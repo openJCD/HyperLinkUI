@@ -13,22 +13,26 @@ namespace VESSEL_GUI
 {
     public class Root : IContainer
     {
-
+        private int width;
+        private int height;
         private Container base_container;
 
         public Container baseContainer { get { return base_container; } }
-
         string IContainer.DebugLabel { get { return "UI Root"; } }
+        public int Width { get { return width; } }
+        public int Height { get { return height; } }
+        public int XPos => 0;
+        public int YPos => 0;
 
-        public string DebugLabel => throw new NotImplementedException();
-
-        public Root() 
+        public Root(GraphicsDeviceManager graphicsInfo) 
         {
+            width = graphicsInfo.PreferredBackBufferWidth;
+            height = graphicsInfo.PreferredBackBufferHeight;
         }
 
-        public  void Draw()
+        public void Draw(SpriteBatch guiSpriteBatch)
         {
-            base_container.Draw();
+            base_container.Draw(guiSpriteBatch);
         }
 
         public void Update(MouseState oldState, MouseState newState, KeyboardState oldKeyboardState, KeyboardState newKeyboardState)

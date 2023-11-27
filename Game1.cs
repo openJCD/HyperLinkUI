@@ -7,11 +7,18 @@ namespace VESSEL_GUI
 {
     public class Game1 : Game
     {
+        //CONSTANTS
+        private readonly int SmallButtonHeight = 20;
+      
+        //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
         private SpriteBatch UISpriteBatch;
         private Root screenRoot;
         private MouseState oldState;
         private KeyboardState oldKeyboardState;
+        private AnchorCoord _testanchor;
+        private AnchorCoord _testanchor2;
+
 
         public Game1()
         {
@@ -23,13 +30,16 @@ namespace VESSEL_GUI
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            screenRoot = new Root();
-            Container rootContainer = new Container(screenRoot, debugLabel:"subroot container"); 
-            Container container2 = new Container(rootContainer, debugLabel:"container 2");
-            Container container3 = new Container(container2, debugLabel: "container 3");
-            Widget widget1 = new Widget(rootContainer, debugLabel: "widget 1");
-            Widget widget2 = new Widget(rootContainer, debugLabel: "widget 2");
-            Widget widget3 = new Widget(container3, debugLabel: "widget 3");
+            screenRoot = new Root(graphicsManager);
+
+            _testanchor = new AnchorCoord(0,0,AnchorType.TOPLEFT, screenRoot);
+
+
+            Container rootContainer = new Container(screenRoot, screenRoot.Width, screenRoot.Height, _testanchor, debugLabel:"subroot container"); 
+
+            Container container2 = new Container(rootContainer, 16, 9, 160, 90, debugLabel:"container 2");
+            _testanchor2 = new AnchorCoord(10, 10, AnchorType.CENTRE, container2);            
+            Widget widget1 = new Widget(container2, 40, SmallButtonHeight, 16,9, debugLabel: "widget 1");
             screenRoot.ChangeBaseContainer(rootContainer);
             Debug.WriteLine(rootContainer.GetParent());
             base.Initialize();
@@ -59,9 +69,11 @@ namespace VESSEL_GUI
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            UISpriteBatch.Begin();
 
-            // TODO: Add your drawing code here
+            screenRoot.Draw(UISpriteBatch);
 
+            UISpriteBatch.End();
             base.Draw(gameTime);
         }
     }
