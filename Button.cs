@@ -10,7 +10,7 @@ namespace VESSEL_GUI
     {
         private AnchorCoord anchor;
 
-        public Button(Container parent, SpriteFont font, int relativex, int relativey, AnchorType anchorType = AnchorType.TOPLEFT) :base(parent, font, relativex, relativey, anchorType)
+        public Button(Container parent, SpriteFont font, int relativex, int relativey, AnchorType anchorType = AnchorType.TOPLEFT) :base(parent, relativex, relativey, anchorType)
         {
             SetNewParent(parent);
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent);       

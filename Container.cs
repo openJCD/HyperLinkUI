@@ -23,42 +23,47 @@ namespace VESSEL_GUI
         public List <Container> ChildContainers { get => child_containers; }
         public List<Widget> ChildWidgets { get => child_widgets; }
         public string DebugLabel { get => debug_label; }
-        public int Width { get => bounding_rectangle.Width; }           
-        public int Height { get => bounding_rectangle.Height; }
-        public int XPos { get => bounding_rectangle.X; }
-        public int YPos { get => bounding_rectangle.Y; }
-        public Rectangle BoundingRectangle { get; }
-        public AnchorCoord Anchor { get; }
+        public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Width = value; }           
+        public int Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height = value; }
+        public int XPos { get => bounding_rectangle.X; set => bounding_rectangle.X = value; }
+        public int YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = value; }
+        public Rectangle BoundingRectangle { get=> bounding_rectangle; }
+        public AnchorCoord Anchor { get => anchor; }
         #endregion
 
         #region overload for Containers as parent
 
-        public Container (Container myParent, int paddingx, int paddingy, int width, int height, int x = 0, int y = 0, string debugLabel = "container")
+        public Container (Container myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT,int x = 0, int y = 0, string debugLabel = "container")
         {
             child_containers  = new List<Container> ();
             child_widgets  = new List<Widget> ();
             debug_label = debugLabel;
             parent = myParent;
             myParent.AddContainer(this);
-            bounding_rectangle = new Rectangle(new Point(x+paddingx, y+paddingy), new Point(x+width-paddingx, y+width-paddingy));
+            anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent);
+            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
 
         #endregion
 
         #region overload for Root as parent 
-        public Container(Root myRoot, int width, int height, AnchorCoord coord, string debugLabel = "container")
+        public Container(Root myRoot, int width, int height, string debugLabel = "container")
         {
             child_containers = new List<Container>();
             child_widgets = new List<Widget>();
             debug_label = debugLabel;
             parent = myRoot;
             myRoot.ChangeBaseContainer(this);
-
-            int x = (int)coord.AbsolutePosition.X;
-            int y = (int)coord.AbsolutePosition.Y;
-            bounding_rectangle = new Rectangle(x,y,width,height);
+            bounding_rectangle = new Rectangle(0,0,width,height);
         }
         #endregion
+        public virtual void Update()
+        {
+            foreach (var container in child_containers) 
+                container.Update();
+            foreach (var child in child_widgets)
+                child.Update();
+        }
 
         public virtual void Draw(SpriteBatch guiSpriteBatch)
         {
@@ -71,13 +76,6 @@ namespace VESSEL_GUI
                 child.Draw(guiSpriteBatch);
         }
 
-        public virtual void Update()
-        {
-            foreach (var container in child_containers) 
-                container.Update();
-            foreach (var child in child_widgets)
-                child.Update();
-        }
         
         public void TransferWidget (Widget widget)
         {

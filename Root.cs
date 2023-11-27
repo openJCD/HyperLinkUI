@@ -18,10 +18,10 @@ namespace VESSEL_GUI
 
         public Container baseContainer { get { return base_container; } }
         string IContainer.DebugLabel { get { return "UI Root"; } }
-        public int Width { get { return width; } }
-        public int Height { get { return height; } }
-        public int XPos => 0;
-        public int YPos => 0;
+        public int Width { get { return width; } set => width = value; }
+        public int Height { get { return height; } set => width = value; }
+        public int XPos { get=>0; set => XPos = 0; }
+        public int YPos { get=>0; set => YPos = 0; }
 
         public Root(GraphicsDeviceManager graphicsInfo) 
         {

@@ -14,14 +14,26 @@ namespace VESSEL_GUI
         private Container parent_container;
         private AnchorCoord anchor;
         private Rectangle bounding_rectangle;
-        private AnchorCoord anchorCoord;
         private AnchorType anchorType;
 
-        public Vector2 AbsolutePosition { get => anchorCoord.AbsolutePosition; }
+        public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; }
         public string DebugLabel => debug_label;
         public Container ParentContainer { get => parent_container; }
         public AnchorCoord Anchor { get => anchor; }
         public Rectangle BoundingRectangle { get => bounding_rectangle; }
+        public int XPos { get=>bounding_rectangle.X; set=>bounding_rectangle.X=value; }
+        public int YPos { get=>bounding_rectangle.Y; set=>bounding_rectangle.Y=value; }
+        public int Width { get; }
+        public int Height { get; }
+
+        public Widget(Container parent, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
+        {
+            parent_container = parent;
+            this.anchor = new AnchorCoord(relativex, relativey, anchorType, parent);
+            parent.TransferWidget(this);
+            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, 10, 20);
+            debug_label = debugLabel;
+        }
 
         public Widget(Container parent, int width, int height, int relativex, int relativey, AnchorType anchorType=AnchorType.TOPLEFT, string debugLabel="widget")
         {
@@ -30,18 +42,13 @@ namespace VESSEL_GUI
 
             debug_label = debugLabel;
  
-            anchorCoord = new AnchorCoord(relativex, relativey, anchorType, parent);
+            anchor = new AnchorCoord(relativex, relativey, anchorType, parent);
             
             int x = (int)anchor.AbsolutePosition.X;
             int y = (int)anchor.AbsolutePosition.Y;
             
             bounding_rectangle = new Rectangle(x,y,width,height);
             UpdatePos();
-        }
-
-        public Widget(Container parent, SpriteFont font, int relativex, int relativey, AnchorType anchorType)
-        {
-            this.anchorType = anchorType;
         }
 
         public virtual void Draw (SpriteBatch guiSpriteBatch)
