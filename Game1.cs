@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Diagnostics;
-
 namespace VESSEL_GUI
 {
     public class Game1 : Game
@@ -16,9 +16,6 @@ namespace VESSEL_GUI
         private Root screenRoot;
         private MouseState oldState;
         private KeyboardState oldKeyboardState;
-        private AnchorCoord _testanchor;
-        private AnchorCoord _testanchor2;
-
 
         public Game1()
         {
@@ -31,17 +28,11 @@ namespace VESSEL_GUI
         {
             // TODO: Add your initialization logic here
             screenRoot = new Root(graphicsManager);
+            Container rootContainer = new Container(screenRoot, screenRoot.Width, screenRoot.Height, debugLabel:"subroot container"); 
 
-            _testanchor = new AnchorCoord(0,0,AnchorType.TOPLEFT, screenRoot);
-
-
-            Container rootContainer = new Container(screenRoot, screenRoot.Width, screenRoot.Height, _testanchor, debugLabel:"subroot container"); 
-
-            Container container2 = new Container(rootContainer, 16, 9, 160, 90, debugLabel:"container 2");
-            _testanchor2 = new AnchorCoord(10, 10, AnchorType.CENTRE, container2);            
-            Widget widget1 = new Widget(container2, 40, SmallButtonHeight, 16,9, debugLabel: "widget 1");
+            Container container2 = new Container(rootContainer, 0,0, 160, 200, AnchorType.CENTRE, debugLabel:"container 2");
+            Widget widget1 = new Widget(container2, -10,-20, AnchorType.BOTTOMRIGHT, debugLabel: "widget 1");
             screenRoot.ChangeBaseContainer(rootContainer);
-            Debug.WriteLine(rootContainer.GetParent());
             base.Initialize();
         }
 
@@ -68,7 +59,7 @@ namespace VESSEL_GUI
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.White);
             UISpriteBatch.Begin();
 
             screenRoot.Draw(UISpriteBatch);

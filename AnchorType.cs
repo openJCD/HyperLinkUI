@@ -25,8 +25,31 @@ namespace VESSEL_GUI
             Type = anchorType;
             OffsetFromAnchor = new Vector2(XOffset, YOffset);
             AbsolutePosition = new Vector2();
-            AnchorLocation = SetAnchorPos(anchorType, parent);
-            AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+            AnchorLocation = new Vector2();
+            switch (anchorType)
+            {
+                case AnchorType.TOPLEFT:
+                    AnchorLocation = new Vector2(parent.XPos, parent.YPos);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                case AnchorType.TOPRIGHT:
+                    AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                case AnchorType.BOTTOMLEFT:
+                    AnchorLocation = new Vector2(parent.XPos, parent.XPos + parent.Height);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                case AnchorType.BOTTOMRIGHT:
+                    AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos + parent.Height);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                case AnchorType.CENTRE:
+                    AnchorLocation = new Vector2(parent.XPos + parent.Width / 2, parent.YPos + parent.Height/2);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                
+            }
         }
 
         public Vector2 AnchorLocation { get; }

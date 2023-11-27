@@ -9,10 +9,10 @@ namespace VESSEL_GUI
     public interface IContainer
     { 
         string DebugLabel { get; }
-        int Width { get; }
-        int Height { get; }
+        int Width { get; set; }
+        int Height { get; set; }
 
-        int XPos { get; }
-        int YPos { get; }
+        int XPos { get; set; }
+        int YPos { get; set; }
     }
 }
