@@ -4,16 +4,16 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace VESSEL_GUI
+namespace VESSEL_GUI.GUI
 {
     public class Button : Widget
     {
         private AnchorCoord anchor;
 
-        public Button(Container parent, SpriteFont font, int relativex, int relativey, AnchorType anchorType = AnchorType.TOPLEFT) :base(parent, relativex, relativey, anchorType)
+        public Button(Container parent, SpriteFont font, int relativex, int relativey, AnchorType anchorType = AnchorType.TOPLEFT) : base(parent, relativex, relativey, anchorType)
         {
             SetNewParent(parent);
-            anchor = new AnchorCoord(relativex, relativey, anchorType, parent);       
+            anchor = new AnchorCoord(relativex, relativey, anchorType, parent, this);
         }
     }
 }

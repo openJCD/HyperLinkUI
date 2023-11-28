@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace VESSEL_GUI
+namespace VESSEL_GUI.GUI
 {
     public class Root : IContainer
     {
@@ -20,10 +20,10 @@ namespace VESSEL_GUI
         string IContainer.DebugLabel { get { return "UI Root"; } }
         public int Width { get { return width; } set => width = value; }
         public int Height { get { return height; } set => width = value; }
-        public int XPos { get=>0; set => XPos = 0; }
-        public int YPos { get=>0; set => YPos = 0; }
+        public int XPos { get => 0; set => XPos = 0; }
+        public int YPos { get => 0; set => YPos = 0; }
 
-        public Root(GraphicsDeviceManager graphicsInfo) 
+        public Root(GraphicsDeviceManager graphicsInfo)
         {
             width = graphicsInfo.PreferredBackBufferWidth;
             height = graphicsInfo.PreferredBackBufferHeight;
@@ -40,7 +40,7 @@ namespace VESSEL_GUI
             {
                 switch (newKeyboardState.GetPressedKeys()[0])
                 {
-                    case (Keys.T):
+                    case Keys.T:
                         PrintUITree();
                         return;
                 }
@@ -54,17 +54,17 @@ namespace VESSEL_GUI
 
         internal void ChangeBaseContainer(Container containerToAdd)
         {
-                base_container = containerToAdd;
+            base_container = containerToAdd;
         }
 
         public void PrintUITree()
         {
             Debug.WriteLine("Whole UI Tree is as follows:");
-            
-            base_container.PrintChildren(1);
-            
+
+            base_container.PrintChildren(0);
+
         }
     }
 
-  
+
 }

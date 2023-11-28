@@ -5,49 +5,53 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using VESSEL_GUI.GUI;
 
 namespace VESSEL_GUI
 {
-    public class Widget
+    public class Widget : Anchorable
     {
         private string debug_label;
-        private Container parent_container;
         private AnchorCoord anchor;
         private Rectangle bounding_rectangle;
         private AnchorType anchorType;
 
         public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; }
-        public string DebugLabel => debug_label;
-        public Container ParentContainer { get => parent_container; }
+        public string DebugLabel { get => debug_label; }
+        public Container ParentContainer { get; private set; }
         public AnchorCoord Anchor { get => anchor; }
         public Rectangle BoundingRectangle { get => bounding_rectangle; }
         public int XPos { get=>bounding_rectangle.X; set=>bounding_rectangle.X=value; }
         public int YPos { get=>bounding_rectangle.Y; set=>bounding_rectangle.Y=value; }
-        public int Width { get; }
-        public int Height { get; }
+        public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Height = value; }
+        public int Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height=value; }
+        public Vector2 localOrigin { get; set; }
 
         public Widget(Container parent, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
         {
-            parent_container = parent;
-            this.anchor = new AnchorCoord(relativex, relativey, anchorType, parent);
+            ParentContainer = parent;
+            anchor = new AnchorCoord(relativex, relativey, anchorType, parent, this);
             parent.TransferWidget(this);
-            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, 10, 20);
+            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, 20, 20);
+            localOrigin = new Vector2(bounding_rectangle.Width/2, bounding_rectangle.Height/2);
             debug_label = debugLabel;
         }
 
         public Widget(Container parent, int width, int height, int relativex, int relativey, AnchorType anchorType=AnchorType.TOPLEFT, string debugLabel="widget")
         {
-            parent_container = parent;
+            ParentContainer = parent;
             parent.TransferWidget(this);
 
             debug_label = debugLabel;
  
-            anchor = new AnchorCoord(relativex, relativey, anchorType, parent);
+            anchor = new AnchorCoord(relativex, relativey, anchorType, parent, this);
             
             int x = (int)anchor.AbsolutePosition.X;
             int y = (int)anchor.AbsolutePosition.Y;
             
             bounding_rectangle = new Rectangle(x,y,width,height);
+            localOrigin = new Vector2(bounding_rectangle.Width / 2, bounding_rectangle.Height / 2);
+
             UpdatePos();
         }
 
@@ -67,7 +71,7 @@ namespace VESSEL_GUI
         /// <param name="newParent"></param>
         internal void SetNewParent (Container newParent)
         {
-            parent_container = newParent;
+            ParentContainer = newParent;
         } 
         
         private void UpdatePos ()

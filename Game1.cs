@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
+using VESSEL_GUI.GUI;
+
 namespace VESSEL_GUI
 {
     public class Game1 : Game
@@ -30,8 +32,8 @@ namespace VESSEL_GUI
             screenRoot = new Root(graphicsManager);
             Container rootContainer = new Container(screenRoot, screenRoot.Width, screenRoot.Height, debugLabel:"subroot container"); 
 
-            Container container2 = new Container(rootContainer, 0,0, 160, 200, AnchorType.CENTRE, debugLabel:"container 2");
-            Widget widget1 = new Widget(container2, -10,-20, AnchorType.BOTTOMRIGHT, debugLabel: "widget 1");
+            Container container2 = new Container(rootContainer, 0,0, 100, 100, AnchorType.CENTRE, debugLabel:"container 2");
+            Widget widget1 = new Widget(container2, 20,20, -10,-10, AnchorType.TOPRIGHT, debugLabel: "widget 1");
             screenRoot.ChangeBaseContainer(rootContainer);
             base.Initialize();
         }
