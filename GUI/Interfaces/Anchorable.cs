@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 
-namespace VESSEL_GUI.GUI
+namespace VESSEL_GUI.GUI.Interfaces
 {
     public interface Anchorable
     {

@@ -7,17 +7,22 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using VESSEL_GUI.GUI.Interfaces;
+using VESSEL_GUI.GUI.Widgets;
 
-namespace VESSEL_GUI.GUI
+
+namespace VESSEL_GUI.GUI.Containers
 {
     public class Root : IContainer
     {
         private int width;
         private int height;
         private Container base_container;
+        private MouseFocusable focused_widget;
 
-        public Container baseContainer { get { return base_container; } }
-        string IContainer.DebugLabel { get { return "UI Root"; } }
+        public MouseFocusable FocusedWidget { get => focused_widget; }
+        public Container BaseContainer { get { return base_container; } }
+        public string DebugLabel { get { return "UI Root"; } }
         public int Width { get { return width; } set => width = value; }
         public int Height { get { return height; } set => width = value; }
         public int XPos { get => 0; set => XPos = 0; }
@@ -49,7 +54,6 @@ namespace VESSEL_GUI.GUI
 
             if (newState.RightButton == ButtonState.Pressed && oldState.RightButton == ButtonState.Released)
                 PrintUITree();
-
         }
 
         internal void ChangeBaseContainer(Container containerToAdd)
@@ -65,6 +69,4 @@ namespace VESSEL_GUI.GUI
 
         }
     }
-
-
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VESSEL_GUI
+namespace VESSEL_GUI.GUI.Containers
 {
     public interface IContainer
-    { 
+    {
         string DebugLabel { get; }
         int Width { get; set; }
         int Height { get; set; }

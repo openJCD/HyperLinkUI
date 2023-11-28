@@ -13,3 +13,13 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Fonts/SometypeMono-Medium.ttf
+/copy:Fonts/SometypeMono-Medium.ttf
+
+#begin Fonts/SometypeMonoMedium.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Fonts/SometypeMonoMedium.spritefont
+

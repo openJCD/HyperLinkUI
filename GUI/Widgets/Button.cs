@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using VESSEL_GUI.GUI.Containers;
+using VESSEL_GUI.GUI.Interfaces;
 
-namespace VESSEL_GUI.GUI
+namespace VESSEL_GUI.GUI.Widgets
 {
     public class Button : Widget
     {

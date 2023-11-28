@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using VESSEL_GUI.GUI.Interfaces;
+using VESSEL_GUI.GUI.Widgets;
 
-namespace VESSEL_GUI.GUI
+namespace VESSEL_GUI.GUI.Containers
 {
     public class Container : IContainer, Anchorable
     {
@@ -16,8 +18,10 @@ namespace VESSEL_GUI.GUI
         private IContainer parent;
         private Rectangle bounding_rectangle;
         private AnchorCoord anchor;
+        private bool isUnderMouseFocus;
 
         #region Attributes
+        public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
         public IContainer Parent { get => parent; }
         public List<Container> ChildContainers { get => child_containers; }
         public List<Widget> ChildWidgets { get => child_widgets; }
@@ -29,6 +33,7 @@ namespace VESSEL_GUI.GUI
         public Rectangle BoundingRectangle { get => bounding_rectangle; }
         public AnchorCoord Anchor { get => anchor; }
         public Vector2 localOrigin { get; set; }
+
         #endregion
 
         #region overload for Containers as parent
@@ -42,13 +47,17 @@ namespace VESSEL_GUI.GUI
 
             myParent.AddContainer(this);
 
+            bounding_rectangle = new Rectangle(0, 0, width, height);
+            //anchor must be initialised with rectangle, but rectangle must be initialised with anchor. whoops!
+            //keep the assignment of the X and Y positions under the declaraion of anchor.
+            localOrigin = new Vector2(Width / 2, Height / 2);
             anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, this);
-            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
-            localOrigin = new Vector2(Width - (Width / 2), Height - (Height / 2));
+            bounding_rectangle.X = (int)anchor.AbsolutePosition.X;
+            bounding_rectangle.Y = (int)anchor.AbsolutePosition.Y;
+
         }
 
         #endregion
-
         #region overload for Root as parent 
         public Container(Root myRoot, int width, int height, string debugLabel = "container")
         {
@@ -60,6 +69,7 @@ namespace VESSEL_GUI.GUI
             bounding_rectangle = new Rectangle(0, 0, width, height);
         }
         #endregion
+        
         public virtual void Update()
         {
             foreach (var container in child_containers)
@@ -78,7 +88,6 @@ namespace VESSEL_GUI.GUI
             foreach (var child in child_widgets)
                 child.Draw(guiSpriteBatch);
         }
-
 
         public void TransferWidget(Widget widget)
         {

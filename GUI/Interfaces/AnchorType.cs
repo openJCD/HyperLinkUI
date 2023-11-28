@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using VESSEL_GUI.GUI.Containers;
 
-namespace VESSEL_GUI.GUI
+namespace VESSEL_GUI.GUI.Interfaces
 {
     public enum AnchorType
     {
@@ -21,19 +22,19 @@ namespace VESSEL_GUI.GUI
         public AnchorCoord(int XOffset, int YOffset, AnchorType anchorType, IContainer parent, Anchorable attached_object)
         {
             Type = anchorType;
-            OffsetFromAnchor = new Vector2(XOffset, YOffset);
+            OffsetFromAnchor = new Vector2();
             AbsolutePosition = new Vector2();
             AnchorLocation = new Vector2();
             switch (anchorType)
             {
                 case AnchorType.TOPLEFT:
                     AnchorLocation = new Vector2(parent.XPos, parent.YPos);
-                    //Offset from anchor is default |^| (XOffset, YOffset)
+                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
                 case AnchorType.TOPRIGHT:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos);
-                    OffsetFromAnchor = new Vector2(XOffset-attached_object.Width, YOffset);
+                    OffsetFromAnchor = new Vector2(XOffset - attached_object.Width, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
                 case AnchorType.BOTTOMLEFT:
@@ -43,13 +44,12 @@ namespace VESSEL_GUI.GUI
                     return;
                 case AnchorType.BOTTOMRIGHT:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos + parent.Height);
-                    OffsetFromAnchor = new Vector2(XOffset - attached_object.Width, YOffset-attached_object.Height);
-
+                    OffsetFromAnchor = new Vector2(XOffset - attached_object.Width, YOffset - attached_object.Height);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
                 case AnchorType.CENTRE:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width / 2, parent.YPos + parent.Height / 2);
-                    OffsetFromAnchor = new Vector2(XOffset-attached_object.localOrigin.X, YOffset-attached_object.localOrigin.Y) ;
+                    OffsetFromAnchor = new Vector2(XOffset - attached_object.localOrigin.X, YOffset - attached_object.localOrigin.Y);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
 

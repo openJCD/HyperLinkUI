@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
-using VESSEL_GUI.GUI;
+using VESSEL_GUI.GUI.Containers;
+using VESSEL_GUI.GUI.Interfaces;
+using VESSEL_GUI.GUI.Widgets;
 
 namespace VESSEL_GUI
 {
@@ -18,7 +20,7 @@ namespace VESSEL_GUI
         private Root screenRoot;
         private MouseState oldState;
         private KeyboardState oldKeyboardState;
-
+        private SpriteFont cp_mono_font;
         public Game1()
         {
             graphicsManager = new GraphicsDeviceManager(this);
@@ -29,12 +31,6 @@ namespace VESSEL_GUI
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            screenRoot = new Root(graphicsManager);
-            Container rootContainer = new Container(screenRoot, screenRoot.Width, screenRoot.Height, debugLabel:"subroot container"); 
-
-            Container container2 = new Container(rootContainer, 0,0, 100, 100, AnchorType.CENTRE, debugLabel:"container 2");
-            Widget widget1 = new Widget(container2, 20,20, -10,-10, AnchorType.TOPRIGHT, debugLabel: "widget 1");
-            screenRoot.ChangeBaseContainer(rootContainer);
             base.Initialize();
         }
 
@@ -42,6 +38,16 @@ namespace VESSEL_GUI
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
 
+            cp_mono_font = Content.Load<SpriteFont>("Fonts/SometypeMonoMedium");
+
+            screenRoot = new Root(graphicsManager);
+
+            Container rootContainer = new Container(screenRoot, screenRoot.Width, screenRoot.Height, debugLabel: "subroot container");
+            Container container2 = new Container(rootContainer, 0, 0, 100, 100, AnchorType.CENTRE, debugLabel: "container 2");
+            Widget widget1 = new Widget(container2, 20, 20, 16, 9, debugLabel: "widget 1");
+            LabelText labelText = new LabelText(container2, "Hello World!", cp_mono_font, anchorType: AnchorType.CENTRE);
+
+            screenRoot.ChangeBaseContainer(rootContainer);
             // TODO: use this.Content to load your game content here
         }
 
@@ -53,6 +59,7 @@ namespace VESSEL_GUI
                 Exit();
             
             screenRoot.Update(oldState, newState, oldKeyboardState, newKeyboardState);
+            
 
             base.Update(gameTime);
             oldKeyboardState = newKeyboardState;
@@ -61,7 +68,7 @@ namespace VESSEL_GUI
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.Black);
             UISpriteBatch.Begin();
 
             screenRoot.Draw(UISpriteBatch);
