@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,9 +17,6 @@ namespace VESSEL_GUI.GUI.Containers
         private int width;
         private int height;
         private Container base_container;
-        private MouseFocusable focused_widget;
-
-        public MouseFocusable FocusedWidget { get => focused_widget; }
         public Container BaseContainer { get { return base_container; } }
         public string DebugLabel { get { return "UI Root"; } }
         public int Width { get { return width; } set => width = value; }
@@ -68,5 +64,6 @@ namespace VESSEL_GUI.GUI.Containers
             base_container.PrintChildren(0);
 
         }
+        
     }
 }

@@ -13,13 +13,23 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Fonts/SometypeMono-Medium.ttf
-/copy:Fonts/SometypeMono-Medium.ttf
+#begin Fonts/CPMono_v07_Plain.otf
+/copy:Fonts/CPMono_v07_Plain.otf
 
-#begin Fonts/SometypeMonoMedium.spritefont
+#begin Fonts/CPMono_v07_Plain.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:Fonts/SometypeMonoMedium.spritefont
+/processorParam:TextureFormat=Compressed
+/build:Fonts/CPMono_v07_Plain.spritefont
+
+#begin Fonts/SometypeMono-Medium.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/SometypeMono-Medium.spritefont
+
+#begin Fonts/SometypeMono-Medium.ttf
+/copy:Fonts/SometypeMono-Medium.ttf
 

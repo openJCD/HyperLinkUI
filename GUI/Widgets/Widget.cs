@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -33,38 +34,31 @@ namespace VESSEL_GUI.GUI.Widgets
         public Vector2 localOrigin { get; set; }
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
 
-
-        public Widget(Container parent, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
+        protected Widget(Container parent)
         {
             ParentContainer = parent;
             parent.TransferWidget(this);
-            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, 20, 20);
-            localOrigin = new Vector2(bounding_rectangle.Width / 2, bounding_rectangle.Height / 2);
-            anchor = new AnchorCoord(relativex, relativey, anchorType, parent, this);
-            debug_label = debugLabel;
         }
 
-        public Widget(Container parent, int width, int height, int relativex, int relativey, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
+        public Widget(Container parent, int width, int height, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
         {
-            ParentContainer = parent;
-            parent.TransferWidget(this);
-
+            localOrigin = new Vector2(width / 2, height / 2);
+            bounding_rectangle = new Rectangle(0, 0, width, height);
+            anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
+            bounding_rectangle.X = (int)anchor.AbsolutePosition.X;
+            bounding_rectangle.Y = (int)anchor.AbsolutePosition.Y;
+            
             debug_label = debugLabel;
+            ParentContainer = parent;
 
-
-            int x = (int)anchor.AbsolutePosition.X;
-            int y = (int)anchor.AbsolutePosition.Y;
-
-            bounding_rectangle = new Rectangle(x, y, width, height);
-            localOrigin = new Vector2(bounding_rectangle.Width / 2, bounding_rectangle.Height / 2);
-            anchor = new AnchorCoord(relativex, relativey, anchorType, parent, this);
-
-            UpdatePos();
+            parent.TransferWidget(this);
         }
+
+
 
         public virtual void Draw(SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.DrawRectangle(bounding_rectangle, Color.White);
+            guiSpriteBatch.FillRectangle(bounding_rectangle, Color.White);
         }
 
         public virtual void Update()

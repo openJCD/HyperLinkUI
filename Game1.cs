@@ -20,7 +20,7 @@ namespace VESSEL_GUI
         private Root screenRoot;
         private MouseState oldState;
         private KeyboardState oldKeyboardState;
-        private SpriteFont cp_mono_font;
+        private SpriteFont monospace;
         public Game1()
         {
             graphicsManager = new GraphicsDeviceManager(this);
@@ -38,14 +38,16 @@ namespace VESSEL_GUI
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            cp_mono_font = Content.Load<SpriteFont>("Fonts/SometypeMonoMedium");
+            monospace = Content.Load<SpriteFont>("Fonts/CPMono_v07_Plain");
 
             screenRoot = new Root(graphicsManager);
 
             Container rootContainer = new Container(screenRoot, screenRoot.Width, screenRoot.Height, debugLabel: "subroot container");
-            Container container2 = new Container(rootContainer, 0, 0, 100, 100, AnchorType.CENTRE, debugLabel: "container 2");
-            Widget widget1 = new Widget(container2, 20, 20, 16, 9, debugLabel: "widget 1");
-            LabelText labelText = new LabelText(container2, "Hello World!", cp_mono_font, anchorType: AnchorType.CENTRE);
+            Container container2 = new Container(rootContainer, 0, 0, 300, 300, AnchorType.CENTRE, debugLabel: "container 2");
+            Container container3 = new Container(container2, -1, 1, container2.Width-2, 30, AnchorType.TOPRIGHT, debugLabel: "container 3");
+
+            Widget widget1 = new Widget(container3, 20, 20, 0, 5, AnchorType.TOPRIGHT, debugLabel: "widget 1");
+            LabelText labelText = new LabelText(container3, "Window Prototype", monospace, 0,2, anchorType: AnchorType.CENTRE);
 
             screenRoot.ChangeBaseContainer(rootContainer);
             // TODO: use this.Content to load your game content here

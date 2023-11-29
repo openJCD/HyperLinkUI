@@ -37,7 +37,6 @@ namespace VESSEL_GUI.GUI.Containers
         #endregion
 
         #region overload for Containers as parent
-
         public Container(Container myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, int x = 0, int y = 0, string debugLabel = "container")
         {
             child_containers = new List<Container>();
@@ -47,17 +46,13 @@ namespace VESSEL_GUI.GUI.Containers
 
             myParent.AddContainer(this);
 
-            bounding_rectangle = new Rectangle(0, 0, width, height);
-            //anchor must be initialised with rectangle, but rectangle must be initialised with anchor. whoops!
-            //keep the assignment of the X and Y positions under the declaraion of anchor.
             localOrigin = new Vector2(Width / 2, Height / 2);
-            anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, this);
-            bounding_rectangle.X = (int)anchor.AbsolutePosition.X;
-            bounding_rectangle.Y = (int)anchor.AbsolutePosition.Y;
+            anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
+            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
 
         }
-
         #endregion
+
         #region overload for Root as parent 
         public Container(Root myRoot, int width, int height, string debugLabel = "container")
         {
