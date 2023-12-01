@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -13,42 +12,22 @@ using VESSEL_GUI.GUI.Widgets;
 
 namespace VESSEL_GUI.GUI.Containers
 {
-    [Serializable()]
-    [XmlRoot("Root")]
     public class Root : IContainer
     {
-        [XmlIgnore]
         private int width;
-        [XmlIgnore]
         private int height;
-        [XmlIgnore]
         private Container base_container;
-
-
-        [XmlElement("SubrootContainer")]
-        public Container BaseContainer { get => base_container; set => base_container = value;  }
-
-        [XmlIgnore]
+        public Container BaseContainer { get { return base_container; } }
         public string DebugLabel { get { return "UI Root"; } }
-        [XmlAttribute]
         public int Width { get { return width; } set => width = value; }
-        [XmlAttribute]
-        public int Height { get { return height; } set => height = value; }
-        [XmlIgnore]
+        public int Height { get { return height; } set => width = value; }
         public int XPos { get => 0; set => XPos = 0; }
-        [XmlIgnore]
         public int YPos { get => 0; set => YPos = 0; }
-
-        public Root() { }
 
         public Root(GraphicsDeviceManager graphicsInfo)
         {
-            Initialise(graphicsInfo);
-        }
-        public void Initialise(GraphicsDeviceManager graphicsInfo)
-        {
-            Width = graphicsInfo.PreferredBackBufferWidth;
-            Height = graphicsInfo.PreferredBackBufferHeight;
+            width = graphicsInfo.PreferredBackBufferWidth;
+            height = graphicsInfo.PreferredBackBufferHeight;
         }
 
         public void Draw(SpriteBatch guiSpriteBatch)
@@ -75,7 +54,7 @@ namespace VESSEL_GUI.GUI.Containers
 
         internal void ChangeBaseContainer(Container containerToAdd)
         {
-            BaseContainer = containerToAdd;
+            base_container = containerToAdd;
         }
 
         public void PrintUITree()

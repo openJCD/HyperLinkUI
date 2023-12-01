@@ -2,11 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
-using System.Xml.Serialization;
 using VESSEL_GUI.GUI.Containers;
-using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
 using VESSEL_GUI.GUI.Widgets;
 
@@ -24,8 +21,6 @@ namespace VESSEL_GUI
         private MouseState oldState;
         private KeyboardState oldKeyboardState;
         private SpriteFont monospace;
-        private GameSettings settings;
-
         public Game1()
         {
             graphicsManager = new GraphicsDeviceManager(this);
@@ -36,26 +31,6 @@ namespace VESSEL_GUI
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            settings = new GameSettings();
-
-            // check if the Loader throws an exception
-            try
-            {
-                settings = settings.Load(Content.RootDirectory + "/Saves/", "settings.xml");
-            } catch
-            {   
-                settings.WindowWidth = graphicsManager.PreferredBackBufferWidth;
-                settings.WindowHeight = graphicsManager.PreferredBackBufferHeight;
-                settings.WindowTitle = "VESSEL";
-                settings.BorderColor = Color.Red;
-                settings.Save(Content.RootDirectory+"/Saves/", "settings.xml");
-            }
-            
-            Window.Title = settings.WindowTitle;
-            graphicsManager.PreferredBackBufferWidth = settings.WindowWidth;
-            graphicsManager.PreferredBackBufferHeight = settings.WindowHeight;
-            graphicsManager.ApplyChanges();
-
             base.Initialize();
         }
 
@@ -75,8 +50,6 @@ namespace VESSEL_GUI
             LabelText labelText = new LabelText(container3, "Window Prototype", monospace, 0,2, anchorType: AnchorType.CENTRE);
 
             screenRoot.ChangeBaseContainer(rootContainer);
-            
-            screenRoot.Save(Content.RootDirectory + "/Saves/Scenes/", "test.xml");
             // TODO: use this.Content to load your game content here
         }
 

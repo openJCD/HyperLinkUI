@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using VESSEL_GUI.GUI.Containers;
 
@@ -11,15 +10,10 @@ namespace VESSEL_GUI.GUI.Interfaces
 {
     public enum AnchorType
     {
-        [XmlEnum("TOPLEFT")]
         TOPLEFT,
-        [XmlEnum("TOPRIGHT")]
         TOPRIGHT,
-        [XmlEnum("BOTTOMLEFT")]
         BOTTOMLEFT,
-        [XmlEnum("BOTTOMRIGHT")]
         BOTTOMRIGHT,
-        [XmlEnum("CENTRE")]
         CENTRE
     }
 
@@ -62,9 +56,9 @@ namespace VESSEL_GUI.GUI.Interfaces
             }
         }
         public Vector2 AnchorLocation { get; }
-        public Vector2 OffsetFromAnchor { get; set; }
-        public Vector2 AbsolutePosition { get; set; }
-        public AnchorType Type { get; set; }
+        public Vector2 OffsetFromAnchor { get; }
+        public Vector2 AbsolutePosition { get; }
+        public AnchorType Type { get; }
     }
 }
 
