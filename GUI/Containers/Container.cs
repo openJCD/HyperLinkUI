@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using VESSEL_GUI.GUI.Interfaces;
 using VESSEL_GUI.GUI.Widgets;
 
@@ -21,34 +22,72 @@ namespace VESSEL_GUI.GUI.Containers
         private bool isUnderMouseFocus;
 
         #region Attributes
+        [XmlIgnore]
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
-        public IContainer Parent { get => parent; }
-        public List<Container> ChildContainers { get => child_containers; }
-        public List<Widget> ChildWidgets { get => child_widgets; }
-        public string DebugLabel { get => debug_label; }
+        
+        [XmlIgnore]
+        public IContainer Parent { get => parent; private set => parent = value; }
+        
+        [XmlArray("Containers")]
+        public List<Container> ChildContainers { get => child_containers; set => child_containers = value; }
+        
+        [XmlArray("Widgets")]
+        public List<Widget> ChildWidgets { get => child_widgets; set => child_widgets = value; }
+
+        [XmlAttribute("debuglabel")]
+        public string DebugLabel { get => debug_label; set => debug_label = value; }
+
+        [XmlAttribute("width")]
         public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Width = value; }
+
+        [XmlAttribute("height")]
         public int Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height = value; }
+
+        [XmlIgnore]
         public int XPos { get => bounding_rectangle.X; set => bounding_rectangle.X = value; }
+
+        [XmlIgnore]
         public int YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = value; }
-        public Rectangle BoundingRectangle { get => bounding_rectangle; }
-        public AnchorCoord Anchor { get => anchor; }
+
+        [XmlIgnore]
+        public Rectangle BoundingRectangle { get => bounding_rectangle; private set => bounding_rectangle = value; }
+
+        [XmlIgnore]
+        public AnchorCoord Anchor { get => anchor; private set => anchor = value; }
+
+        [XmlElement("Anchor")]
+        public AnchorType anchorType { get => anchor.Type; }
+
+        [XmlAttribute("relativex")]
+        public int LocalX { get => (int)anchor.OffsetFromAnchor.X; }
+
+        [XmlAttribute("relativey")]
+        public int LocalY { get => (int)anchor.OffsetFromAnchor.Y; }
+
+        [XmlIgnore]
         public Vector2 localOrigin { get; set; }
 
         #endregion
 
+
         #region overload for Containers as parent
+
+        public Container ()
+        {
+
+        }
         public Container(Container myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, int x = 0, int y = 0, string debugLabel = "container")
         {
-            child_containers = new List<Container>();
-            child_widgets = new List<Widget>();
-            debug_label = debugLabel;
-            parent = myParent;
+            ChildContainers = new List<Container>();
+            ChildWidgets = new List<Widget>();
+            DebugLabel = debugLabel;
+            Parent = myParent;
 
             myParent.AddContainer(this);
 
             localOrigin = new Vector2(Width / 2, Height / 2);
-            anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
-            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
+            Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
+            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
 
         }
         #endregion
