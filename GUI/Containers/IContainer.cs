@@ -14,5 +14,7 @@ namespace VESSEL_GUI.GUI.Containers
 
         int XPos { get; set; }
         int YPos { get; set; }
+
+        public void AddContainer (IContainer container) { }         
     }
 }

@@ -36,19 +36,15 @@ namespace VESSEL_GUI
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            settings = new GameSettings();
-
             // check if the Loader throws an exception
             try
             {
                 settings = settings.Load(Content.RootDirectory + "/Saves/", "settings.xml");
             } catch
-            {   
-                settings.WindowWidth = graphicsManager.PreferredBackBufferWidth;
-                settings.WindowHeight = graphicsManager.PreferredBackBufferHeight;
-                settings.WindowTitle = "VESSEL";
-                settings.BorderColor = Color.Red;
+            {
+                settings = new GameSettings();
                 settings.Save(Content.RootDirectory+"/Saves/", "settings.xml");
+                settings = settings.Load(Content.RootDirectory + "/Saves/", "settings.xml");
             }
             
             Window.Title = settings.WindowTitle;
@@ -64,17 +60,17 @@ namespace VESSEL_GUI
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
 
             monospace = Content.Load<SpriteFont>("Fonts/CPMono_v07_Plain");
+            SpriteFont monospaceSmall = Content.Load<SpriteFont>("Fonts/CPMono_v07_Light");
+            
+            screenRoot = new Root(graphicsManager, settings);
 
-            screenRoot = new Root(graphicsManager);
+            Container rootContainer = new Container(screenRoot,0,0, screenRoot.Width, screenRoot.Height+20, debugLabel: "subroot container");
+            Taskbar TaskBarContainer = new Taskbar(screenRoot, 20, settings);
+            LabelText dateTime = new LabelText(TaskBarContainer, "00:00, DD/MM/YY", monospace,-10, 0, anchorType:AnchorType.BOTTOMRIGHT);
+            Window testwindow = new Window(rootContainer, 0, 20, 300, 300, monospaceSmall,  title: "Test Window Class Instance", AnchorType.TOPLEFT);
+            Window testwindow2 = new Window(rootContainer, 0, 20, 300, 200, monospaceSmall, title: "Test Window Class Instance 2", AnchorType.TOPRIGHT);
 
-            Container rootContainer = new Container(screenRoot, screenRoot.Width, screenRoot.Height, debugLabel: "subroot container");
-            Container container2 = new Container(rootContainer, 0, 0, 300, 300, AnchorType.CENTRE, debugLabel: "container 2");
-            Container container3 = new Container(container2, -1, 1, container2.Width-2, 30, AnchorType.TOPRIGHT, debugLabel: "container 3");
-
-            Widget widget1 = new Widget(container3, 20, 20, 0, 5, AnchorType.TOPRIGHT, debugLabel: "widget 1");
-            LabelText labelText = new LabelText(container3, "Window Prototype", monospace, 0,2, anchorType: AnchorType.CENTRE);
-
-            screenRoot.ChangeBaseContainer(rootContainer);
+            screenRoot.InitSettings(settings);
             
             screenRoot.Save(Content.RootDirectory + "/Saves/Scenes/", "test.xml");
             // TODO: use this.Content to load your game content here
@@ -83,12 +79,25 @@ namespace VESSEL_GUI
         protected override void Update(GameTime gameTime)
         {
             MouseState newState = Mouse.GetState();
-            KeyboardState newKeyboardState = new KeyboardState();
+            KeyboardState newKeyboardState = Keyboard.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             
+            // check for f5, if so hot reload settings
+            if (oldKeyboardState.IsKeyUp(Keys.F5) && newKeyboardState.IsKeyDown(Keys.F5))
+            {
+                // do something here
+                // this will only be called when the key is first pressed
+                Debug.WriteLine("Hot Reloading Settings ...");
+                settings = settings.Load(Content.RootDirectory + "/Saves/", "settings.xml");
+                Window.Title = settings.WindowTitle;
+                graphicsManager.PreferredBackBufferWidth = settings.WindowWidth;
+                graphicsManager.PreferredBackBufferHeight = settings.WindowHeight;
+                graphicsManager.ApplyChanges();
+                screenRoot.InitSettings(settings);
+                Debug.WriteLine("Done.");
+            }
             screenRoot.Update(oldState, newState, oldKeyboardState, newKeyboardState);
-            
 
             base.Update(gameTime);
             oldKeyboardState = newKeyboardState;

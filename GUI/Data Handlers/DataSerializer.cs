@@ -102,10 +102,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
                 {
                     FileStream streamReader = new FileStream(savePath + "/" + saveName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     myself = (Root)serializer.Deserialize(streamReader);
-/*                    foreach (Container container in myself.BaseContainer.ChildContainers)
-                    {
-                        container.Parent;
-                    }*/
+                    
                     streamReader.Close();
                     return myself;
                 }

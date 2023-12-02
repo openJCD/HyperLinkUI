@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using VESSEL_GUI.GUI.Containers;
+using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
 
 namespace VESSEL_GUI.GUI.Widgets
@@ -52,6 +53,8 @@ namespace VESSEL_GUI.GUI.Widgets
         [XmlElement("AnchorType")]
         public AnchorType anchorType { get => anchor.Type; set => anchor.Type = value; }
 
+        public GameSettings Settings { get; set; }
+
         protected Widget(Container parent)
         {
             ParentContainer = parent;
@@ -74,7 +77,8 @@ namespace VESSEL_GUI.GUI.Widgets
 
         public virtual void Draw(SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.FillRectangle(bounding_rectangle, Color.White);
+            guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
+            guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.WidgetFillColor);
         }
 
         public virtual void Update()

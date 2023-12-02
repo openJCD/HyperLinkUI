@@ -13,6 +13,16 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Fonts/CPMono_v07_Light.otf
+/copy:Fonts/CPMono_v07_Light.otf
+
+#begin Fonts/CPMono_v07_Light.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/CPMono_v07_Light.spritefont
+
 #begin Fonts/CPMono_v07_Plain.otf
 /copy:Fonts/CPMono_v07_Plain.otf
 

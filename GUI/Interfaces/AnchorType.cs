@@ -5,10 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
+using SharpDX.Direct3D9;
+using SharpDX.MediaFoundation;
 using VESSEL_GUI.GUI.Containers;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace VESSEL_GUI.GUI.Interfaces
 {
+    [Serializable()]
     public enum AnchorType
     {
         [XmlEnum("TOPLEFT")]
@@ -61,10 +65,45 @@ namespace VESSEL_GUI.GUI.Interfaces
 
             }
         }
-        public Vector2 AnchorLocation { get; }
+
+
+        public Vector2 AnchorLocation { get; private set; }
         public Vector2 OffsetFromAnchor { get; set; }
         public Vector2 AbsolutePosition { get; set; }
         public AnchorType Type { get; set; }
+    
+        public void RecalculateAnchor(int XOffset, int YOffset, IContainer parent, int width, int height)
+        {
+            switch (Type)
+            {
+                case AnchorType.TOPLEFT:
+                    AnchorLocation = new Vector2(parent.XPos, parent.YPos);
+                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                case AnchorType.TOPRIGHT:
+                    AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos);
+                    OffsetFromAnchor = new Vector2(XOffset - width, YOffset);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                case AnchorType.BOTTOMLEFT:
+                    AnchorLocation = new Vector2(parent.XPos, parent.YPos + parent.Height);
+                    OffsetFromAnchor = new Vector2(XOffset, YOffset - height);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                case AnchorType.BOTTOMRIGHT:
+                    AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos + parent.Height);
+                    OffsetFromAnchor = new Vector2(XOffset - width, YOffset - height);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+                case AnchorType.CENTRE:
+                    AnchorLocation = new Vector2(parent.XPos + parent.Width / 2, parent.YPos + parent.Height / 2);
+                    OffsetFromAnchor = new Vector2(XOffset - width / 2, YOffset - height / 2);
+                    AbsolutePosition = AnchorLocation + OffsetFromAnchor;
+                    return;
+
+            }
+        }
     }
 }
 

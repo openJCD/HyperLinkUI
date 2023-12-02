@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
 using VESSEL_GUI.GUI.Widgets;
 
@@ -22,11 +23,11 @@ namespace VESSEL_GUI.GUI.Containers
         [XmlIgnore]
         private int height;
         [XmlIgnore]
-        private Container base_container;
+        private List<Container> base_containers;
+        private GraphicsDeviceManager graphicsInfo;
 
-
-        [XmlElement("SubrootContainer")]
-        public Container BaseContainer { get => base_container; set => base_container = value;  }
+        [XmlElement("object")]
+        public List<Container> BaseContainers { get => base_containers; set => base_containers = value;  }
 
         [XmlIgnore]
         public string DebugLabel { get { return "UI Root"; } }
@@ -39,52 +40,68 @@ namespace VESSEL_GUI.GUI.Containers
         [XmlIgnore]
         public int YPos { get => 0; set => YPos = 0; }
 
+        private readonly GameSettings Settings;
+
         public Root() { }
 
-        public Root(GraphicsDeviceManager graphicsInfo)
+        public Root(GraphicsDeviceManager graphicsInfo, GameSettings settings)
         {
             Initialise(graphicsInfo);
+            Settings = settings;
+            BaseContainers = new List<Container>();
         }
         public void Initialise(GraphicsDeviceManager graphicsInfo)
         {
+            this.graphicsInfo = graphicsInfo;
             Width = graphicsInfo.PreferredBackBufferWidth;
             Height = graphicsInfo.PreferredBackBufferHeight;
         }
 
-        public void Draw(SpriteBatch guiSpriteBatch)
-        {
-            base_container.Draw(guiSpriteBatch);
-        }
+
 
         public void Update(MouseState oldState, MouseState newState, KeyboardState oldKeyboardState, KeyboardState newKeyboardState)
         {
-            if (newKeyboardState.GetPressedKeyCount() == 0 && oldKeyboardState.GetPressedKeyCount() > 0)
-            {
-                switch (newKeyboardState.GetPressedKeys()[0])
-                {
-                    case Keys.T:
-                        PrintUITree();
-                        return;
-                }
+            Width = graphicsInfo.PreferredBackBufferWidth;
+            Height = graphicsInfo.PreferredBackBufferHeight;
 
-            }
+            foreach (Container container in base_containers)
+                container.Update();
 
             if (newState.RightButton == ButtonState.Pressed && oldState.RightButton == ButtonState.Released)
                 PrintUITree();
         }
-
-        internal void ChangeBaseContainer(Container containerToAdd)
+        public void Draw(SpriteBatch guiSpriteBatch)
         {
-            BaseContainer = containerToAdd;
+            foreach (Container container in BaseContainers)
+                container.Draw(guiSpriteBatch);
+        }
+
+        internal void AddContainer(Container containerToAdd)
+        {
+            BaseContainers.Add(containerToAdd);
         }
 
         public void PrintUITree()
         {
             Debug.WriteLine("Whole UI Tree is as follows:");
 
-            base_container.PrintChildren(0);
+            foreach(Container container in BaseContainers)
+            {
+                container.PrintChildren(0);
+            }
 
         }
         
+        /// <summary>
+        /// Loop through tree and initialise "settings" in all child objects. 
+        /// </summary>
+        /// <param name="settings">the settings class to apply to the tree</param>
+        public void InitSettings (GameSettings settings)
+        {
+            foreach(Container container in BaseContainers)
+            {
+                container.InitSettings(settings);
+            }
+        }
     }
 }

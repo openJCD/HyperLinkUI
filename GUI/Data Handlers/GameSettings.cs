@@ -15,21 +15,40 @@ namespace VESSEL_GUI.GUI.Data_Handlers
     [XmlRoot("GameSettings")]
     public class GameSettings
     {
+        [XmlElement("WindowTitle")]
+        public string WindowTitle { get; set; }
+
         [XmlElement("WindowWidth")]
         public int WindowWidth { get; set; }
 
         [XmlElement("WindowHeight")]
         public int WindowHeight { get; set; }
 
-        [XmlElement("BorderColor")]
+        [XmlElement("Border")]
         public Color BorderColor { get; set; }
 
-        [XmlElement("WindowTitle")]
-        public string WindowTitle { get; set; }
+        [XmlElement("Taskbar")]
+        public Color TaskbarColor { get; set; }
+
+        [XmlElement("WidgetBorderColor")]
+        public Color WidgetBorderColor { get; set; }
+
+        [XmlElement("WidgetFillColor")]
+        public Color WidgetFillColor { get; set; }
+
+        [XmlElement("TextFillColor")]
+        public Color TextColor { get; set; }
 
         public GameSettings( )
         {
-
+            BorderColor = new Color(Color.Red, 255f);
+            TaskbarColor = new Color(Color.DodgerBlue, 200f);
+            WidgetBorderColor = Color.GhostWhite;
+            WidgetFillColor = Color.SlateGray;
+            TextColor = Color.White;
+            WindowWidth = 640;
+            WindowHeight = 480;
+            WindowTitle = "Window";
         }
 
         public GameSettings(int windowWidth, int windowHeight, Color borderColor, string widowTitle)
@@ -39,58 +58,5 @@ namespace VESSEL_GUI.GUI.Data_Handlers
             BorderColor = borderColor;
             WindowTitle = widowTitle;
         }
-
-/*        public void Save(this GameSettings myself, string savePath, string saveName)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(GameSettings));
-            if (Directory.Exists(savePath))
-            {
-                if (File.Exists(savePath+saveName))
-                {
-                    FileStream streamWriter = new FileStream(savePath + "/" + saveName, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
-                    serializer.Serialize(streamWriter, this);
-                    streamWriter.Close();
-                }
-                else
-                {
-                    File.Create(savePath+saveName);
-                    // Try saving again if the file exists.
-                    myself.Save(savePath, saveName);
-                }
-            } else
-            {
-                Directory.CreateDirectory(savePath);
-                myself.Save(savePath, saveName);
-            }
-        }*/
-
-/*        public GameSettings Load (string savePath, string saveName)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(GameSettings));
-            if (Directory.Exists(savePath))
-            {
-                if (File.Exists(savePath + saveName))
-                {
-                    FileStream streamReader = new FileStream(savePath + "/" + saveName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    serializer.Deserialize(streamReader);
-                    
-                    streamReader.Close();
-                }
-                else
-                {
-                    File.Create(savePath + saveName);
-                    // Try saving/loading again if now the file exists.
-                    Save(savePath, saveName);
-                    Load(savePath, saveName);
-                }
-            }
-            else
-            {
-                Directory.CreateDirectory(savePath);
-                Save(savePath, saveName);
-                Load(savePath, saveName);
-
-            }*/
-        
     }
 }

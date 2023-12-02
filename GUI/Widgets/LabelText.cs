@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Xml.Serialization;
 using VESSEL_GUI.GUI.Containers;
+using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
 
 namespace VESSEL_GUI.GUI.Widgets
@@ -10,7 +11,6 @@ namespace VESSEL_GUI.GUI.Widgets
     {
         private SpriteFont font;
         private string text;
-        private Color color = Color.White;
 
         [XmlIgnore]
         public SpriteFont Font { get => font; set => font=value; }
@@ -18,9 +18,8 @@ namespace VESSEL_GUI.GUI.Widgets
         [XmlElement]
         public string Text { get=>text; set=>text=value; }
 
-        [XmlElement]
-        public Color Color { get => color; set => color = value; }
 
+        
         public LabelText () { }
 
         public LabelText(Container parent, string text, SpriteFont spriteFont, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT) : base(parent)
@@ -31,7 +30,7 @@ namespace VESSEL_GUI.GUI.Widgets
             Font = spriteFont;
             this.Text = text;
             DebugLabel = text;
-
+            
             localOrigin = new Vector2(fontwidth / 2, fontheight / 2);
             Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, fontwidth, fontheight);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, fontwidth, fontheight);
@@ -40,7 +39,7 @@ namespace VESSEL_GUI.GUI.Widgets
         public override void Draw(SpriteBatch guiSpriteBatch) 
         {
             Vector2 position = new Vector2(XPos, YPos);
-            guiSpriteBatch.DrawString(font, text, position, color);
+            guiSpriteBatch.DrawString(font, text, position, Settings.TextColor);
         }
     }
 }

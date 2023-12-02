@@ -1,16 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
 using VESSEL_GUI.GUI.Widgets;
 
 namespace VESSEL_GUI.GUI.Containers
 {
+    [XmlInclude(typeof(Window))]
+    [XmlInclude(typeof(Taskbar))]
     public class Container : IContainer, Anchorable
     {
         private List<Container> child_containers;
@@ -28,10 +32,10 @@ namespace VESSEL_GUI.GUI.Containers
         [XmlIgnore]
         public IContainer Parent { get => parent; private set => parent = value; }
         
-        [XmlArray("Containers")]
+        [XmlElement("Containers")]
         public List<Container> ChildContainers { get => child_containers; set => child_containers = value; }
         
-        [XmlArray("Widgets")]
+        [XmlElement("Widgets")]
         public List<Widget> ChildWidgets { get => child_widgets; set => child_widgets = value; }
 
         [XmlAttribute("debuglabel")]
@@ -50,10 +54,10 @@ namespace VESSEL_GUI.GUI.Containers
         public int YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = value; }
 
         [XmlIgnore]
-        public Rectangle BoundingRectangle { get => bounding_rectangle; private set => bounding_rectangle = value; }
+        public Rectangle BoundingRectangle { get => bounding_rectangle; protected set => bounding_rectangle = value; }
 
         [XmlIgnore]
-        public AnchorCoord Anchor { get => anchor; private set => anchor = value; }
+        public AnchorCoord Anchor { get => anchor; protected set => anchor = value; }
 
         [XmlElement("Anchor")]
         public AnchorType anchorType { get => anchor.Type; }
@@ -67,6 +71,9 @@ namespace VESSEL_GUI.GUI.Containers
         [XmlIgnore]
         public Vector2 localOrigin { get; set; }
 
+        [XmlIgnore]
+        public GameSettings Settings { get; private set; }                               
+        
         #endregion
 
 
@@ -76,36 +83,44 @@ namespace VESSEL_GUI.GUI.Containers
         {
 
         }
-        public Container(Container myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, int x = 0, int y = 0, string debugLabel = "container")
+
+        protected Container (Container parent)
+        {
+            Parent = parent;
+            parent.AddContainer(this);
+        }
+
+        public Container(Container myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container")
         {
             ChildContainers = new List<Container>();
             ChildWidgets = new List<Widget>();
             DebugLabel = debugLabel;
             Parent = myParent;
 
+            Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
             myParent.AddContainer(this);
 
             localOrigin = new Vector2(Width / 2, Height / 2);
-            Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
-
         }
         #endregion
-
-        #region overload for Root as parent 
-        public Container(Root myRoot, int width, int height, string debugLabel = "container")
+        public Container(Root myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container")
         {
-            child_containers = new List<Container>();
-            child_widgets = new List<Widget>();
-            debug_label = debugLabel;
-            parent = myRoot;
-            myRoot.ChangeBaseContainer(this);
-            bounding_rectangle = new Rectangle(0, 0, width, height);
+            ChildContainers = new List<Container>();
+            ChildWidgets = new List<Widget>();
+            DebugLabel = debugLabel;
+            Parent = myParent;
+
+            Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
+            myParent.AddContainer(this);
+
+            localOrigin = new Vector2(Width / 2, Height / 2);
+            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
-        #endregion
-        
         public virtual void Update()
         {
+            Anchor.RecalculateAnchor(this.LocalX, this.LocalY, Parent, Width, Height);
+            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
             foreach (var container in child_containers)
                 container.Update();
             foreach (var child in child_widgets)
@@ -114,12 +129,12 @@ namespace VESSEL_GUI.GUI.Containers
 
         public virtual void Draw(SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.DrawRectangle(bounding_rectangle, Color.OrangeRed);
+            guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.BorderColor);
 
-            foreach (var container in child_containers)
+            foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
 
-            foreach (var child in child_widgets)
+            foreach (var child in ChildWidgets)
                 child.Draw(guiSpriteBatch);
         }
 
@@ -137,12 +152,12 @@ namespace VESSEL_GUI.GUI.Containers
         /// Transfer ownershiip of the Container from wherever it was previously to this particular Container.
         /// </summary>
         /// <param name="container">Container to transfer</param>
-        public void TransferContainer(Container container)
+        public void AddContainer(Container container)
         {
             if (container.Parent != null)
             {
                 container.SetNewContainerParent(this);
-                AddContainer(container);
+                ChildContainers.Add(container);
             }
 
         }
@@ -150,11 +165,6 @@ namespace VESSEL_GUI.GUI.Containers
         private void SetNewContainerParent(Container container)
         {
             parent = container;
-        }
-
-        private void AddContainer(Container container)
-        {
-            child_containers.Add(container);
         }
 
         public void PrintChildren(int layer)
@@ -171,7 +181,6 @@ namespace VESSEL_GUI.GUI.Containers
                 container.PrintChildren(layer + 1);
             }
 
-
             foreach (Widget widget in ChildWidgets)
                 Debug.WriteLine(indent + widget.DebugLabel);
         }
@@ -181,9 +190,21 @@ namespace VESSEL_GUI.GUI.Containers
             if (parent == null)
             {
                 throw new InvalidOperationException("Instance was not initialised with a parent");
-
             }
             return parent;
+        }
+
+        public void InitSettings(GameSettings settings)
+        {
+            Settings = settings;
+            foreach (Container container in ChildContainers)
+            {
+                container.InitSettings(settings);
+            }
+            foreach (Widget widget in ChildWidgets)
+            {
+                widget.Settings = settings;
+            }
         }
 
     }
