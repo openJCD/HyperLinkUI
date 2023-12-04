@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
 using System.Xml.Serialization;
 using VESSEL_GUI.GUI.Containers;
@@ -25,28 +25,39 @@ namespace VESSEL_GUI
         private KeyboardState oldKeyboardState;
         private SpriteFont monospace;
         private GameSettings settings;
+        private LabelText debug;
+        private ContentManager UIContentManager; //manager for fonts and shit
 
         public Game1()
         {
-            graphicsManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            graphicsManager = new GraphicsDeviceManager(this);
+            UIContentManager = new ContentManager(Content.ServiceProvider);
+
+            UIContentManager.RootDirectory = "Content/GUI";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+
+            // test for button click events
+            UIEventHandler.OnButtonClick += PrintDebugMessage;
+
             // check if the Loader throws an exception
             try
             {
-                settings = settings.Load(Content.RootDirectory + "/Saves/", "settings.xml");
+                settings = settings.Load(UIContentManager.RootDirectory + "/Saves/", "settings.xml");
+                
             } catch
             {
                 settings = new GameSettings();
-                settings.Save(Content.RootDirectory+"/Saves/", "settings.xml");
-                settings = settings.Load(Content.RootDirectory + "/Saves/", "settings.xml");
+                settings.Save(UIContentManager.RootDirectory+"/Saves/", "settings.xml");
+                settings = settings.Load(UIContentManager.RootDirectory + "/Saves/", "settings.xml");
             }
-            
+
+            settings.LoadAllContent(UIContentManager);
             Window.Title = settings.WindowTitle;
             graphicsManager.PreferredBackBufferWidth = settings.WindowWidth;
             graphicsManager.PreferredBackBufferHeight = settings.WindowHeight;
@@ -55,26 +66,39 @@ namespace VESSEL_GUI
             base.Initialize();
         }
 
+        private void PrintDebugMessage(Object sender, EventArgs e)
+        {
+            Button Sender = (Button)sender;
+            Debug.WriteLine(Sender.DebugLabel + " was pressed");
+        }
+
         protected override void LoadContent()
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            monospace = Content.Load<SpriteFont>("Fonts/CPMono_v07_Plain");
-            SpriteFont monospaceSmall = Content.Load<SpriteFont>("Fonts/CPMono_v07_Light");
+            monospace = UIContentManager.Load<SpriteFont>("Fonts/CPMono_v07_Plain");
+            Texture2D styledbuttontexture = UIContentManager.Load<Texture2D>("Textures/Button/large_button_atlas");
+
+            SpriteFont monospaceSmall = UIContentManager.Load<SpriteFont>("Fonts/CPMono_v07_Light");
             
             screenRoot = new Root(graphicsManager, settings);
 
-            Container rootContainer = new Container(screenRoot,0,0, screenRoot.Width, screenRoot.Height+20, debugLabel: "subroot container");
-            Taskbar TaskBarContainer = new Taskbar(screenRoot, 20, settings);
+            Taskbar TaskBarContainer = new Taskbar(screenRoot, 20);
             LabelText dateTime = new LabelText(TaskBarContainer, "00:00, DD/MM/YY", monospace,-10, 0, anchorType:AnchorType.BOTTOMRIGHT);
-            Window testwindow = new Window(rootContainer, 0, 20, 300, 300, monospaceSmall,  title: "Test Window Class Instance", AnchorType.TOPLEFT);
-            Window testwindow2 = new Window(rootContainer, 0, 20, 300, 200, monospaceSmall, title: "Test Window Class Instance 2", AnchorType.TOPRIGHT);
-
-            screenRoot.InitSettings(settings);
             
-            screenRoot.Save(Content.RootDirectory + "/Saves/Scenes/", "test.xml");
-            // TODO: use this.Content to load your game content here
+            WindowContainer testwindow = new WindowContainer(screenRoot, 0, 20, 300, 300, monospaceSmall,  title: "Test Window Class Instance", AnchorType.TOPLEFT);
+            debug = new LabelText(testwindow, "Hello Monogame!", monospace, 10,30, anchorType: AnchorType.CENTRE);
+
+            WindowContainer testwindow2 = new WindowContainer(screenRoot, 0, 20, 300, 200, monospaceSmall, title: "Test Window Class Instance 2", AnchorType.TOPRIGHT);
+
+            Button debugbutton = new Button(testwindow2, styledbuttontexture, 0, 0, anchorType:AnchorType.CENTRE);
+            
+            // screenRoot.InitSettings(settings);
+            
+            screenRoot.Save(UIContentManager.RootDirectory + "/Saves/Scenes/", "test.xml");
+           // TODO: use this.Content to load your game content here
         }
+
 
         protected override void Update(GameTime gameTime)
         {
@@ -89,12 +113,14 @@ namespace VESSEL_GUI
                 // do something here
                 // this will only be called when the key is first pressed
                 Debug.WriteLine("Hot Reloading Settings ...");
-                settings = settings.Load(Content.RootDirectory + "/Saves/", "settings.xml");
+                settings = settings.Load(UIContentManager.RootDirectory + "/Saves/", "settings.xml");
+
+                if (settings.WindowWidth != graphicsManager.PreferredBackBufferWidth && settings.WindowHeight != graphicsManager.PreferredBackBufferHeight)
+                    debug.Text = "Please restart to apply resolution changes!";
+
                 Window.Title = settings.WindowTitle;
-                graphicsManager.PreferredBackBufferWidth = settings.WindowWidth;
-                graphicsManager.PreferredBackBufferHeight = settings.WindowHeight;
-                graphicsManager.ApplyChanges();
-                screenRoot.InitSettings(settings);
+
+                screenRoot.ApplyNewSettings(settings);
                 Debug.WriteLine("Done.");
             }
             screenRoot.Update(oldState, newState, oldKeyboardState, newKeyboardState);
@@ -107,7 +133,7 @@ namespace VESSEL_GUI
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-            UISpriteBatch.Begin();
+            UISpriteBatch.Begin(SpriteSortMode.Deferred);
 
             screenRoot.Draw(UISpriteBatch);
 

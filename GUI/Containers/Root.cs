@@ -26,22 +26,22 @@ namespace VESSEL_GUI.GUI.Containers
         private List<Container> base_containers;
         private GraphicsDeviceManager graphicsInfo;
 
-        [XmlElement("object")]
+        [XmlElement("Container")]
         public List<Container> BaseContainers { get => base_containers; set => base_containers = value;  }
-
         [XmlIgnore]
         public string DebugLabel { get { return "UI Root"; } }
-        [XmlAttribute]
+        [XmlIgnore]
         public int Width { get { return width; } set => width = value; }
-        [XmlAttribute]
+        [XmlIgnore]
         public int Height { get { return height; } set => height = value; }
         [XmlIgnore]
         public int XPos { get => 0; set => XPos = 0; }
         [XmlIgnore]
         public int YPos { get => 0; set => YPos = 0; }
+        [XmlIgnore]
+        public GameSettings Settings { get; private set; }
 
-        private readonly GameSettings Settings;
-
+        
         public Root() { }
 
         public Root(GraphicsDeviceManager graphicsInfo, GameSettings settings)
@@ -61,11 +61,9 @@ namespace VESSEL_GUI.GUI.Containers
 
         public void Update(MouseState oldState, MouseState newState, KeyboardState oldKeyboardState, KeyboardState newKeyboardState)
         {
-            Width = graphicsInfo.PreferredBackBufferWidth;
-            Height = graphicsInfo.PreferredBackBufferHeight;
-
+            
             foreach (Container container in base_containers)
-                container.Update();
+                container.Update(oldState, newState);
 
             if (newState.RightButton == ButtonState.Pressed && oldState.RightButton == ButtonState.Released)
                 PrintUITree();
@@ -84,24 +82,27 @@ namespace VESSEL_GUI.GUI.Containers
         public void PrintUITree()
         {
             Debug.WriteLine("Whole UI Tree is as follows:");
-
             foreach(Container container in BaseContainers)
             {
                 container.PrintChildren(0);
             }
-
         }
         
         /// <summary>
         /// Loop through tree and initialise "settings" in all child objects. 
         /// </summary>
         /// <param name="settings">the settings class to apply to the tree</param>
-        public void InitSettings (GameSettings settings)
+/*        public void InitSettings (GameSettings settings)
         {
-            foreach(Container container in BaseContainers)
+            foreach (Container container in BaseContainers)
             {
                 container.InitSettings(settings);
             }
+        }*/
+
+        public void ApplyNewSettings(GameSettings settings)
+        {
+            Settings = settings;
         }
     }
 }

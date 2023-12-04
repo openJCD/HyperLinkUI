@@ -13,24 +13,25 @@ using VESSEL_GUI.GUI.Widgets;
 
 namespace VESSEL_GUI.GUI.Containers
 {
-    [XmlInclude(typeof(Window))]
+    [XmlInclude(typeof(WindowContainer))]
     [XmlInclude(typeof(Taskbar))]
     public class Container : IContainer, Anchorable
     {
         private List<Container> child_containers;
         private List<Widget> child_widgets;
         private string debug_label;
-        private IContainer parent;
+        protected IContainer parent;
         private Rectangle bounding_rectangle;
         private AnchorCoord anchor;
         private bool isUnderMouseFocus;
+        private GameSettings settings;
 
         #region Attributes
         [XmlIgnore]
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
         
         [XmlIgnore]
-        public IContainer Parent { get => parent; private set => parent = value; }
+        public virtual IContainer Parent { get => parent; protected set => parent = value; }
         
         [XmlElement("Containers")]
         public List<Container> ChildContainers { get => child_containers; set => child_containers = value; }
@@ -72,8 +73,10 @@ namespace VESSEL_GUI.GUI.Containers
         public Vector2 localOrigin { get; set; }
 
         [XmlIgnore]
-        public GameSettings Settings { get; private set; }                               
-        
+        public virtual GameSettings Settings { get => Parent.Settings; private set => settings = value; }
+
+        [XmlAttribute]
+        public bool IsVisible { get; set; } = true;
         #endregion
 
 
@@ -84,7 +87,13 @@ namespace VESSEL_GUI.GUI.Containers
 
         }
 
-        protected Container (Container parent)
+        protected Container (IContainer parent)
+        {
+            Parent = parent;
+            parent.AddContainer(this);
+        }
+
+        protected Container(Root parent)
         {
             Parent = parent;
             parent.AddContainer(this);
@@ -96,6 +105,7 @@ namespace VESSEL_GUI.GUI.Containers
             ChildWidgets = new List<Widget>();
             DebugLabel = debugLabel;
             Parent = myParent;
+            IsVisible = true;
 
             Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
             myParent.AddContainer(this);
@@ -110,6 +120,7 @@ namespace VESSEL_GUI.GUI.Containers
             ChildWidgets = new List<Widget>();
             DebugLabel = debugLabel;
             Parent = myParent;
+            IsVisible = true;
 
             Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
             myParent.AddContainer(this);
@@ -117,25 +128,29 @@ namespace VESSEL_GUI.GUI.Containers
             localOrigin = new Vector2(Width / 2, Height / 2);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
-        public virtual void Update()
+        public virtual void Update(MouseState oldState, MouseState newState)
         {
-            Anchor.RecalculateAnchor(this.LocalX, this.LocalY, Parent, Width, Height);
-            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
-            foreach (var container in child_containers)
-                container.Update();
-            foreach (var child in child_widgets)
-                child.Update();
+            if (IsVisible)
+            {
+                foreach (var container in child_containers)
+                    container.Update(oldState, newState);
+                foreach (var child in child_widgets)
+                    child.Update(oldState, newState);
+            }
         }
 
         public virtual void Draw(SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.BorderColor);
+            if (IsVisible)
+            {
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.BorderColor);
 
-            foreach (var container in ChildContainers)
-                container.Draw(guiSpriteBatch);
+                foreach (var container in ChildContainers)
+                    container.Draw(guiSpriteBatch);
 
-            foreach (var child in ChildWidgets)
-                child.Draw(guiSpriteBatch);
+                foreach (var child in ChildWidgets)
+                    child.Draw(guiSpriteBatch);
+            }
         }
 
         public void TransferWidget(Widget widget)
@@ -193,19 +208,14 @@ namespace VESSEL_GUI.GUI.Containers
             }
             return parent;
         }
-
-        public void InitSettings(GameSettings settings)
+        
+        public void Close()
         {
-            Settings = settings;
-            foreach (Container container in ChildContainers)
-            {
-                container.InitSettings(settings);
-            }
-            foreach (Widget widget in ChildWidgets)
-            {
-                widget.Settings = settings;
-            }
+            IsVisible = false;
         }
-
+        public void Open ()
+        {
+            IsVisible = true;
+        }
     }
 }

@@ -13,33 +13,48 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Fonts/CPMono_v07_Light.otf
-/copy:Fonts/CPMono_v07_Light.otf
+#begin GUI/Fonts/CPMono_v07_Light.otf
+/copy:GUI/Fonts/CPMono_v07_Light.otf
 
-#begin Fonts/CPMono_v07_Light.spritefont
+#begin GUI/Fonts/CPMono_v07_Light.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts/CPMono_v07_Light.spritefont
+/processorParam:TextureFormat=Color
+/build:GUI/Fonts/CPMono_v07_Light.spritefont
 
-#begin Fonts/CPMono_v07_Plain.otf
-/copy:Fonts/CPMono_v07_Plain.otf
+#begin GUI/Fonts/CPMono_v07_Plain.otf
+/copy:GUI/Fonts/CPMono_v07_Plain.otf
 
-#begin Fonts/CPMono_v07_Plain.spritefont
+#begin GUI/Fonts/CPMono_v07_Plain.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts/CPMono_v07_Plain.spritefont
+/processorParam:TextureFormat=Color
+/build:GUI/Fonts/CPMono_v07_Plain.spritefont
 
-#begin Fonts/SometypeMono-Medium.spritefont
+#begin GUI/Fonts/SometypeMono-Medium.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts/SometypeMono-Medium.spritefont
+/processorParam:TextureFormat=Color
+/build:GUI/Fonts/SometypeMono-Medium.spritefont
 
-#begin Fonts/SometypeMono-Medium.ttf
-/copy:Fonts/SometypeMono-Medium.ttf
+#begin GUI/Fonts/SometypeMono-Medium.ttf
+/copy:GUI/Fonts/SometypeMono-Medium.ttf
+
+#begin GUI/Saves/readme.txt
+/copy:GUI/Saves/readme.txt
+
+#begin GUI/Textures/Button/large_button_atlas.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:GUI/Textures/Button/large_button_atlas.png
 

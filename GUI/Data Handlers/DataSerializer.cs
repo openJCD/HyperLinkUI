@@ -54,7 +54,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
                     File.Create(savePath + saveName);
                     // Try saving/loading again if now the file exists.
                     myself.Save(savePath, saveName);
-                    myself.Load(savePath, saveName);
+                    myself = myself.Load(savePath, saveName);
                     return myself;
                 }
             }
@@ -62,7 +62,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
             {
                 Directory.CreateDirectory(savePath);
                 myself.Save(savePath, saveName);
-                myself.Load(savePath, saveName);
+                myself = myself.Load(savePath, saveName);
                 return myself;
             }
 

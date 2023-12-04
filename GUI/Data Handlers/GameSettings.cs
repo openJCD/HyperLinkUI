@@ -7,6 +7,8 @@ using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using System.Linq.Expressions;
 using System;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace VESSEL_GUI.GUI.Data_Handlers
 {
@@ -39,6 +41,10 @@ namespace VESSEL_GUI.GUI.Data_Handlers
         [XmlElement("TextFillColor")]
         public Color TextColor { get; set; }
 
+        [XmlElement("PrimarySpriteFontPath")]
+        public string PrimarySpriteFontPath { get; set; }
+        [XmlIgnore]
+        public SpriteFont PrimarySpriteFont { get; private set; }
         public GameSettings( )
         {
             BorderColor = new Color(Color.Red, 255f);
@@ -49,6 +55,12 @@ namespace VESSEL_GUI.GUI.Data_Handlers
             WindowWidth = 640;
             WindowHeight = 480;
             WindowTitle = "Window";
+            PrimarySpriteFontPath = "Fonts/CPMono_v07_Plain";
+        }
+
+        public void LoadAllContent (ContentManager manager)
+        {
+            PrimarySpriteFont = manager.Load<SpriteFont>(PrimarySpriteFontPath);
         }
 
         public GameSettings(int windowWidth, int windowHeight, Color borderColor, string widowTitle)

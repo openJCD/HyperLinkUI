@@ -66,7 +66,6 @@ namespace VESSEL_GUI.GUI.Interfaces
             }
         }
 
-
         public Vector2 AnchorLocation { get; private set; }
         public Vector2 OffsetFromAnchor { get; set; }
         public Vector2 AbsolutePosition { get; set; }

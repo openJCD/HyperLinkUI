@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VESSEL_GUI.GUI.Data_Handlers;
 
 namespace VESSEL_GUI.GUI.Containers
 {
@@ -14,6 +15,8 @@ namespace VESSEL_GUI.GUI.Containers
 
         int XPos { get; set; }
         int YPos { get; set; }
+        
+        GameSettings Settings { get; }
 
         public void AddContainer (IContainer container) { }         
     }
