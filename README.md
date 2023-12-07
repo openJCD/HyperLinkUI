@@ -3,7 +3,7 @@
 
 ----
 
-    Stylable UI Framework for Monogame applications
+    Stylable Event-Based UI Framework for Monogame applications
 
 ----
 
