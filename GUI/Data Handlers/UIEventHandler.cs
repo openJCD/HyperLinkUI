@@ -8,7 +8,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
 {
     #nullable enable
     // classes for EventArgs
-    public class OnButtonClickEventArgs : EventArgs { public string? type; Object? target; }
+    public class OnButtonClickEventArgs : EventArgs { public EventType? event_type; public int? tag; }
     public static class UIEventHandler  
     {
         public static event EventHandler<OnButtonClickEventArgs> OnButtonClick;

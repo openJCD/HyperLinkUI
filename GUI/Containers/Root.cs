@@ -74,7 +74,7 @@ namespace VESSEL_GUI.GUI.Containers
                 container.Draw(guiSpriteBatch);
         }
 
-        internal void AddContainer(Container containerToAdd)
+        public void AddContainer(Container containerToAdd)
         {
             BaseContainers.Add(containerToAdd);
         }

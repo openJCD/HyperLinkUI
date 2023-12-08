@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
-using System.Xml.Serialization;
 using VESSEL_GUI.GUI.Containers;
 using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
@@ -43,7 +42,7 @@ namespace VESSEL_GUI
             // TODO: Add your initialization logic here
 
             // test for button click events
-            UIEventHandler.OnButtonClick += PrintDebugMessage;
+            UIEventHandler.OnButtonClick += Game1_HandleOnButtonClick;
 
             // check if the Loader throws an exception
             try
@@ -66,10 +65,15 @@ namespace VESSEL_GUI
             base.Initialize();
         }
 
-        private void PrintDebugMessage(Object sender, EventArgs e)
-        {
+        private void Game1_HandleOnButtonClick(Object sender, OnButtonClickEventArgs e)
+        {            
             Button Sender = (Button)sender;
-            Debug.WriteLine(Sender.DebugLabel + " was pressed");
+            Debug.WriteLine(Sender.DebugLabel + " was pressed with event type " + e.event_type);
+            debug.Text = Sender.DebugLabel + " was pressed with event type " + e.event_type;
+
+            if (e.event_type == EventType.QuitGame)
+                Exit();
+            
         }
 
         protected override void LoadContent()
@@ -77,25 +81,32 @@ namespace VESSEL_GUI
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
 
             monospace = UIContentManager.Load<SpriteFont>("Fonts/CPMono_v07_Plain");
-            Texture2D styledbuttontexture = UIContentManager.Load<Texture2D>("Textures/Button/large_button_atlas");
+            Texture2D styledbuttontexture = UIContentManager.Load<Texture2D>("Textures/Button/btn_large_2");
+            Texture2D windowicon1 = UIContentManager.Load<Texture2D>("Textures/Button/btn_icon_window1");
+            Texture2D windowicon2 = UIContentManager.Load<Texture2D>("Textures/Button/btn_icon_window2");
+            //Texture3D test3dtexture = Content.Load<Texture3D>("");
+            Model sphere = Content.Load<Model>("Game/Models/sphere");
+
 
             SpriteFont monospaceSmall = UIContentManager.Load<SpriteFont>("Fonts/CPMono_v07_Light");
             
             screenRoot = new Root(graphicsManager, settings);
 
-            Taskbar TaskBarContainer = new Taskbar(screenRoot, 20);
-            LabelText dateTime = new LabelText(TaskBarContainer, "00:00, DD/MM/YY", monospace,-10, 0, anchorType:AnchorType.BOTTOMRIGHT);
-            
-            WindowContainer testwindow = new WindowContainer(screenRoot, 0, 20, 300, 300, monospaceSmall,  title: "Test Window Class Instance", AnchorType.TOPLEFT);
-            debug = new LabelText(testwindow, "Hello Monogame!", monospace, 10,30, anchorType: AnchorType.CENTRE);
+            //Taskbar TaskBarContainer = new Taskbar(screenRoot, 40);
+            //LabelText dateTime = new LabelText(TaskBarContainer, "00:00, DD/MM/YY", monospace,5,0, anchorType:AnchorType.TOPRIGHT);
+            //IconButton testWindowIconButton = new IconButton(TaskBarContainer, windowicon1, 1, 1, 2, EventType.OpenApp);
+            //IconButton testWindowIconButton2 = new IconButton(TaskBarContainer, windowicon2, 41, 1, 3, EventType.OpenApp);
 
-            WindowContainer testwindow2 = new WindowContainer(screenRoot, 0, 20, 300, 200, monospaceSmall, title: "Test Window Class Instance 2", AnchorType.TOPRIGHT);
+            WindowContainer testwindow = new WindowContainer(screenRoot, 0, 50, 300, 300, tag:2,  title: "Test Window Class Instance", AnchorType.TOPLEFT);
+            testwindow.IsOpen = false;
+            debug = new LabelText(testwindow, "Hello Monogame!", settings.PrimarySpriteFont, 10,30, anchorType: AnchorType.CENTRE);
 
-            Button debugbutton = new Button(testwindow2, styledbuttontexture, 0, 0, anchorType:AnchorType.CENTRE);
+            WindowContainer testwindow2 = new WindowContainer(screenRoot, 0, 50, 300, 200, tag:3, title: "Test Window Class Instance 2", AnchorType.TOPRIGHT);
+            ViewPortWindow viewportwindowtest = new ViewPortWindow(screenRoot, 0, 0, 500, 500, 0, sphere, GraphicsDevice);
             
             // screenRoot.InitSettings(settings);
             
-            screenRoot.Save(UIContentManager.RootDirectory + "/Saves/Scenes/", "test.xml");
+           // screenRoot.Save(UIContentManager.RootDirectory + "/Saves/Scenes/", "test.xml");
            // TODO: use this.Content to load your game content here
         }
 
@@ -124,7 +135,7 @@ namespace VESSEL_GUI
                 Debug.WriteLine("Done.");
             }
             screenRoot.Update(oldState, newState, oldKeyboardState, newKeyboardState);
-
+            Window.Title = settings.WindowTitle + ", FPS:" + 1/gameTime.ElapsedGameTime.TotalSeconds;
             base.Update(gameTime);
             oldKeyboardState = newKeyboardState;
             oldState = newState;

@@ -22,7 +22,7 @@ namespace VESSEL_GUI.GUI.Containers
         private string debug_label;
         protected IContainer parent;
         private Rectangle bounding_rectangle;
-        private AnchorCoord anchor;
+        public AnchorCoord anchor;
         private bool isUnderMouseFocus;
         private GameSettings settings;
 
@@ -73,10 +73,15 @@ namespace VESSEL_GUI.GUI.Containers
         public Vector2 localOrigin { get; set; }
 
         [XmlIgnore]
-        public virtual GameSettings Settings { get => Parent.Settings; private set => settings = value; }
+        public virtual GameSettings Settings { get => Parent.Settings; protected set => settings = value; }
 
         [XmlAttribute]
-        public bool IsVisible { get; set; } = true;
+        public bool IsOpen { get; set; } = true;
+        [XmlAttribute]
+        public bool DrawBorder { get; set; } = true;
+
+        [XmlElement]
+        public int Tag { get; protected set; }
         #endregion
 
 
@@ -105,7 +110,6 @@ namespace VESSEL_GUI.GUI.Containers
             ChildWidgets = new List<Widget>();
             DebugLabel = debugLabel;
             Parent = myParent;
-            IsVisible = true;
 
             Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
             myParent.AddContainer(this);
@@ -120,7 +124,7 @@ namespace VESSEL_GUI.GUI.Containers
             ChildWidgets = new List<Widget>();
             DebugLabel = debugLabel;
             Parent = myParent;
-            IsVisible = true;
+            IsOpen = true;
 
             Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
             myParent.AddContainer(this);
@@ -130,27 +134,30 @@ namespace VESSEL_GUI.GUI.Containers
         }
         public virtual void Update(MouseState oldState, MouseState newState)
         {
-            if (IsVisible)
-            {
-                foreach (var container in child_containers)
-                    container.Update(oldState, newState);
-                foreach (var child in child_widgets)
-                    child.Update(oldState, newState);
-            }
+            bounding_rectangle.X = (int)Anchor.AbsolutePosition.X;
+            bounding_rectangle.Y = (int)Anchor.AbsolutePosition.Y;
+            
+            if (!IsOpen)
+                return;
+            foreach (var container in child_containers)
+                container.Update(oldState, newState);
+            foreach (var child in child_widgets)
+                child.Update(oldState, newState);
         }
 
         public virtual void Draw(SpriteBatch guiSpriteBatch)
         {
-            if (IsVisible)
-            {
+            if (!IsOpen)
+                return;
+
+            if (DrawBorder)
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.BorderColor);
 
-                foreach (var container in ChildContainers)
-                    container.Draw(guiSpriteBatch);
+            foreach (var container in ChildContainers)
+                container.Draw(guiSpriteBatch);
 
-                foreach (var child in ChildWidgets)
-                    child.Draw(guiSpriteBatch);
-            }
+            foreach (var child in ChildWidgets)
+                child.Draw(guiSpriteBatch);           
         }
 
         public void TransferWidget(Widget widget)
@@ -211,11 +218,11 @@ namespace VESSEL_GUI.GUI.Containers
         
         public void Close()
         {
-            IsVisible = false;
+            IsOpen = false;
         }
-        public void Open ()
+        public void Open()
         {
-            IsVisible = true;
+            IsOpen = true;
         }
     }
 }

@@ -17,6 +17,8 @@ namespace VESSEL_GUI.GUI.Data_Handlers
     [XmlRoot("GameSettings")]
     public class GameSettings
     {
+
+        #region window settings
         [XmlElement("WindowTitle")]
         public string WindowTitle { get; set; }
 
@@ -25,7 +27,9 @@ namespace VESSEL_GUI.GUI.Data_Handlers
 
         [XmlElement("WindowHeight")]
         public int WindowHeight { get; set; }
+        #endregion
 
+        #region colours
         [XmlElement("Border")]
         public Color BorderColor { get; set; }
 
@@ -40,11 +44,30 @@ namespace VESSEL_GUI.GUI.Data_Handlers
 
         [XmlElement("TextFillColor")]
         public Color TextColor { get; set; }
+        #endregion
 
+        #region fonts
         [XmlElement("PrimarySpriteFontPath")]
         public string PrimarySpriteFontPath { get; set; }
         [XmlIgnore]
         public SpriteFont PrimarySpriteFont { get; private set; }
+        [XmlElement("SecondarySpriteFontPath")]
+        public string SecondarySpriteFontPath { get; set; }
+        [XmlIgnore]
+        public SpriteFont SecondarySpriteFont { get; private set; }
+        #endregion
+
+        #region textures
+        [XmlElement("LargeButtonTexturePath")]
+        public string LargeButtonTexturePath { get; set; }
+        [XmlIgnore]
+        public Texture2D LargeButtonTexture { get; set; }
+        [XmlElement("CloseButtonTexturePath")]
+        public string CloseButtonTexturePath { get; set; }
+        [XmlIgnore]
+        public Texture2D CloseButtonTexture { get; set; }
+        #endregion
+
         public GameSettings( )
         {
             BorderColor = new Color(Color.Red, 255f);
@@ -55,12 +78,18 @@ namespace VESSEL_GUI.GUI.Data_Handlers
             WindowWidth = 640;
             WindowHeight = 480;
             WindowTitle = "Window";
-            PrimarySpriteFontPath = "Fonts/CPMono_v07_Plain";
+            PrimarySpriteFontPath = "Fonts/RobotoMono";
+            SecondarySpriteFontPath = "Fonts/CPMono_v07_Light";
+            LargeButtonTexturePath = "Textures/Button/btn_large";
+            CloseButtonTexturePath = "Textures/Button/btn_close";
         }
 
         public void LoadAllContent (ContentManager manager)
         {
             PrimarySpriteFont = manager.Load<SpriteFont>(PrimarySpriteFontPath);
+            SecondarySpriteFont = manager.Load<SpriteFont>(SecondarySpriteFontPath);
+            LargeButtonTexture = manager.Load<Texture2D>(LargeButtonTexturePath);
+            CloseButtonTexture = manager.Load<Texture2D>(CloseButtonTexturePath);
         }
 
         public GameSettings(int windowWidth, int windowHeight, Color borderColor, string widowTitle)

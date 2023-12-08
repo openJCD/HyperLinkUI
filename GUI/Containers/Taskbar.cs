@@ -15,14 +15,15 @@ namespace VESSEL_GUI.GUI.Containers
         private GameSettings settings;
         public Taskbar () {  }
 
-        public Taskbar (IContainer parent, int height) 
+        public Taskbar (Root parent, int height) : base (parent) 
         {
             ChildContainers = new List<Container> ();
             ChildWidgets = new List<Widget>();
             Parent = parent;
+            Parent.AddContainer(this);
+            Settings = parent.Settings;
             Height = height;
             Width = parent.Width;
-            Parent.AddContainer(this);
             DebugLabel = "Taskbar";
             Anchor = new AnchorCoord(0, 0, AnchorType.TOPLEFT, parent, parent.Width, height);
             BoundingRectangle = new Rectangle(0, 0, Width, Height);
@@ -31,10 +32,7 @@ namespace VESSEL_GUI.GUI.Containers
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
             guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.TaskbarColor);
-            foreach (Widget widget in ChildWidgets)
-                widget.Draw(guiSpriteBatch);
-            foreach (Container container in ChildContainers)
-                container.Draw(guiSpriteBatch);
+            base.Draw(guiSpriteBatch);
         }
 
         public override void Update (MouseState oldState, MouseState newState)
