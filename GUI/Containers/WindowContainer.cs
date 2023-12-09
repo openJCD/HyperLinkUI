@@ -69,7 +69,7 @@ namespace VESSEL_GUI.GUI.Containers
         public override void Update (MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);
-            if (headerbar.BoundingRectangle.Contains(newState.Position))
+            if (headerbar.BoundingRectangle.Contains(oldState.Position))
             {
                 if (oldState.LeftButton == ButtonState.Pressed)
                 {
