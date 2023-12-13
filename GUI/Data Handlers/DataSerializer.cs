@@ -69,9 +69,9 @@ namespace VESSEL_GUI.GUI.Data_Handlers
 
         }
 
-        public static void Save(this Root myself, string savePath, string saveName)
+        public static void Save(this UIRoot myself, string savePath, string saveName)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Root));
+            XmlSerializer serializer = new XmlSerializer(typeof(UIRoot));
             if (Directory.Exists(savePath))
             {
                 if (File.Exists(savePath + "/" + saveName))
@@ -93,15 +93,15 @@ namespace VESSEL_GUI.GUI.Data_Handlers
                 myself.Save(savePath, saveName);
             }
         }
-        public static Root Load(this Root myself, string savePath, string saveName)
+        public static UIRoot Load(this UIRoot myself, string savePath, string saveName)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Root));
+            XmlSerializer serializer = new XmlSerializer(typeof(UIRoot));
             if (Directory.Exists(savePath))
             {
                 if (File.Exists(savePath + saveName))
                 {
                     FileStream streamReader = new FileStream(savePath + "/" + saveName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    myself = (Root)serializer.Deserialize(streamReader);
+                    myself = (UIRoot)serializer.Deserialize(streamReader);
                     
                     streamReader.Close();
                     return myself;
@@ -109,7 +109,6 @@ namespace VESSEL_GUI.GUI.Data_Handlers
                 else
                 {
                     throw new System.IO.IOException("Could not find the target file! Uh-Oh! ");
-                    return myself;
                 }
             }
             else

@@ -16,7 +16,7 @@ using VESSEL_GUI.GUI.Interfaces;
 
 namespace VESSEL_GUI.GUI.Widgets
 {
-    [XmlInclude(typeof(LabelText))]
+    [XmlInclude(typeof(TextLabel))]
     [XmlInclude(typeof(Button))]
     public class Widget : Anchorable
     {
@@ -109,7 +109,7 @@ namespace VESSEL_GUI.GUI.Widgets
         {
             Anchor = new AnchorCoord(LocalX, LocalY, anchorType, ParentContainer, Width, Height);
             bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
-            DebugLabel = "Positions: " + Anchor.AbsolutePosition + ", " + BoundingRectangle.Location;
+            // DebugLabel = "Positions: " + Anchor.AbsolutePosition + ", " + BoundingRectangle.Location;
         }
     }
 }

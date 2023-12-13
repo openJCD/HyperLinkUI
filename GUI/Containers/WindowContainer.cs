@@ -17,8 +17,10 @@ namespace VESSEL_GUI.GUI.Containers
         [XmlIgnore]
         private Container headerbar;
         private Widget close_button;
-        private LabelText label;
+        private TextLabel label;
 
+        [XmlIgnore]
+        new UIRoot parent;
 
         [XmlElement("AnchorType")]
         public AnchorType AnchorType { get => Anchor.Type; }
@@ -29,21 +31,23 @@ namespace VESSEL_GUI.GUI.Containers
         {
 
         }
-        public WindowContainer (Root parent, int relx, int rely, int width, int height, int tag, string title = "window", AnchorType anchorType=AnchorType.CENTRE) : base(parent) 
+        public WindowContainer (UIRoot parent, int relx, int rely, int width, int height, int tag, string title = "window", AnchorType anchorType=AnchorType.CENTRE) : base(parent) 
         {
+            this.parent = parent;
             UIEventHandler.OnButtonClick += WindowContainer_OnButtonClick;
             ChildWidgets = new List<Widget>();
             ChildContainers = new List<Container>();
             DebugLabel = title;
             IsOpen = true;
             Tag = tag;
+            IsSticky = false;
 
             Anchor = new AnchorCoord(relx, rely, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, height);
 
             headerbar = new Container(this, 0, 0, width, 20, AnchorType.TOPLEFT);
             close_button = new IconButton(headerbar, Settings.CloseButtonTexture, -2, 1, tag, EventType.CloseApp, anchorType:AnchorType.TOPRIGHT);
-            label = new LabelText(headerbar, DebugLabel, Settings.SecondarySpriteFont, 0,0, AnchorType.CENTRE);
+            label = new TextLabel(headerbar, DebugLabel, Settings.SecondarySpriteFont, 0,0, AnchorType.CENTRE);
             localOrigin = new Vector2(Width / 2, Height / 2);
         }
         public void WindowContainer_OnButtonClick (Object sender, OnButtonClickEventArgs e)
@@ -70,15 +74,26 @@ namespace VESSEL_GUI.GUI.Containers
         {
             base.Update(oldState, newState);
             if (headerbar.BoundingRectangle.Contains(oldState.Position))
-            {
+            {                
                 if (oldState.LeftButton == ButtonState.Pressed)
                 {
-                    Vector2 mouseDelta = newState.Position.ToVector2() - oldState.Position.ToVector2();
-
-                    anchor.AbsolutePosition += mouseDelta;
-                    headerbar.anchor.AbsolutePosition = anchor.AbsolutePosition;
+                    parent.BringWindowToTop(this);
+                    if (parent.draggedWindow == this)
+                    {
+                        Vector2 mouseDelta = newState.Position.ToVector2() - oldState.Position.ToVector2();
+                        anchor.AbsolutePosition += mouseDelta;
+                        headerbar.anchor.AbsolutePosition = anchor.AbsolutePosition;
+                    }
                 }
             }
+        }
+
+        public override void Draw(SpriteBatch guiSpriteBatch)
+        {
+            if (!IsOpen)
+                return;
+            guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Black);
+            base.Draw(guiSpriteBatch);
         }
     }
 }

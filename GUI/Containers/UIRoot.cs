@@ -16,13 +16,13 @@ namespace VESSEL_GUI.GUI.Containers
 {
     [Serializable()]
     [XmlRoot("Root")]
-    public class Root : IContainer
+    public class UIRoot : IContainer
     {
-        [XmlIgnore]
+        private Vector2 oldmousepos;
+        private Vector2 newmousepos;
+
         private int width;
-        [XmlIgnore]
         private int height;
-        [XmlIgnore]
         private List<Container> base_containers;
         private GraphicsDeviceManager graphicsInfo;
 
@@ -41,10 +41,11 @@ namespace VESSEL_GUI.GUI.Containers
         [XmlIgnore]
         public GameSettings Settings { get; private set; }
 
-        
-        public Root() { }
+        [XmlIgnore]
+        public Container draggedWindow { get; set; }
+        public UIRoot() { }
 
-        public Root(GraphicsDeviceManager graphicsInfo, GameSettings settings)
+        public UIRoot(GraphicsDeviceManager graphicsInfo, GameSettings settings)
         {
             Initialise(graphicsInfo);
             Settings = settings;
@@ -61,17 +62,23 @@ namespace VESSEL_GUI.GUI.Containers
 
         public void Update(MouseState oldState, MouseState newState, KeyboardState oldKeyboardState, KeyboardState newKeyboardState)
         {
-            
-            foreach (Container container in base_containers)
+            draggedWindow = null;
+            oldmousepos = oldState.Position.ToVector2();
+            foreach (Container container in base_containers.ToList())
                 container.Update(oldState, newState);
 
             if (newState.RightButton == ButtonState.Pressed && oldState.RightButton == ButtonState.Released)
                 PrintUITree();
+            newmousepos = newState.Position.ToVector2();
+
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
+            guiSpriteBatch.DrawCircle(oldmousepos, 5, 3, Color.Green);
             foreach (Container container in BaseContainers)
                 container.Draw(guiSpriteBatch);
+            guiSpriteBatch.DrawCircle(newmousepos, 5, 3, Color.Purple);
+
         }
 
         public void AddContainer(Container containerToAdd)
@@ -104,5 +111,13 @@ namespace VESSEL_GUI.GUI.Containers
         {
             Settings = settings;
         }
+
+        public void BringWindowToTop(Container window)
+        {
+            BaseContainers.Remove(window);
+            BaseContainers.Add(window);
+            draggedWindow = window;
+        }
+
     }
 }

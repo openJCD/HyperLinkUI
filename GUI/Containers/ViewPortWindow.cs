@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System.Reflection.Emit;
 using VESSEL_GUI.GUI.Data_Handlers;
 using System;
 
@@ -24,7 +23,7 @@ namespace VESSEL_GUI.GUI.Containers
 
         Model testmodel;
         public Texture3D modelTexture { get; set; }
-        public ViewPortWindow (Root parent, int relx, int rely, int width, int height, int tag, Model testmodel, GraphicsDevice graphics, string title = "Viewport Window", AnchorType anchorType = AnchorType.TOPLEFT) :base (parent, relx, rely, width, height, tag, title, anchorType)
+        public ViewPortWindow (UIRoot parent, int relx, int rely, int width, int height, int tag, Model testmodel, GraphicsDevice graphics, string title = "Viewport Window", AnchorType anchorType = AnchorType.TOPLEFT) :base (parent, relx, rely, width, height, tag, title, anchorType)
         {
 
             this.testmodel = testmodel;
@@ -45,31 +44,31 @@ namespace VESSEL_GUI.GUI.Containers
             WindowPort = new Viewport((int)AbsolutePosition.X, (int)AbsolutePosition.Y, Width, Height);
             Viewport oldViewPort = graphics.Viewport;
             Viewport newViewport = WindowPort;
-            Random random = new Random();
             if (!IsOpen)
             {
                 return;
             }
+
+            base.Draw(guiSpriteBatch);
+
+            guiSpriteBatch.End();
+
             graphics.Viewport = newViewport;
+
             foreach (ModelMesh mesh in testmodel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    //effect.EnableDefaultLighting();
+                    effect.EnableDefaultLighting();
                     effect.AmbientLightColor = new Vector3(0, 0, 0);
                     effect.View = viewMatrix;
                     effect.World = worldMatrix;
                     effect.Projection = projectionMatrix;
                 }
                 mesh.Draw();
-                for (int i = 0; i<1000; i++)
-                {
-                    Vector3 pt = SphereCoordHandler.GetVector3FromSphereCoords(mesh.BoundingSphere.Radius, i*random.Next(180), i+random.Next(90));
-                    guiSpriteBatch.DrawCircle(new Vector2(WindowPort.Project(pt, projectionMatrix, viewMatrix, worldMatrix).X, WindowPort.Project(pt, projectionMatrix, viewMatrix, worldMatrix).Y), 1, 10, Color.Red);
-                }
             }
-            base.Draw(guiSpriteBatch); 
             graphics.Viewport = oldViewPort;
+            guiSpriteBatch.Begin();
         }
 
         public override void Update(MouseState oldState, MouseState newState) 

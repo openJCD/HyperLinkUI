@@ -66,6 +66,11 @@ namespace VESSEL_GUI.GUI.Data_Handlers
         public string CloseButtonTexturePath { get; set; }
         [XmlIgnore]
         public Texture2D CloseButtonTexture { get; set; }
+
+        [XmlElement("WindowBackgroundTexturePath")]
+        public string WindowBackgroundTexturePath { get; set; }
+        [XmlIgnore]
+        public Texture2D WindowBackgroundTexture { get; set; }
         #endregion
 
         public GameSettings( )
@@ -82,6 +87,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
             SecondarySpriteFontPath = "Fonts/CPMono_v07_Light";
             LargeButtonTexturePath = "Textures/Button/btn_large";
             CloseButtonTexturePath = "Textures/Button/btn_close";
+            WindowBackgroundTexturePath = "Textures/window_bg";
         }
 
         public void LoadAllContent (ContentManager manager)
@@ -90,6 +96,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
             SecondarySpriteFont = manager.Load<SpriteFont>(SecondarySpriteFontPath);
             LargeButtonTexture = manager.Load<Texture2D>(LargeButtonTexturePath);
             CloseButtonTexture = manager.Load<Texture2D>(CloseButtonTexturePath);
+            WindowBackgroundTexture = manager.Load<Texture2D>(WindowBackgroundTexturePath);
         }
 
         public GameSettings(int windowWidth, int windowHeight, Color borderColor, string widowTitle)

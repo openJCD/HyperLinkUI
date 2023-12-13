@@ -19,12 +19,12 @@ namespace VESSEL_GUI
         //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
         private SpriteBatch UISpriteBatch;
-        private Root screenRoot;
+        private UIRoot screenRoot;
         private MouseState oldState;
         private KeyboardState oldKeyboardState;
         private SpriteFont monospace;
         private GameSettings settings;
-        private LabelText debug;
+        private TextLabel debug;
         private ContentManager UIContentManager; //manager for fonts and shit
 
         public Game1()
@@ -32,7 +32,6 @@ namespace VESSEL_GUI
             Content.RootDirectory = "Content";
             graphicsManager = new GraphicsDeviceManager(this);
             UIContentManager = new ContentManager(Content.ServiceProvider);
-
             UIContentManager.RootDirectory = "Content/GUI";
             IsMouseVisible = true;
         }
@@ -81,7 +80,7 @@ namespace VESSEL_GUI
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
 
             monospace = UIContentManager.Load<SpriteFont>("Fonts/CPMono_v07_Plain");
-            Texture2D styledbuttontexture = UIContentManager.Load<Texture2D>("Textures/Button/btn_large_2");
+            Texture2D styledbuttontexture = UIContentManager.Load<Texture2D>("Textures/Button/btn_large");
             Texture2D windowicon1 = UIContentManager.Load<Texture2D>("Textures/Button/btn_icon_window1");
             Texture2D windowicon2 = UIContentManager.Load<Texture2D>("Textures/Button/btn_icon_window2");
             //Texture3D test3dtexture = Content.Load<Texture3D>("");
@@ -90,18 +89,19 @@ namespace VESSEL_GUI
 
             SpriteFont monospaceSmall = UIContentManager.Load<SpriteFont>("Fonts/CPMono_v07_Light");
             
-            screenRoot = new Root(graphicsManager, settings);
+            screenRoot = new UIRoot(graphicsManager, settings);
 
-            //Taskbar TaskBarContainer = new Taskbar(screenRoot, 40);
-            //LabelText dateTime = new LabelText(TaskBarContainer, "00:00, DD/MM/YY", monospace,5,0, anchorType:AnchorType.TOPRIGHT);
-            //IconButton testWindowIconButton = new IconButton(TaskBarContainer, windowicon1, 1, 1, 2, EventType.OpenApp);
-            //IconButton testWindowIconButton2 = new IconButton(TaskBarContainer, windowicon2, 41, 1, 3, EventType.OpenApp);
+//            Taskbar TaskBarContainer = new Taskbar(screenRoot, 40);
+//            TextLabel dateTime = new TextLabel(TaskBarContainer, "00:00, DD/MM/YY", monospace,5,0, anchorType:AnchorType.TOPRIGHT);
+//            IconButton testWindowIconButton = new IconButton(TaskBarContainer, windowicon1, 1, 1, 2, EventType.OpenApp);
+//            IconButton testWindowIconButton2 = new IconButton(TaskBarContainer, windowicon2, 100, 1, 3, EventType.OpenApp);
 
             WindowContainer testwindow = new WindowContainer(screenRoot, 0, 50, 300, 300, tag:2,  title: "Test Window Class Instance", AnchorType.TOPLEFT);
-            testwindow.IsOpen = false;
-            debug = new LabelText(testwindow, "Hello Monogame!", settings.PrimarySpriteFont, 10,30, anchorType: AnchorType.CENTRE);
+            debug = new TextLabel(testwindow, "Hello Monogame!", settings.PrimarySpriteFont, 10,30, anchorType: AnchorType.CENTRE);
 
             WindowContainer testwindow2 = new WindowContainer(screenRoot, 0, 50, 300, 200, tag:3, title: "Test Window Class Instance 2", AnchorType.TOPRIGHT);
+            Button quitbutton = new Button(testwindow2, styledbuttontexture, -10, -30, tag:0, EventType.QuitGame, text:"Quit", anchorType:AnchorType.BOTTOMRIGHT);
+            Checkbox checkbox = new Checkbox(testwindow2, "Toggle Me!", 0, 30, 0, 20, 20, anchorType:AnchorType.CENTRE);
             ViewPortWindow viewportwindowtest = new ViewPortWindow(screenRoot, 0, 0, 500, 500, 0, sphere, GraphicsDevice);
             
             // screenRoot.InitSettings(settings);
@@ -130,12 +130,13 @@ namespace VESSEL_GUI
                     debug.Text = "Please restart to apply resolution changes!";
 
                 Window.Title = settings.WindowTitle;
-
+                graphicsManager.PreferredBackBufferWidth = settings.WindowWidth;
+                graphicsManager.PreferredBackBufferHeight = settings.WindowHeight;
+                graphicsManager.ApplyChanges();
                 screenRoot.ApplyNewSettings(settings);
                 Debug.WriteLine("Done.");
             }
             screenRoot.Update(oldState, newState, oldKeyboardState, newKeyboardState);
-            Window.Title = settings.WindowTitle + ", FPS:" + 1/gameTime.ElapsedGameTime.TotalSeconds;
             base.Update(gameTime);
             oldKeyboardState = newKeyboardState;
             oldState = newState;
@@ -145,9 +146,10 @@ namespace VESSEL_GUI
         {
             GraphicsDevice.Clear(Color.Black);
             UISpriteBatch.Begin(SpriteSortMode.Deferred);
+            Window.Title = settings.WindowTitle + ", FPS:" + 1/gameTime.ElapsedGameTime.TotalSeconds;
 
             screenRoot.Draw(UISpriteBatch);
-
+            
             UISpriteBatch.End();
             base.Draw(gameTime);
         }

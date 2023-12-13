@@ -58,16 +58,16 @@ namespace VESSEL_GUI.GUI.Containers
         public Rectangle BoundingRectangle { get => bounding_rectangle; protected set => bounding_rectangle = value; }
 
         [XmlIgnore]
-        public AnchorCoord Anchor { get => anchor; protected set => anchor = value; }
+        public AnchorCoord Anchor { get => anchor; set => anchor = value; }
 
         [XmlElement("Anchor")]
         public AnchorType anchorType { get => anchor.Type; }
 
         [XmlAttribute("relativex")]
-        public int LocalX { get => (int)anchor.OffsetFromAnchor.X; }
+        public int LocalX { get; set; }
 
         [XmlAttribute("relativey")]
-        public int LocalY { get => (int)anchor.OffsetFromAnchor.Y; }
+        public int LocalY { get; set; }
 
         [XmlIgnore]
         public Vector2 localOrigin { get; set; }
@@ -84,6 +84,7 @@ namespace VESSEL_GUI.GUI.Containers
         public int Tag { get; protected set; }
         #endregion
 
+        public bool IsSticky { get; set; } = true;
 
         #region overload for Containers as parent
 
@@ -98,7 +99,7 @@ namespace VESSEL_GUI.GUI.Containers
             parent.AddContainer(this);
         }
 
-        protected Container(Root parent)
+        protected Container(UIRoot parent)
         {
             Parent = parent;
             parent.AddContainer(this);
@@ -110,7 +111,8 @@ namespace VESSEL_GUI.GUI.Containers
             ChildWidgets = new List<Widget>();
             DebugLabel = debugLabel;
             Parent = myParent;
-
+            LocalX = paddingx;
+            LocalY = paddingy;
             Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
             myParent.AddContainer(this);
 
@@ -118,14 +120,15 @@ namespace VESSEL_GUI.GUI.Containers
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
         #endregion
-        public Container(Root myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container")
+        public Container(UIRoot myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container")
         {
             ChildContainers = new List<Container>();
             ChildWidgets = new List<Widget>();
             DebugLabel = debugLabel;
             Parent = myParent;
             IsOpen = true;
-
+            LocalX = paddingx;
+            LocalY = paddingy;
             Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
             myParent.AddContainer(this);
 
@@ -136,9 +139,10 @@ namespace VESSEL_GUI.GUI.Containers
         {
             bounding_rectangle.X = (int)Anchor.AbsolutePosition.X;
             bounding_rectangle.Y = (int)Anchor.AbsolutePosition.Y;
-            
             if (!IsOpen)
                 return;
+            if (IsSticky)
+                 Anchor.RecalculateAnchor(LocalX, LocalY, Parent, Width, Height);
             foreach (var container in child_containers)
                 container.Update(oldState, newState);
             foreach (var child in child_widgets)

@@ -48,7 +48,8 @@ namespace VESSEL_GUI.GUI.Widgets
             labelfont = Settings.SecondarySpriteFont;
             Tag = tag;
             event_type = eventType;
-
+            LocalX = relativex;
+            LocalY = relativey;
             // button atlas should ALWAYS be 3 even-width images. Frame 0 is static, 1 is under mouse and 2 is clicked.
             int width = texture.Width/3;
             int height = texture.Height;
@@ -66,7 +67,8 @@ namespace VESSEL_GUI.GUI.Widgets
             labelfont = Settings.PrimarySpriteFont;
             Tag = tag;
             event_type = eventType;
-
+            LocalX = relativex;
+            LocalY = relativey;
             // button atlas should ALWAYS be 3 even-width images. Frame 0 is static, 1 is under mouse and 2 is clicked.
             int width = texture.Width / 3;
             int height = texture.Height;

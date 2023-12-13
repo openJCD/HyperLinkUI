@@ -15,7 +15,7 @@ namespace VESSEL_GUI.GUI.Containers
         private GameSettings settings;
         public Taskbar () {  }
 
-        public Taskbar (Root parent, int height) : base (parent) 
+        public Taskbar (UIRoot parent, int height) : base (parent) 
         {
             ChildContainers = new List<Container> ();
             ChildWidgets = new List<Widget>();

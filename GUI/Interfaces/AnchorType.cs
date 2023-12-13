@@ -82,22 +82,22 @@ namespace VESSEL_GUI.GUI.Interfaces
                     return;
                 case AnchorType.TOPRIGHT:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos);
-                    OffsetFromAnchor = new Vector2(XOffset - width, YOffset);
+                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
                 case AnchorType.BOTTOMLEFT:
                     AnchorLocation = new Vector2(parent.XPos, parent.YPos + parent.Height);
-                    OffsetFromAnchor = new Vector2(XOffset, YOffset - height);
+                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
                 case AnchorType.BOTTOMRIGHT:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos + parent.Height);
-                    OffsetFromAnchor = new Vector2(XOffset - width, YOffset - height);
+                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
                 case AnchorType.CENTRE:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width / 2, parent.YPos + parent.Height / 2);
-                    OffsetFromAnchor = new Vector2(XOffset - width / 2, YOffset - height / 2);
+                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
 
