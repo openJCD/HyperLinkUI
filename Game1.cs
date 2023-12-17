@@ -101,7 +101,7 @@ namespace VESSEL_GUI
 
             WindowContainer testwindow2 = new WindowContainer(screenRoot, 0, 50, 300, 200, tag:3, title: "Test Window Class Instance 2", AnchorType.TOPRIGHT);
             Button quitbutton = new Button(testwindow2, styledbuttontexture, -10, -30, tag:0, EventType.QuitGame, text:"Quit", anchorType:AnchorType.BOTTOMRIGHT);
-            Checkbox checkbox = new Checkbox(testwindow2, "Toggle Me!", 0, 30, 0, 20, 20, anchorType:AnchorType.CENTRE);
+            Checkbox checkbox = new Checkbox(testwindow2, "Toggle Me!", 0, 0, 0, 18, 18, anchorType:AnchorType.CENTRE);
             ViewPortWindow viewportwindowtest = new ViewPortWindow(screenRoot, 0, 0, 500, 500, 0, sphere, GraphicsDevice);
             
             // screenRoot.InitSettings(settings);

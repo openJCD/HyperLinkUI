@@ -72,7 +72,6 @@ namespace VESSEL_GUI.GUI.Containers
         }
         public override void Update (MouseState oldState, MouseState newState)
         {
-            base.Update(oldState, newState);
             if (headerbar.BoundingRectangle.Contains(oldState.Position))
             {                
                 if (oldState.LeftButton == ButtonState.Pressed)
@@ -86,6 +85,15 @@ namespace VESSEL_GUI.GUI.Containers
                     }
                 }
             }
+            List<Container> containers_above_me = parent.GetContainersAbove(this);
+            foreach (Container window in containers_above_me)
+            {
+                if (window.BoundingRectangle.Intersects(this.BoundingRectangle) && window != this)
+                { 
+                    IsActive = false; return;
+                }   else IsActive = true;
+            }            
+            base.Update(oldState, newState);
         }
 
         public override void Draw(SpriteBatch guiSpriteBatch)

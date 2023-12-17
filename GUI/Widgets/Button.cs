@@ -103,7 +103,7 @@ namespace VESSEL_GUI.GUI.Widgets
 
         public override void Draw (SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
+            // guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
             //draw text with relative position set to the width and height of the texture / 2
             guiSpriteBatch.DrawString(labelfont, DebugLabel, (AbsolutePosition + texturesheet.InGameBounds.Size.ToVector2() / 2)-labelfont.MeasureString(DebugLabel)/2, Settings.TextColor);
             texturesheet.Draw(guiSpriteBatch, AbsolutePosition);            

@@ -11,7 +11,7 @@ using VESSEL_GUI.GUI.Interfaces;
 
 namespace VESSEL_GUI.GUI.Widgets
 {
-    public class Checkbox : Widget
+    public class Checkbox : Widget, FormItem
     {
         TextLabel label;
         Rectangle btnrect;
@@ -21,6 +21,7 @@ namespace VESSEL_GUI.GUI.Widgets
         Button button;
         public string Text { get; set; }
         public bool State { get; private set; }
+        public string Name { get => Text; set => Text = value; }
 
         public Checkbox(Container parent, string text, int relativex,
             int relativey,
@@ -36,18 +37,20 @@ namespace VESSEL_GUI.GUI.Widgets
             this.anchorType = anchorType;
             LocalX = relativex;
             LocalY = relativey;
-            Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, Width, Height);
-            container = new Container(parent, relativex, relativey, 30, 30, anchorType, "Checkbox");
+            container = new Container(parent, relativex, relativey, 10, 10, anchorType, "Checkbox");
             label = new TextLabel(container, text, relativex, relativey, anchorType);
             container.Width = label.Width + btnwidth;
             container.Height = label.Height;
+            container.DrawBorder = false;
+            Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, Width, Height);
+            BoundingRectangle = container.BoundingRectangle;
         }
 
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
             container.Draw(guiSpriteBatch);
             label.Draw(guiSpriteBatch);
-            guiSpriteBatch.DrawRectangle(container.BoundingRectangle, Color.Green);
+            guiSpriteBatch.DrawRectangle(BoundingRectangle, Color.Green);
             if (IsUnderMouseFocus)
                 guiSpriteBatch.DrawRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(4)), Settings.WidgetBorderColor);
             if (State)
@@ -59,9 +62,13 @@ namespace VESSEL_GUI.GUI.Widgets
 
         public override void Update(MouseState oldState, MouseState newState)
         {
-            base.Update(oldState, newState);
+            base.Update(oldState, newState); 
+            BoundingRectangle = container.BoundingRectangle;
+            // label.Text = "Pos:" + container.Anchor.AbsolutePosition;
+
             btnrect = new Rectangle((int)(AbsolutePosition.X + Width), (int)AbsolutePosition.Y, btnwidth, btnheight);
-            container.Update(oldState, newState);            
+
+            container.Update(oldState, newState);  
             if (btnrect.Contains(oldState.Position))
             {
                 isUnderMouseFocus = true;
@@ -81,6 +88,15 @@ namespace VESSEL_GUI.GUI.Widgets
                 State = false;
             else if (!State)
                 State = true;
+        }
+
+        public string ReadValue()
+        {
+            string term;
+            if (State)
+                term = "true";
+            else term = "false";
+            return term;
         }
     }
 }

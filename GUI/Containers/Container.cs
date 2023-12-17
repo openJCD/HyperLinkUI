@@ -55,7 +55,7 @@ namespace VESSEL_GUI.GUI.Containers
         public int YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = value; }
 
         [XmlIgnore]
-        public Rectangle BoundingRectangle { get => bounding_rectangle; protected set => bounding_rectangle = value; }
+        public Rectangle BoundingRectangle { get => bounding_rectangle; set => bounding_rectangle = value; }
 
         [XmlIgnore]
         public AnchorCoord Anchor { get => anchor; set => anchor = value; }
@@ -83,9 +83,10 @@ namespace VESSEL_GUI.GUI.Containers
         [XmlElement]
         public int Tag { get; protected set; }
         #endregion
-
+        [XmlAttribute]
         public bool IsSticky { get; set; } = true;
 
+        public bool IsActive { get; set; } = true;
         #region overload for Containers as parent
 
         public Container ()
@@ -137,12 +138,13 @@ namespace VESSEL_GUI.GUI.Containers
         }
         public virtual void Update(MouseState oldState, MouseState newState)
         {
+            if (IsSticky)
+                 Anchor = new AnchorCoord(LocalX, LocalY, Anchor.Type, Parent, Width, Height);
             bounding_rectangle.X = (int)Anchor.AbsolutePosition.X;
             bounding_rectangle.Y = (int)Anchor.AbsolutePosition.Y;
             if (!IsOpen)
                 return;
-            if (IsSticky)
-                 Anchor.RecalculateAnchor(LocalX, LocalY, Parent, Width, Height);
+
             foreach (var container in child_containers)
                 container.Update(oldState, newState);
             foreach (var child in child_widgets)
@@ -156,12 +158,14 @@ namespace VESSEL_GUI.GUI.Containers
 
             if (DrawBorder)
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.BorderColor);
-
             foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
 
             foreach (var child in ChildWidgets)
-                child.Draw(guiSpriteBatch);           
+                child.Draw(guiSpriteBatch);
+            
+            if (!IsActive)
+                guiSpriteBatch.Draw(Settings.InactiveWindowTexture, BoundingRectangle, Settings.InactiveWindowTexture.Bounds, Color.White);
         }
 
         public void TransferWidget(Widget widget)
@@ -228,5 +232,26 @@ namespace VESSEL_GUI.GUI.Containers
         {
             IsOpen = true;
         }
+        public List<Container> GetContainersAbove(Container window)
+        {
+
+            int index = ChildContainers.IndexOf(window);
+            List<Container> abovecontainers = new List<Container>();
+            if (index == ChildContainers.Count - 1)
+            {
+                abovecontainers.Add(window);
+                return abovecontainers;
+            }
+            else
+            {
+                foreach (Container container in ChildContainers)
+                {
+                    if (ChildContainers.IndexOf(container) > index)
+                        abovecontainers.Add(container);
+                }
+                return abovecontainers;
+            }
+        }
+
     }
 }

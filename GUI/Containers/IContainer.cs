@@ -15,9 +15,12 @@ namespace VESSEL_GUI.GUI.Containers
 
         int XPos { get; set; }
         int YPos { get; set; }
-        
+        public List<Container> ChildContainers { get; set; }
+
         GameSettings Settings { get; }
 
-        public void AddContainer (IContainer container) { }         
+        public void AddContainer(Container container) { }
+
+        public List<Container> GetContainersAbove(Container window);
     }
 }

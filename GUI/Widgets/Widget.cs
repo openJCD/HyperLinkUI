@@ -91,8 +91,7 @@ namespace VESSEL_GUI.GUI.Widgets
 
         public virtual void Update(MouseState oldState, MouseState newState)
         {
-            // change stuff here, position, etc. it will then be updated by the function below. 
-           
+            // change stuff here, position, etc. it will then be updated by the function below.            
             UpdatePos();
         }
 

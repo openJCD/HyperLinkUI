@@ -73,6 +73,9 @@ namespace VESSEL_GUI.GUI.Interfaces
     
         public void RecalculateAnchor(int XOffset, int YOffset, IContainer parent, int width, int height)
         {
+            OffsetFromAnchor = new Vector2();
+            AbsolutePosition = new Vector2();
+            AnchorLocation = new Vector2();
             switch (Type)
             {
                 case AnchorType.TOPLEFT:

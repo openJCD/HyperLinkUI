@@ -1,11 +1,5 @@
-﻿using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
-using System.Linq.Expressions;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
@@ -71,9 +65,13 @@ namespace VESSEL_GUI.GUI.Data_Handlers
         public string WindowBackgroundTexturePath { get; set; }
         [XmlIgnore]
         public Texture2D WindowBackgroundTexture { get; set; }
+        
+        public string InactiveWindowTexturePath { get; set; }
+        [XmlIgnore]
+        public Texture2D InactiveWindowTexture { get; set; }
         #endregion
 
-        public GameSettings( )
+        public GameSettings()
         {
             BorderColor = new Color(Color.Red, 255f);
             TaskbarColor = new Color(Color.DodgerBlue, 200f);
@@ -88,6 +86,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
             LargeButtonTexturePath = "Textures/Button/btn_large";
             CloseButtonTexturePath = "Textures/Button/btn_close";
             WindowBackgroundTexturePath = "Textures/window_bg";
+            InactiveWindowTexturePath = "Textures/Window/inactive";
         }
 
         public void LoadAllContent (ContentManager manager)
@@ -97,6 +96,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
             LargeButtonTexture = manager.Load<Texture2D>(LargeButtonTexturePath);
             CloseButtonTexture = manager.Load<Texture2D>(CloseButtonTexturePath);
             WindowBackgroundTexture = manager.Load<Texture2D>(WindowBackgroundTexturePath);
+            InactiveWindowTexture = manager.Load<Texture2D>(InactiveWindowTexturePath);
         }
 
         public GameSettings(int windowWidth, int windowHeight, Color borderColor, string widowTitle)

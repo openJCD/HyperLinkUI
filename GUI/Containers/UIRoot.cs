@@ -27,7 +27,7 @@ namespace VESSEL_GUI.GUI.Containers
         private GraphicsDeviceManager graphicsInfo;
 
         [XmlElement("Container")]
-        public List<Container> BaseContainers { get => base_containers; set => base_containers = value;  }
+        public List<Container> ChildContainers { get => base_containers; set => base_containers = value;  }
         [XmlIgnore]
         public string DebugLabel { get { return "UI Root"; } }
         [XmlIgnore]
@@ -49,7 +49,7 @@ namespace VESSEL_GUI.GUI.Containers
         {
             Initialise(graphicsInfo);
             Settings = settings;
-            BaseContainers = new List<Container>();
+            ChildContainers = new List<Container>();
         }
         public void Initialise(GraphicsDeviceManager graphicsInfo)
         {
@@ -57,8 +57,6 @@ namespace VESSEL_GUI.GUI.Containers
             Width = graphicsInfo.PreferredBackBufferWidth;
             Height = graphicsInfo.PreferredBackBufferHeight;
         }
-
-
 
         public void Update(MouseState oldState, MouseState newState, KeyboardState oldKeyboardState, KeyboardState newKeyboardState)
         {
@@ -75,7 +73,7 @@ namespace VESSEL_GUI.GUI.Containers
         public void Draw(SpriteBatch guiSpriteBatch)
         {
             guiSpriteBatch.DrawCircle(oldmousepos, 5, 3, Color.Green);
-            foreach (Container container in BaseContainers)
+            foreach (Container container in ChildContainers)
                 container.Draw(guiSpriteBatch);
             guiSpriteBatch.DrawCircle(newmousepos, 5, 3, Color.Purple);
 
@@ -83,13 +81,13 @@ namespace VESSEL_GUI.GUI.Containers
 
         public void AddContainer(Container containerToAdd)
         {
-            BaseContainers.Add(containerToAdd);
+            ChildContainers.Add(containerToAdd);
         }
 
         public void PrintUITree()
         {
             Debug.WriteLine("Whole UI Tree is as follows:");
-            foreach(Container container in BaseContainers)
+            foreach(Container container in ChildContainers)
             {
                 container.PrintChildren(0);
             }
@@ -114,10 +112,30 @@ namespace VESSEL_GUI.GUI.Containers
 
         public void BringWindowToTop(Container window)
         {
-            BaseContainers.Remove(window);
-            BaseContainers.Add(window);
+            ChildContainers.Remove(window);
+            ChildContainers.Add(window);
             draggedWindow = window;
         }
 
+        public List<Container> GetContainersAbove(Container window)
+        {
+
+            int index = ChildContainers.IndexOf(window);
+            List<Container> abovecontainers = new List<Container>();
+            if (index == ChildContainers.Count - 1) 
+            {   
+                abovecontainers.Add(window);
+                return abovecontainers;
+            }
+            else
+            {
+                foreach (Container container in ChildContainers)
+                {
+                    if (ChildContainers.IndexOf(container) > index)
+                        abovecontainers.Add(container);
+                }
+                return abovecontainers;
+            }
+        }
     }
 }
