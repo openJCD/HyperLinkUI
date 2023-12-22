@@ -10,6 +10,8 @@
 ## Installation
     Installation has not been implemented on NuGet or anything like that yet
 
+----
+
 ## Creating a basic scene
 The `Window()` class provides a good starting point here, as it is a nicely decorated container for all manner of widgets.
 First though, some basic declarations must be made. 
