@@ -5,6 +5,7 @@ using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using VESSEL_GUI.GUI.Data_Handlers;
@@ -94,6 +95,17 @@ namespace VESSEL_GUI.GUI.Containers
 
         }
 
+        ~Container()
+        {
+            Dispose();
+        }
+        public void Dispose()
+        {
+            Debug.WriteLine("Decoupling Container from parent...");
+            Parent.ChildContainers.Remove(this);
+            Parent.ChildContainers = Parent.ChildContainers.ToList();
+            Debug.Write(" Done. Out of scope? \n");
+        }
         protected Container (IContainer parent)
         {
             Parent = parent;
@@ -145,9 +157,9 @@ namespace VESSEL_GUI.GUI.Containers
             if (!IsOpen)
                 return;
 
-            foreach (var container in child_containers)
+            foreach (var container in child_containers.ToList())
                 container.Update(oldState, newState);
-            foreach (var child in child_widgets)
+            foreach (var child in child_widgets.ToList())
                 child.Update(oldState, newState);
         }
 
@@ -170,12 +182,11 @@ namespace VESSEL_GUI.GUI.Containers
 
         public void TransferWidget(Widget widget)
         {
-            if (widget.ParentContainer != null)
+            if (widget.Parent != null)
             {
                 widget.SetNewParent(this);
                 child_widgets.Add(widget);
             }
-
         }
 
         /// <summary>
@@ -189,7 +200,6 @@ namespace VESSEL_GUI.GUI.Containers
                 container.SetNewContainerParent(this);
                 ChildContainers.Add(container);
             }
-
         }
 
         private void SetNewContainerParent(Container container)
@@ -252,6 +262,5 @@ namespace VESSEL_GUI.GUI.Containers
                 return abovecontainers;
             }
         }
-
     }
 }

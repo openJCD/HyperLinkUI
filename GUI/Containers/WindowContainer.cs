@@ -46,7 +46,7 @@ namespace VESSEL_GUI.GUI.Containers
             BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, height);
 
             headerbar = new Container(this, 0, 0, width, 20, AnchorType.TOPLEFT);
-            close_button = new IconButton(headerbar, Settings.CloseButtonTexture, -2, 1, tag, EventType.CloseApp, anchorType:AnchorType.TOPRIGHT);
+            close_button = new IconButton(headerbar, Settings.CloseButtonTexture, -2, 1, tag, EventType.CloseWindow, anchorType:AnchorType.TOPRIGHT);
             label = new TextLabel(headerbar, DebugLabel, Settings.SecondarySpriteFont, 0,0, AnchorType.CENTRE);
             localOrigin = new Vector2(Width / 2, Height / 2);
         }
@@ -56,11 +56,11 @@ namespace VESSEL_GUI.GUI.Containers
             {
                 switch (e.event_type)
                 {
-                    case EventType.CloseApp:
+                    case EventType.CloseWindow:
                         Debug.WriteLine(DebugLabel +" was closed or attempted it or smth");
                         Close();
                         return;
-                    case EventType.OpenApp:
+                    case EventType.OpenWindow:
                         Open();
                         return;
                     case EventType.None:

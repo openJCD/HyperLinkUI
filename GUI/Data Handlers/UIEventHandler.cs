@@ -16,7 +16,7 @@ namespace VESSEL_GUI.GUI.Data_Handlers
 
         public static void onButtonClick(Button sender, OnButtonClickEventArgs e)
         {
-            OnButtonClick?.Invoke(sender, e);
+            OnButtonClick?.Invoke((Button)sender, e);
         }
     }
 }

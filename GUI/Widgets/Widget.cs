@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Input;
 using VESSEL_GUI.GUI.Containers;
 using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace VESSEL_GUI.GUI.Widgets
 {
@@ -32,7 +33,7 @@ namespace VESSEL_GUI.GUI.Widgets
         [XmlAttribute]
         public string DebugLabel { get => debug_label; set => debug_label = value; }
         [XmlIgnore]
-        public Container ParentContainer { get; protected set; }
+        public Container Parent { get; protected set; }
         [XmlIgnore]
         public AnchorCoord Anchor { get => anchor; protected set => anchor = value; }
         [XmlIgnore]
@@ -59,22 +60,26 @@ namespace VESSEL_GUI.GUI.Widgets
         [XmlElement("AnchorType")]
         public AnchorType anchorType { get => anchor.Type; set => anchor.Type = value; }
 
-        public GameSettings Settings { get => ParentContainer.Settings; }
+        public GameSettings Settings { get => Parent.Settings; }
 
         protected Widget(Container parent)
         {
-            ParentContainer = parent;
+            Parent = parent;
             parent.TransferWidget(this);
         }
-
         public Widget() { }
 
+        ~Widget()
+        {
+            Parent.ChildWidgets.Remove(this);
+            Parent.ChildWidgets = Parent.ChildWidgets.ToList();
+        }
         public Widget(Container parent, int width, int height, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
         {
             LocalX = relativex;
             LocalY = relativey;
             DebugLabel = debugLabel;
-            ParentContainer = parent;
+            Parent = parent;
             this.anchorType = anchorType; 
 
             localOrigin = new Vector2(width / 2, height / 2);
@@ -101,12 +106,12 @@ namespace VESSEL_GUI.GUI.Widgets
         /// <param name="newParent"></param>
         internal void SetNewParent(Container newParent)
         {
-            ParentContainer = newParent;
+            Parent = newParent;
         }
 
-        public void UpdatePos()
+        public virtual void UpdatePos()
         {
-            Anchor = new AnchorCoord(LocalX, LocalY, anchorType, ParentContainer, Width, Height);
+            Anchor = new AnchorCoord(LocalX, LocalY, anchorType, Parent, Width, Height);
             bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
             // DebugLabel = "Positions: " + Anchor.AbsolutePosition + ", " + BoundingRectangle.Location;
         }

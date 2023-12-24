@@ -60,6 +60,12 @@ namespace VESSEL_GUI.GUI.Widgets
         {
             Vector2 position = new Vector2(XPos, YPos);
             guiSpriteBatch.DrawString(font, text, position, Settings.TextColor);
-        }       
+        }
+        public override void UpdatePos()
+        {
+            Width = (int)font.MeasureString(Text).X;
+            Height = (int)font.MeasureString(Text).Y;
+            base.UpdatePos();        
+        }
     }
 }

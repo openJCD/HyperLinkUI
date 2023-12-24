@@ -10,7 +10,9 @@ namespace VESSEL_GUI.GUI.Data_Handlers
     {
         None,
         QuitGame,
-        OpenApp,
-        CloseApp        
+        OpenWindow,
+        CloseWindow, 
+        LaunchApp,
+        KillApp
     }
 }

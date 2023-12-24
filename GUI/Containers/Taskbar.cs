@@ -1,23 +1,20 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using VESSEL_GUI.GUI.Data_Handlers;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 using VESSEL_GUI.GUI.Interfaces;
 using VESSEL_GUI.GUI.Widgets;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Input;
-using System.Xml.Serialization;
 
 namespace VESSEL_GUI.GUI.Containers
 {
 
     public class Taskbar : Container
     {
-        private GameSettings settings;
-        public Taskbar () {  }
+        public Taskbar() { }
 
-        public Taskbar (UIRoot parent, int height) : base (parent) 
+        public Taskbar(UIRoot parent, int height) : base(parent)
         {
-            ChildContainers = new List<Container> ();
+            ChildContainers = new List<Container>();
             ChildWidgets = new List<Widget>();
             Parent = parent;
             Parent.AddContainer(this);
@@ -35,11 +32,11 @@ namespace VESSEL_GUI.GUI.Containers
             base.Draw(guiSpriteBatch);
         }
 
-        public override void Update (MouseState oldState, MouseState newState)
+        public override void Update(MouseState oldState, MouseState newState)
         {
-            Anchor.RecalculateAnchor(0,0,Parent, Parent.Width, Parent.Height);
+            Anchor.RecalculateAnchor(0, 0, Parent, Parent.Width, Parent.Height);
             Width = Parent.Width;
-            foreach(var container in ChildContainers)
+            foreach (var container in ChildContainers)
             {
                 container.Update(oldState, newState);
             }

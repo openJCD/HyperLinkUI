@@ -1,11 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VESSEL_GUI.GUI.Containers;
 using VESSEL_GUI.GUI.Interfaces;
 
@@ -18,7 +13,6 @@ namespace VESSEL_GUI.GUI.Widgets
         Container container;
         int btnwidth;
         int btnheight;
-        Button button;
         public string Text { get; set; }
         public bool State { get; private set; }
         public string Name { get => Text; set => Text = value; }
@@ -26,9 +20,9 @@ namespace VESSEL_GUI.GUI.Widgets
         public Checkbox(Container parent, string text, int relativex,
             int relativey,
             int tag,
-            int btnwidth = 10, 
-            int btnheight = 10, 
-            AnchorType anchorType = AnchorType.TOPLEFT) : base(parent) 
+            int btnwidth = 10,
+            int btnheight = 10,
+            AnchorType anchorType = AnchorType.TOPLEFT) : base(parent)
         {
             Text = text;
             State = false;
@@ -56,28 +50,29 @@ namespace VESSEL_GUI.GUI.Widgets
             if (State)
             {
                 guiSpriteBatch.FillRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(3)), Settings.WidgetFillColor);
-            }          
-            guiSpriteBatch.DrawRectangle(btnrect, Settings.WidgetBorderColor);          
+            }
+            guiSpriteBatch.DrawRectangle(btnrect, Settings.WidgetBorderColor);
         }
 
         public override void Update(MouseState oldState, MouseState newState)
         {
-            base.Update(oldState, newState); 
+            base.Update(oldState, newState);
             BoundingRectangle = container.BoundingRectangle;
             // label.Text = "Pos:" + container.Anchor.AbsolutePosition;
 
             btnrect = new Rectangle((int)(AbsolutePosition.X + Width), (int)AbsolutePosition.Y, btnwidth, btnheight);
 
-            container.Update(oldState, newState);  
+            container.Update(oldState, newState);
             if (btnrect.Contains(oldState.Position))
             {
                 isUnderMouseFocus = true;
-                if (oldState.LeftButton == ButtonState.Pressed && newState.LeftButton == ButtonState.Released )
+                if (oldState.LeftButton == ButtonState.Pressed && newState.LeftButton == ButtonState.Released)
                 {
                     ToggleState();
                 }
 
-            } else
+            }
+            else
             {
                 isUnderMouseFocus = false;
             }

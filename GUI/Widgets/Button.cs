@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
-using System.Xml.Serialization;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Xml.Serialization;
 using VESSEL_GUI.GUI.Containers;
 using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
@@ -25,7 +21,7 @@ namespace VESSEL_GUI.GUI.Widgets
         public int Tag { get; protected set; }
 
         public EventType event_type { get; set; }
-        public Button ( )
+        public Button()
         {
 
         }
@@ -40,10 +36,10 @@ namespace VESSEL_GUI.GUI.Widgets
         /// <param name="tag">Tag that links this button to other objects in the scene</param>
         /// <param name="text">Text to use for the button</param>
         /// <param name="anchorType">Type of anchor to use - relative positon based on TOPLEFT, TOPRIGHT, etc. of the object's parent</param>
-        public Button(Container parent, Texture2D texture, int relativex, int relativey, int tag, EventType eventType, int scalefactor = 2, string text = "Button!", AnchorType anchorType = AnchorType.TOPLEFT) : base ( parent)
+        public Button(Container parent, Texture2D texture, int relativex, int relativey, int tag, EventType eventType, int scalefactor = 2, string text = "Button!", AnchorType anchorType = AnchorType.TOPLEFT) : base(parent)
         {
             this.texture = texture;
-            ParentContainer = parent;
+            Parent = parent;
             DebugLabel = text;
             labelfont = Settings.SecondarySpriteFont;
             Tag = tag;
@@ -51,18 +47,18 @@ namespace VESSEL_GUI.GUI.Widgets
             LocalX = relativex;
             LocalY = relativey;
             // button atlas should ALWAYS be 3 even-width images. Frame 0 is static, 1 is under mouse and 2 is clicked.
-            int width = texture.Width/3;
+            int width = texture.Width / 3;
             int height = texture.Height;
             this.texturesheet = new AnimatedTextureAtlas(texture, 1, 3);
-
+            DebugLabel += ", " + tag;
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
-            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);           
+            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
 
         public Button(Container parent, Texture2D texture, int relativex, int relativey, int tag, EventType eventType, AnchorType anchorType = AnchorType.TOPLEFT) : base(parent)
         {
             this.texture = texture;
-            ParentContainer = parent;
+            Parent = parent;
             DebugLabel = "btn_icon";
             labelfont = Settings.PrimarySpriteFont;
             Tag = tag;
@@ -77,10 +73,10 @@ namespace VESSEL_GUI.GUI.Widgets
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
-        public override void Update (MouseState oldState, MouseState newState)
+        public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);
-            if (BoundingRectangle.Contains(newState.Position)) 
+            if (BoundingRectangle.Contains(newState.Position))
             {
                 isUnderMouseFocus = true;
                 texturesheet.forceFrame(1);
@@ -92,8 +88,8 @@ namespace VESSEL_GUI.GUI.Widgets
                     {
                         UIEventHandler.onButtonClick(this, new OnButtonClickEventArgs { event_type = event_type, tag = Tag });
                     }
-                }   
-            } 
+                }
+            }
             else
             {
                 isUnderMouseFocus = false;
@@ -101,12 +97,12 @@ namespace VESSEL_GUI.GUI.Widgets
             }
         }
 
-        public override void Draw (SpriteBatch guiSpriteBatch)
+        public override void Draw(SpriteBatch guiSpriteBatch)
         {
             // guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
             //draw text with relative position set to the width and height of the texture / 2
-            guiSpriteBatch.DrawString(labelfont, DebugLabel, (AbsolutePosition + texturesheet.InGameBounds.Size.ToVector2() / 2)-labelfont.MeasureString(DebugLabel)/2, Settings.TextColor);
-            texturesheet.Draw(guiSpriteBatch, AbsolutePosition);            
+            guiSpriteBatch.DrawString(labelfont, DebugLabel, (AbsolutePosition + texturesheet.InGameBounds.Size.ToVector2() / 2) - labelfont.MeasureString(DebugLabel) / 2, Settings.TextColor);
+            texturesheet.Draw(guiSpriteBatch, AbsolutePosition);
         }
     }
 }

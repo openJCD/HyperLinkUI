@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using VESSEL_GUI.GUI.Data_Handlers;
-using VESSEL_GUI.GUI.Interfaces;
-using VESSEL_GUI.GUI.Widgets;
 
 
 namespace VESSEL_GUI.GUI.Containers
@@ -27,7 +24,7 @@ namespace VESSEL_GUI.GUI.Containers
         private GraphicsDeviceManager graphicsInfo;
 
         [XmlElement("Container")]
-        public List<Container> ChildContainers { get => base_containers; set => base_containers = value;  }
+        public List<Container> ChildContainers { get => base_containers; set => base_containers = value; }
         [XmlIgnore]
         public string DebugLabel { get { return "UI Root"; } }
         [XmlIgnore]
@@ -43,7 +40,10 @@ namespace VESSEL_GUI.GUI.Containers
 
         [XmlIgnore]
         public Container draggedWindow { get; set; }
-        public UIRoot() { }
+        public UIRoot()
+        {
+            ChildContainers = new List<Container>();
+        }
 
         public UIRoot(GraphicsDeviceManager graphicsInfo, GameSettings settings)
         {
@@ -68,7 +68,6 @@ namespace VESSEL_GUI.GUI.Containers
             if (newState.RightButton == ButtonState.Pressed && oldState.RightButton == ButtonState.Released)
                 PrintUITree();
             newmousepos = newState.Position.ToVector2();
-
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
@@ -87,23 +86,23 @@ namespace VESSEL_GUI.GUI.Containers
         public void PrintUITree()
         {
             Debug.WriteLine("Whole UI Tree is as follows:");
-            foreach(Container container in ChildContainers)
+            foreach (Container container in ChildContainers)
             {
                 container.PrintChildren(0);
             }
         }
-        
+
         /// <summary>
         /// Loop through tree and initialise "settings" in all child objects. 
         /// </summary>
         /// <param name="settings">the settings class to apply to the tree</param>
-/*        public void InitSettings (GameSettings settings)
-        {
-            foreach (Container container in BaseContainers)
-            {
-                container.InitSettings(settings);
-            }
-        }*/
+        /*        public void InitSettings (GameSettings settings)
+                {
+                    foreach (Container container in BaseContainers)
+                    {
+                        container.InitSettings(settings);
+                    }
+                }*/
 
         public void ApplyNewSettings(GameSettings settings)
         {
@@ -119,11 +118,10 @@ namespace VESSEL_GUI.GUI.Containers
 
         public List<Container> GetContainersAbove(Container window)
         {
-
             int index = ChildContainers.IndexOf(window);
             List<Container> abovecontainers = new List<Container>();
-            if (index == ChildContainers.Count - 1) 
-            {   
+            if (index == ChildContainers.Count - 1)
+            {
                 abovecontainers.Add(window);
                 return abovecontainers;
             }
