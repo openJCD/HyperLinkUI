@@ -16,15 +16,15 @@ namespace VESSEL_GUI.GUI.Interfaces
     public enum AnchorType
     {
         [XmlEnum("TOPLEFT")]
-        TOPLEFT,
+        TOPLEFT = 00,
         [XmlEnum("TOPRIGHT")]
-        TOPRIGHT,
+        TOPRIGHT = 10,
         [XmlEnum("BOTTOMLEFT")]
-        BOTTOMLEFT,
+        BOTTOMLEFT = 01,
         [XmlEnum("BOTTOMRIGHT")]
-        BOTTOMRIGHT,
+        BOTTOMRIGHT = 11,
         [XmlEnum("CENTRE")]
-        CENTRE
+        CENTRE = 55
     }
 
     public struct AnchorCoord

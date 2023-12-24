@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using VESSEL_GUI.GameCode.OS;
+using VESSEL_GUI.GameCode.Scripting;
 using VESSEL_GUI.GUI.Containers;
 using VESSEL_GUI.GUI.Data_Handlers;
 using VESSEL_GUI.GUI.Interfaces;
@@ -15,19 +16,21 @@ namespace VESSEL_GUI
     public class Game1 : Game
     {
         //CONSTANTS
-
+        const string SCRIPT_DIRECTORY = "Content/Game/Scripts/";
         //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
         private SpriteBatch UISpriteBatch;
-        private UIRoot screenRoot;
         private MouseState oldState;
         private KeyboardState oldKeyboardState;
-        private SpriteFont monospace;
         private TextLabel debug;
         private ContentManager UIContentManager; //manager for fonts and shit
+        private TestScriptHandler ScriptHandler;
 
         GameSettings Settings;
         OSBackendManager OSBackend;
+        
+        public static UIRoot screenRoot;
+
         public Game1()
         {
             Content.RootDirectory = "Content";
@@ -48,7 +51,6 @@ namespace VESSEL_GUI
             try
             {
                 Settings = Settings.Load(UIContentManager.RootDirectory + "/Saves/", "settings.xml");
-
             }
             catch
             {
@@ -87,6 +89,10 @@ namespace VESSEL_GUI
 
             screenRoot = new UIRoot(graphicsManager, Settings);
             OSBackend.Initialise(screenRoot);
+
+            ScriptHandler = new TestScriptHandler(SCRIPT_DIRECTORY+"test.lua");
+            ScriptHandler.lua["Root"] = screenRoot;
+            ScriptHandler.lua.GetFunction("Init").Call();
 
             Container debugtextcontainer = new Container(screenRoot, -10, -10, 500, 30, AnchorType.BOTTOMRIGHT, "DebugContainer") { IsSticky = true };
             debug = new TextLabel(debugtextcontainer, "Hello Monogame!", Settings.PrimarySpriteFont, 0, -5, anchorType: AnchorType.BOTTOMLEFT);

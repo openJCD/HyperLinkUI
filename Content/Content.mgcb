@@ -32,6 +32,9 @@
 /processorParam:TextureFormat=Compressed
 /build:Game/Models/sphere.fbx
 
+#begin Game/Scripts/test.lua
+/copy:Game/Scripts/test.lua
+
 #begin GUI/Fonts/CPMono_v07_Light.otf
 /copy:GUI/Fonts/CPMono_v07_Light.otf
 
