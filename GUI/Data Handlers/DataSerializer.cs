@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using VESSEL_GUI.GUI.Containers;
+using HyperLinkUI.GUI.Containers;
 
-namespace VESSEL_GUI.GUI.Data_Handlers
+namespace HyperLinkUI.GUI.Data_Handlers
 {
     public static class DataSerializer
     {

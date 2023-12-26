@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VESSEL_GUI.GUI.Containers;
-using VESSEL_GUI.GUI.Data_Handlers;
-using VESSEL_GUI.GUI.Interfaces;
+using HyperLinkUI.GUI.Containers;
+using HyperLinkUI.GUI.Data_Handlers;
+using HyperLinkUI.GUI.Interfaces;
 
-namespace VESSEL_GUI.GUI.Widgets
+namespace HyperLinkUI.GUI.Widgets
 {
     public class IconButton : Button
     {

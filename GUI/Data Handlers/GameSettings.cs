@@ -4,7 +4,7 @@ using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-namespace VESSEL_GUI.GUI.Data_Handlers
+namespace HyperLinkUI.GUI.Data_Handlers
 {
     
     [Serializable()]

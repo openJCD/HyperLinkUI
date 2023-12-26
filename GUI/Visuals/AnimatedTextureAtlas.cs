@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VESSEL_GUI.GUI.Visuals
+namespace HyperLinkUI.GUI.Visuals
 {
     public class AnimatedTextureAtlas
     {

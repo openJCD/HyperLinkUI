@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using VESSEL_GUI.GUI.Containers;
-using VESSEL_GUI.GUI.Interfaces;
+using HyperLinkUI.GUI.Containers;
+using HyperLinkUI.GUI.Interfaces;
 
-namespace VESSEL_GUI.GUI.Widgets
+namespace HyperLinkUI.GUI.Widgets
 {
     public class Checkbox : Widget, FormItem
     {

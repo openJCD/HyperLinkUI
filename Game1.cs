@@ -4,14 +4,19 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
-using VESSEL_GUI.GameCode.OS;
-using VESSEL_GUI.GameCode.Scripting;
-using VESSEL_GUI.GUI.Containers;
-using VESSEL_GUI.GUI.Data_Handlers;
-using VESSEL_GUI.GUI.Interfaces;
-using VESSEL_GUI.GUI.Widgets;
+using HyperLinkUI.GameCode.OS;
+using HyperLinkUI.GameCode.Scripting;
+using HyperLinkUI.GameCode.Scripting.API;
+using HyperLinkUI.GUI.Data_Handlers;
+using HyperLinkUI.GUI.Containers;
+using HyperLinkUI.GUI.Data_Handlers;
+using HyperLinkUI.GUI.Interfaces;
+using HyperLinkUI.GUI.Widgets;
+using NLua;
+using System.Runtime.ExceptionServices;
+using NLua.Exceptions;
 
-namespace VESSEL_GUI
+namespace HyperLinkUI
 {
     public class Game1 : Game
     {
@@ -28,6 +33,7 @@ namespace VESSEL_GUI
 
         GameSettings Settings;
         OSBackendManager OSBackend;
+        APIManager ScriptingAPI;
         
         public static UIRoot screenRoot;
 
@@ -39,6 +45,7 @@ namespace VESSEL_GUI
             UIContentManager.RootDirectory = "Content/GUI";
             IsMouseVisible = true;
             OSBackend = OSBackendManager.Instance;
+            ScriptingAPI = new APIManager();
         }
 
         protected override void Initialize()
@@ -89,14 +96,21 @@ namespace VESSEL_GUI
 
             screenRoot = new UIRoot(graphicsManager, Settings);
             OSBackend.Initialise(screenRoot);
-
-            ScriptHandler = new TestScriptHandler(SCRIPT_DIRECTORY+"test.lua");
-            ScriptHandler.lua["Root"] = screenRoot;
-            ScriptHandler.lua.GetFunction("Init").Call();
-
             Container debugtextcontainer = new Container(screenRoot, -10, -10, 500, 30, AnchorType.BOTTOMRIGHT, "DebugContainer") { IsSticky = true };
             debug = new TextLabel(debugtextcontainer, "Hello Monogame!", Settings.PrimarySpriteFont, 0, -5, anchorType: AnchorType.BOTTOMLEFT);
+
+            ScriptHandler = new TestScriptHandler(SCRIPT_DIRECTORY+"test.lua", ScriptingAPI);
+            ScriptHandler.lua["Root"] = screenRoot;
+            ScriptHandler.lua["parent"] = debugtextcontainer;
+            ScriptHandler.lua.GetFunction("Init").Call();
+            //try
+            //{
+            //} catch (LuaScriptException e)
+            //{
+            //    Debug.WriteLine("Error initialising Script " + ScriptHandler.file + ": " + e.Message) ;
+            //}
             // screenRoot.InitSettings(settings);
+            Container c = (Container)ScriptHandler.lua.GetObjectFromPath("c");
 
             // screenRoot.Save(UIContentManager.RootDirectory + "/Saves/Scenes/", "test.xml");
             // TODO: use this.Content to load your game content here

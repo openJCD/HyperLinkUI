@@ -1,7 +1,7 @@
-﻿using VESSEL_GUI.GUI.Containers;
-using VESSEL_GUI.GUI.Widgets;
+﻿using HyperLinkUI.GUI.Containers;
+using HyperLinkUI.GUI.Widgets;
 
-namespace VESSEL_GUI.GameCode.OS
+namespace HyperLinkUI.GameCode.OS
 {
     public class Process
     {

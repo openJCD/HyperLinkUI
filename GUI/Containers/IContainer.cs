@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VESSEL_GUI.GUI.Data_Handlers;
+using HyperLinkUI.GUI.Data_Handlers;
 
-namespace VESSEL_GUI.GUI.Containers
+namespace HyperLinkUI.GUI.Containers
 {
     public interface IContainer
     {

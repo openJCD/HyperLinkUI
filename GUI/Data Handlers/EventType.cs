@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VESSEL_GUI.GUI.Data_Handlers
+namespace HyperLinkUI.GUI.Data_Handlers
 {
     public enum EventType
     {

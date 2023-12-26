@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VESSEL_GUI.GUI.Widgets;
-namespace VESSEL_GUI.GUI.Data_Handlers
+using HyperLinkUI.GUI.Widgets;
+namespace HyperLinkUI.GUI.Data_Handlers
 {
     #nullable enable
     // classes for EventArgs

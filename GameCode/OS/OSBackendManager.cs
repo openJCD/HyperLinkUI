@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using VESSEL_GUI.GUI.Containers;
+using HyperLinkUI.GUI.Containers;
 
-namespace VESSEL_GUI.GameCode.OS
+namespace HyperLinkUI.GameCode.OS
 {
 
     public sealed class OSBackendManager

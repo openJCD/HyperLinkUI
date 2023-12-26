@@ -2,15 +2,15 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using VESSEL_GUI.GUI.Interfaces;
-using VESSEL_GUI.GUI.Widgets;
+using HyperLinkUI.GUI.Interfaces;
+using HyperLinkUI.GUI.Widgets;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Input;
-using Button = VESSEL_GUI.GUI.Widgets.Button;
-using VESSEL_GUI.GUI.Data_Handlers;
+using Button = HyperLinkUI.GUI.Widgets.Button;
+using HyperLinkUI.GUI.Data_Handlers;
 using System.Diagnostics;
 
-namespace VESSEL_GUI.GUI.Containers
+namespace HyperLinkUI.GUI.Containers
 {
     public class WindowContainer: Container 
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VESSEL_GUI.GUI.Interfaces
+namespace HyperLinkUI.GUI.Interfaces
 {
     public interface FormItem
     {

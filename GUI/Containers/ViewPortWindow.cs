@@ -1,11 +1,11 @@
-﻿using VESSEL_GUI.GUI.Interfaces;
+﻿using HyperLinkUI.GUI.Interfaces;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using VESSEL_GUI.GUI.Data_Handlers;
+using HyperLinkUI.GUI.Data_Handlers;
 using System;
 
-namespace VESSEL_GUI.GUI.Containers
+namespace HyperLinkUI.GUI.Containers
 {
     public class ViewPortWindow : WindowContainer
     {

@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using VESSEL_GUI.GUI.Containers;
+using HyperLinkUI.GameCode.Scripting;
+using HyperLinkUI.GUI.Containers;
 
-namespace VESSEL_GUI.GameCode.OS
+namespace HyperLinkUI.GameCode.OS
 {
     public class Application
     {
@@ -9,6 +10,8 @@ namespace VESSEL_GUI.GameCode.OS
         public int RequiredRam { get; set; }
         public int appID;
         public string Name;
+
+        public ApplicationScript Script { get; set; }
         public Application() { }
         public Application(WindowContainer window, int ram) 
         {
@@ -29,6 +32,10 @@ namespace VESSEL_GUI.GameCode.OS
         public void Close()
         {
             Window.Close();
+        }
+        public void AttachScript (ApplicationScript script)
+        {
+            Script = script;
         }
     }
 }

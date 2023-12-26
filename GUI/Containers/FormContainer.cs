@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VESSEL_GUI.GUI.Interfaces;
-using VESSEL_GUI.GUI.Widgets;
+using HyperLinkUI.GUI.Interfaces;
+using HyperLinkUI.GUI.Widgets;
 
-namespace VESSEL_GUI.GUI.Containers
+namespace HyperLinkUI.GUI.Containers
 {
     public class FormContainer : Container 
     {

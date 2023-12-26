@@ -2,10 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using VESSEL_GUI.GUI.Interfaces;
-using VESSEL_GUI.GUI.Widgets;
+using HyperLinkUI.GUI.Interfaces;
+using HyperLinkUI.GUI.Widgets;
 
-namespace VESSEL_GUI.GUI.Containers
+namespace HyperLinkUI.GUI.Containers
 {
 
     public class Taskbar : Container

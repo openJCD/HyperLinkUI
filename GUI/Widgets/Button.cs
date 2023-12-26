@@ -2,12 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Xml.Serialization;
-using VESSEL_GUI.GUI.Containers;
-using VESSEL_GUI.GUI.Data_Handlers;
-using VESSEL_GUI.GUI.Interfaces;
-using VESSEL_GUI.GUI.Visuals;
+using HyperLinkUI.GUI.Containers;
+using HyperLinkUI.GUI.Data_Handlers;
+using HyperLinkUI.GUI.Interfaces;
+using HyperLinkUI.GUI.Visuals;
 
-namespace VESSEL_GUI.GUI.Widgets
+namespace HyperLinkUI.GUI.Widgets
 {
     public class Button : Widget
     {

@@ -7,24 +7,24 @@ using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using SharpDX.Direct3D9;
 using SharpDX.MediaFoundation;
-using VESSEL_GUI.GUI.Containers;
+using HyperLinkUI.GUI.Containers;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
-namespace VESSEL_GUI.GUI.Interfaces
+namespace HyperLinkUI.GUI.Interfaces
 {
     [Serializable()]
     public enum AnchorType
     {
         [XmlEnum("TOPLEFT")]
-        TOPLEFT = 00,
+        TOPLEFT,
         [XmlEnum("TOPRIGHT")]
-        TOPRIGHT = 10,
+        TOPRIGHT,
         [XmlEnum("BOTTOMLEFT")]
-        BOTTOMLEFT = 01,
+        BOTTOMLEFT,
         [XmlEnum("BOTTOMRIGHT")]
-        BOTTOMRIGHT = 11,
+        BOTTOMRIGHT,
         [XmlEnum("CENTRE")]
-        CENTRE = 55
+        CENTRE
     }
 
     public struct AnchorCoord

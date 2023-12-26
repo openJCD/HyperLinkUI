@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
-using VESSEL_GUI.GUI.Data_Handlers;
+using HyperLinkUI.GUI.Data_Handlers;
 
 
-namespace VESSEL_GUI.GUI.Containers
+namespace HyperLinkUI.GUI.Containers
 {
     [Serializable()]
     [XmlRoot("Root")]
@@ -81,6 +81,7 @@ namespace VESSEL_GUI.GUI.Containers
         public void AddContainer(Container containerToAdd)
         {
             ChildContainers.Add(containerToAdd);
+            containerToAdd.SetNewContainerParent(this);
         }
 
         public void PrintUITree()

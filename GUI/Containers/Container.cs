@@ -8,11 +8,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using VESSEL_GUI.GUI.Data_Handlers;
-using VESSEL_GUI.GUI.Interfaces;
-using VESSEL_GUI.GUI.Widgets;
+using HyperLinkUI.GUI.Data_Handlers;
+using HyperLinkUI.GUI.Interfaces;
+using HyperLinkUI.GUI.Widgets;
 
-namespace VESSEL_GUI.GUI.Containers
+namespace HyperLinkUI.GUI.Containers
 {
     [XmlInclude(typeof(WindowContainer))]
     [XmlInclude(typeof(Taskbar))]
@@ -27,7 +27,7 @@ namespace VESSEL_GUI.GUI.Containers
         private bool isUnderMouseFocus;
         private GameSettings settings;
 
-        #region Attributes
+        #region Properties/Members
         [XmlIgnore]
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
         
@@ -62,7 +62,7 @@ namespace VESSEL_GUI.GUI.Containers
         public AnchorCoord Anchor { get => anchor; set => anchor = value; }
 
         [XmlElement("Anchor")]
-        public AnchorType anchorType { get => anchor.Type; }
+        public AnchorType AnchorType { get => anchor.Type; set => anchor.Type = value; }
 
         [XmlAttribute("relativex")]
         public int LocalX { get; set; }
@@ -92,7 +92,9 @@ namespace VESSEL_GUI.GUI.Containers
 
         public Container ()
         {
-
+            ChildContainers = new List<Container>();
+            ChildWidgets = new List<Widget>();
+            DebugLabel = "container";
         }
 
         ~Container()
@@ -194,17 +196,23 @@ namespace VESSEL_GUI.GUI.Containers
         /// </summary>
         /// <param name="container">Container to transfer</param>
         public void AddContainer(Container container)
-        {
-            if (container.Parent != null)
-            {
-                container.SetNewContainerParent(this);
-                ChildContainers.Add(container);
-            }
+        {          
+           container.SetNewContainerParent(this);
+           ChildContainers.Add(container);    
         }
 
-        private void SetNewContainerParent(Container container)
+        public void SetNewContainerParent(Container container)
         {
             parent = container;
+            Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, parent, Width, Height);
+            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
+        }
+
+        public void SetNewContainerParent(UIRoot container)
+        {
+            parent = container;
+            Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, parent, Width, Height);
+            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
         }
 
         public void PrintChildren(int layer)
