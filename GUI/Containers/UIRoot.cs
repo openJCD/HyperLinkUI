@@ -108,6 +108,8 @@ namespace HyperLinkUI.GUI.Containers
         public void ApplyNewSettings(GameSettings settings)
         {
             Settings = settings;
+            Width = settings.WindowWidth;
+            Height = settings.WindowHeight;
         }
 
         public void BringWindowToTop(Container window)

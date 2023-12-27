@@ -142,6 +142,7 @@ namespace HyperLinkUI
                 graphicsManager.PreferredBackBufferHeight = Settings.WindowHeight;
                 graphicsManager.ApplyChanges();
                 screenRoot.ApplyNewSettings(Settings);
+                ScriptHandler.lua.GetFunction("Init").Call();
                 Debug.WriteLine("Done.");
             }
             base.Update(gameTime);
