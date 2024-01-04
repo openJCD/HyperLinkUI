@@ -15,10 +15,19 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MonoGame.Forms.DX" Version="3.2.0" />
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
     <PackageReference Include="NLua" Version="1.6.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Game\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\Game\Scripts\TaskMgr.lua.required">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />

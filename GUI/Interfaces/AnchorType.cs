@@ -62,7 +62,6 @@ namespace HyperLinkUI.GUI.Interfaces
                     OffsetFromAnchor = new Vector2(XOffset - width/2, YOffset - height/2);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
                     return;
-
             }
         }
 

@@ -11,7 +11,6 @@ namespace HyperLinkUI.GameCode.Scripting
     {
         public static void ConfigureSandboxEnv(Lua env)
         {
-            env.DoString(@"import ('HyperLinkUI', 'HyperLinkUI.Scripting.API') ");
             env.DoString(@"
                 function cfg_sb()
                     import = function () end

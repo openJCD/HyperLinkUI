@@ -9,26 +9,22 @@ using HyperLinkUI.GameCode.Scripting;
 using HyperLinkUI.GameCode.Scripting.API;
 using HyperLinkUI.GUI.Data_Handlers;
 using HyperLinkUI.GUI.Containers;
-using HyperLinkUI.GUI.Data_Handlers;
 using HyperLinkUI.GUI.Interfaces;
 using HyperLinkUI.GUI.Widgets;
-using NLua;
-using System.Runtime.ExceptionServices;
-using NLua.Exceptions;
-
 namespace HyperLinkUI
 {
     public class Game1 : Game
     {
         //CONSTANTS
-        const string SCRIPT_DIRECTORY = "Content/Game/Scripts/";
+        public const string SCRIPT_DIRECTORY = "Content/Game/Scripts/";
+        public const string UI_SAVES_DIRECTORY = "Content/GUI/Saves/";
         //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
         private SpriteBatch UISpriteBatch;
         private MouseState oldState;
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
-        private ContentManager UIContentManager; //manager for fonts and shit
+        public static ContentManager UIContentManager; //manager for fonts and shit
         private TestScriptHandler ScriptHandler;
 
         GameSettings Settings;
@@ -57,13 +53,13 @@ namespace HyperLinkUI
             // check if the Loader throws an exception
             try
             {
-                Settings = Settings.Load(UIContentManager.RootDirectory + "/Saves/", "settings.xml");
+                Settings = Settings.Load(UI_SAVES_DIRECTORY, "settings.xml");
             }
             catch
             {
                 Settings = new GameSettings();
-                Settings.Save(UIContentManager.RootDirectory + "/Saves/", "settings.xml");
-                Settings = Settings.Load(UIContentManager.RootDirectory + "/Saves/", "settings.xml");
+                Settings.Save(UI_SAVES_DIRECTORY, "settings.xml");
+                Settings = Settings.Load(UI_SAVES_DIRECTORY, "settings.xml");
             }
 
             Settings.LoadAllContent(UIContentManager);
@@ -83,26 +79,21 @@ namespace HyperLinkUI
 
             if (e.event_type == EventType.QuitGame)
                 Exit();
-
         }
 
         protected override void LoadContent()
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
-
-            Model sphere = Content.Load<Model>("Game/Models/sphere");
+            screenRoot = new UIRoot(Settings);
+            OSBackend.Initialise(screenRoot, ScriptingAPI);
 
             SpriteFont monospaceSmall = UIContentManager.Load<SpriteFont>("Fonts/CPMono_v07_Light");
 
-            screenRoot = new UIRoot(graphicsManager, Settings);
-            OSBackend.Initialise(screenRoot);
             Container debugtextcontainer = new Container(screenRoot, -10, -10, 500, 30, AnchorType.BOTTOMRIGHT, "DebugContainer") { IsSticky = true };
             debug = new TextLabel(debugtextcontainer, "Hello Monogame!", Settings.PrimarySpriteFont, 0, -5, anchorType: AnchorType.BOTTOMLEFT);
 
-            ScriptHandler = new TestScriptHandler(SCRIPT_DIRECTORY+"test.lua", ScriptingAPI);
-            ScriptHandler.lua["Root"] = screenRoot;
-            ScriptHandler.lua["parent"] = debugtextcontainer;
-            ScriptHandler.lua.GetFunction("Init").Call();
+
+            OSBackend.LoadAppsFromFolder("Content/Game/Scripts");
             //try
             //{
             //} catch (LuaScriptException e)
@@ -110,12 +101,10 @@ namespace HyperLinkUI
             //    Debug.WriteLine("Error initialising Script " + ScriptHandler.file + ": " + e.Message) ;
             //}
             // screenRoot.InitSettings(settings);
-            Container c = (Container)ScriptHandler.lua.GetObjectFromPath("c");
 
             // screenRoot.Save(UIContentManager.RootDirectory + "/Saves/Scenes/", "test.xml");
             // TODO: use this.Content to load your game content here
         }
-
 
         protected override void Update(GameTime gameTime)
         {
@@ -132,18 +121,15 @@ namespace HyperLinkUI
                 // do something here
                 // this will only be called when the key is first pressed
                 Debug.WriteLine("Hot Reloading Settings ...");
-                Settings = Settings.Load(UIContentManager.RootDirectory + "/Saves/", "settings.xml");
-
-                if (Settings.WindowWidth != graphicsManager.PreferredBackBufferWidth && Settings.WindowHeight != graphicsManager.PreferredBackBufferHeight)
-                    debug.Text = "Please restart to apply resolution changes!";
-
+                UIEventHandler.onHotReload(this, null);
                 Window.Title = Settings.WindowTitle;
                 graphicsManager.PreferredBackBufferWidth = Settings.WindowWidth;
                 graphicsManager.PreferredBackBufferHeight = Settings.WindowHeight;
                 graphicsManager.ApplyChanges();
-                screenRoot.ApplyNewSettings(Settings);
-                ScriptHandler.lua.GetFunction("Init").Call();
                 Debug.WriteLine("Done.");
+            }
+            if (oldKeyboardState.IsKeyUp(Keys.F2) && newKeyboardState.IsKeyDown(Keys.F2))
+            {
             }
             base.Update(gameTime);
             oldKeyboardState = newKeyboardState;
@@ -157,7 +143,7 @@ namespace HyperLinkUI
             Window.Title = Settings.WindowTitle + ", FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
 
             OSBackend.Draw(UISpriteBatch);
-
+            
             UISpriteBatch.End();
             base.Draw(gameTime);
         }

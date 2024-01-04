@@ -6,7 +6,6 @@ using HyperLinkUI.GUI.Interfaces;
 using HyperLinkUI.GUI.Widgets;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Input;
-using Button = HyperLinkUI.GUI.Widgets.Button;
 using HyperLinkUI.GUI.Data_Handlers;
 using System.Diagnostics;
 
@@ -81,7 +80,7 @@ namespace HyperLinkUI.GUI.Containers
                     {
                         Vector2 mouseDelta = newState.Position.ToVector2() - oldState.Position.ToVector2();
                         anchor.AbsolutePosition += mouseDelta;
-                        headerbar.anchor.AbsolutePosition = anchor.AbsolutePosition;
+                        headerbar.IsSticky=true;
                     }
                 }
             }

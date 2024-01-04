@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HyperLinkUI.GUI.Data_Handlers;
 using HyperLinkUI.GUI.Interfaces;
 
 namespace HyperLinkUI.GameCode.Scripting.API
@@ -26,6 +27,10 @@ namespace HyperLinkUI.GameCode.Scripting.API
                 default:
                     return AnchorType.CENTRE;
             }
+        }
+        public static T ParseEnum<T>(string value)
+        {
+            return (T)Enum.Parse(typeof(T), value, true);
         }
     }
 }

@@ -7,7 +7,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
 using HyperLinkUI.GUI.Data_Handlers;
-
+using Microsoft.Xna.Framework.Content;
+using System.Configuration;
 
 namespace HyperLinkUI.GUI.Containers
 {
@@ -40,9 +41,22 @@ namespace HyperLinkUI.GUI.Containers
 
         [XmlIgnore]
         public Container draggedWindow { get; set; }
-        public UIRoot()
+        public UIRoot(string settingsPath, string settingsFile, ContentManager manager)
         {
             ChildContainers = new List<Container>();
+            Settings = new GameSettings();
+            try
+            { Settings = Settings.Load(settingsPath, settingsFile); }
+            catch { Settings.Save(settingsPath, settingsFile); Settings.Load(settingsPath, settingsFile); }
+            Settings.LoadAllContent(manager);
+            ApplyNewSettings(Settings);
+        }
+        public UIRoot(GameSettings settings)
+        {
+            ChildContainers = new List<Container>();
+            Settings = settings;
+            Width = Settings.WindowWidth;
+            Height = Settings.WindowHeight;
         }
 
         public UIRoot(GraphicsDeviceManager graphicsInfo, GameSettings settings)
@@ -71,11 +85,10 @@ namespace HyperLinkUI.GUI.Containers
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.DrawCircle(oldmousepos, 5, 3, Color.Green);
             foreach (Container container in ChildContainers)
                 container.Draw(guiSpriteBatch);
+            guiSpriteBatch.DrawCircle(oldmousepos, 5, 3, Color.Green);
             guiSpriteBatch.DrawCircle(newmousepos, 5, 3, Color.Purple);
-
         }
 
         public void AddContainer(Container containerToAdd)
@@ -92,19 +105,6 @@ namespace HyperLinkUI.GUI.Containers
                 container.PrintChildren(0);
             }
         }
-
-        /// <summary>
-        /// Loop through tree and initialise "settings" in all child objects. 
-        /// </summary>
-        /// <param name="settings">the settings class to apply to the tree</param>
-        /*        public void InitSettings (GameSettings settings)
-                {
-                    foreach (Container container in BaseContainers)
-                    {
-                        container.InitSettings(settings);
-                    }
-                }*/
-
         public void ApplyNewSettings(GameSettings settings)
         {
             Settings = settings;

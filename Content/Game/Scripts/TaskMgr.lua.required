@@ -1,0 +1,10 @@
+﻿function Init()
+	testc = newContainer("BottomRight", -1, -1, 10, 5)
+	myself.Window:AddContainer(testc)
+	send_debug_message(myself.Window.DebugLabel)
+end
+function OnUpdate()
+end
+
+function OnDraw()
+end

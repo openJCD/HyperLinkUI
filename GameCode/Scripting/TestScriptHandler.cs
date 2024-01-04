@@ -18,6 +18,7 @@ namespace HyperLinkUI.GameCode.Scripting
             api.ExposeTo(lua);
             lua.LoadCLRPackage();
             SandboxHelper.ConfigureSandboxEnv(lua);
+            
             lua.DoFile(scriptpath);
         }
     }

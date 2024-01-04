@@ -73,6 +73,8 @@ namespace HyperLinkUI.GUI.Widgets
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
+
+        public Button (Container parent, int relativex, int relativey, int tag, EventType eventType, AnchorType anchorType) : this (parent, parent.Settings.LargeButtonTexture, relativex, relativey, tag, eventType, anchorType) { }
         public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);

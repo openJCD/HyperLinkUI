@@ -65,8 +65,6 @@ namespace HyperLinkUI.GUI.Data_Handlers
                 myself = myself.Load(savePath, saveName);
                 return myself;
             }
-
-
         }
 
         public static void Save(this UIRoot myself, string savePath, string saveName)

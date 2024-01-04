@@ -8,7 +8,7 @@ namespace HyperLinkUI.GameCode.OS
         public int Id;
         public string Name;
         public int RequiredRam;
-        Application linkedApp;
+        public Application linkedApp;
         public Container RenderContainer;
         public TextLabel RenderLabel;
         public IconButton RenderKillBtn;

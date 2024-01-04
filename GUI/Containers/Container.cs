@@ -11,6 +11,7 @@ using System.Xml.Serialization;
 using HyperLinkUI.GUI.Data_Handlers;
 using HyperLinkUI.GUI.Interfaces;
 using HyperLinkUI.GUI.Widgets;
+using NLua;
 
 namespace HyperLinkUI.GUI.Containers
 {
@@ -23,7 +24,7 @@ namespace HyperLinkUI.GUI.Containers
         private string debug_label;
         protected IContainer parent;
         private Rectangle bounding_rectangle;
-        public AnchorCoord anchor;
+        protected AnchorCoord anchor;
         private bool isUnderMouseFocus;
         private GameSettings settings;
 
@@ -71,20 +72,17 @@ namespace HyperLinkUI.GUI.Containers
         public int LocalY { get; set; }
 
         [XmlIgnore]
+        [LuaHide]
         public Vector2 localOrigin { get; set; }
 
         [XmlIgnore]
         public virtual GameSettings Settings { get => Parent.Settings; protected set => settings = value; }
 
-        [XmlAttribute]
         public bool IsOpen { get; set; } = true;
-        [XmlAttribute]
         public bool DrawBorder { get; set; } = true;
 
-        [XmlElement]
         public int Tag { get; protected set; }
         #endregion
-        [XmlAttribute]
         public bool IsSticky { get; set; } = true;
 
         public bool IsActive { get; set; } = true;
@@ -103,10 +101,16 @@ namespace HyperLinkUI.GUI.Containers
         }
         public void Dispose()
         {
-            Debug.WriteLine("Decoupling Container from parent...");
-            Parent.ChildContainers.Remove(this);
-            Parent.ChildContainers = Parent.ChildContainers.ToList();
-            Debug.Write(" Done. Out of scope? \n");
+            try
+            {
+                Debug.WriteLine("Decoupling Container from parent...");
+                Parent.ChildContainers.Remove(this);
+                Parent.ChildContainers = Parent.ChildContainers.ToList();
+                Debug.Write(" Done. Out of scope? \n");
+            } catch
+            {
+                Debug.WriteLine("Failed to decouple container. Parent was likely null");
+            }
         }
         protected Container (IContainer parent)
         {
@@ -154,8 +158,7 @@ namespace HyperLinkUI.GUI.Containers
         {
             if (IsSticky)
                  Anchor = new AnchorCoord(LocalX, LocalY, Anchor.Type, Parent, Width, Height);
-            bounding_rectangle.X = (int)Anchor.AbsolutePosition.X;
-            bounding_rectangle.Y = (int)Anchor.AbsolutePosition.Y;
+            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));            
             if (!IsOpen)
                 return;
 
@@ -194,13 +197,12 @@ namespace HyperLinkUI.GUI.Containers
         /// <summary>
         /// Transfer ownershiip of the Container from wherever it was previously to this particular Container.
         /// </summary>
-        /// <param name="container">Container to transfer</param>
-        public void AddContainer(Container container)
-        {          
-           container.SetNewContainerParent(this);
-           ChildContainers.Add(container);    
+        /// <param name="containerToAdd">Container to transfer</param>
+        public void AddContainer(Container containerToAdd)
+        {
+            ChildContainers.Add(containerToAdd);
+            containerToAdd.SetNewContainerParent(this);
         }
-
         public void SetNewContainerParent(Container container)
         {
             parent = container;
@@ -269,6 +271,12 @@ namespace HyperLinkUI.GUI.Containers
                 }
                 return abovecontainers;
             }
+        }
+        public void SetPosition (int x, int y)
+        {
+            AnchorCoord newAnchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height) { AbsolutePosition = new Vector2(x, y) };
+            
+            Anchor = newAnchor;
         }
     }
 }
