@@ -16,7 +16,6 @@ namespace HyperLinkUI
     public class Game1 : Game
     {
         //CONSTANTS
-        public const string SCRIPT_DIRECTORY = "Content/Game/Scripts/";
         public const string UI_SAVES_DIRECTORY = "Content/GUI/Saves/";
         //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
@@ -25,11 +24,8 @@ namespace HyperLinkUI
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
         public static ContentManager UIContentManager; //manager for fonts and shit
-        private TestScriptHandler ScriptHandler;
 
         GameSettings Settings;
-        OSBackendManager OSBackend;
-        APIManager ScriptingAPI;
         
         public static UIRoot screenRoot;
 
@@ -40,8 +36,6 @@ namespace HyperLinkUI
             UIContentManager = new ContentManager(Content.ServiceProvider);
             UIContentManager.RootDirectory = "Content/GUI";
             IsMouseVisible = true;
-            OSBackend = OSBackendManager.Instance;
-            ScriptingAPI = new APIManager();
         }
 
         protected override void Initialize()
@@ -85,27 +79,10 @@ namespace HyperLinkUI
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
             screenRoot = new UIRoot(Settings);
-            OSBackend.Initialise(screenRoot, ScriptingAPI);
-
-            SpriteFont monospaceSmall = UIContentManager.Load<SpriteFont>("Fonts/CPMono_v07_Light");
 
             Container debugtextcontainer = new Container(screenRoot, -10, -10, 500, 30, AnchorType.BOTTOMRIGHT, "DebugContainer") { IsSticky = true };
             debug = new TextLabel(debugtextcontainer, "Hello Monogame!", Settings.PrimarySpriteFont, 0, -5, anchorType: AnchorType.BOTTOMLEFT);
-
-
-            OSBackend.LoadAppsFromFolder("Content/Game/Scripts");
-            //try
-            //{
-            //} catch (LuaScriptException e)
-            //{
-            //    Debug.WriteLine("Error initialising Script " + ScriptHandler.file + ": " + e.Message) ;
-            //}
-            // screenRoot.InitSettings(settings);
-
-            // screenRoot.Save(UIContentManager.RootDirectory + "/Saves/Scenes/", "test.xml");
-            // TODO: use this.Content to load your game content here
         }
-
         protected override void Update(GameTime gameTime)
         {
             MouseState newState = Mouse.GetState();
@@ -113,8 +90,7 @@ namespace HyperLinkUI
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            OSBackend.Update(oldState, newState, oldKeyboardState, newKeyboardState);
-
+            screenRoot.Draw(UISpriteBatch); 
             // check for f5, if so hot reload settings
             if (oldKeyboardState.IsKeyUp(Keys.F5) && newKeyboardState.IsKeyDown(Keys.F5))
             {
@@ -141,9 +117,7 @@ namespace HyperLinkUI
             GraphicsDevice.Clear(Color.Black);
             UISpriteBatch.Begin(SpriteSortMode.Deferred);
             Window.Title = Settings.WindowTitle + ", FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
-
-            OSBackend.Draw(UISpriteBatch);
-            
+            screenRoot.Draw(UISpriteBatch); 
             UISpriteBatch.End();
             base.Draw(gameTime);
         }

@@ -25,7 +25,6 @@ namespace HyperLinkUI.GUI.Containers
         public AnchorType AnchorType { get => Anchor.Type; }
         public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; protected set => anchor.AbsolutePosition = value; }
 
-
         public WindowContainer ()
         {
 
