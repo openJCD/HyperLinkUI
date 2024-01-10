@@ -12,6 +12,9 @@ namespace HyperLinkUI.GUI.Data_Handlers
     public class GameSettings
     {
 
+        [XmlIgnore]
+        public ContentManager ContentManager { get; set; }
+
         #region window settings
         [XmlElement("WindowTitle")]
         public string WindowTitle { get; set; }
@@ -91,12 +94,13 @@ namespace HyperLinkUI.GUI.Data_Handlers
 
         public void LoadAllContent (ContentManager manager)
         {
-            PrimarySpriteFont = manager.Load<SpriteFont>(PrimarySpriteFontPath);
-            SecondarySpriteFont = manager.Load<SpriteFont>(SecondarySpriteFontPath);
-            LargeButtonTexture = manager.Load<Texture2D>(LargeButtonTexturePath);
-            CloseButtonTexture = manager.Load<Texture2D>(CloseButtonTexturePath);
-            WindowBackgroundTexture = manager.Load<Texture2D>(WindowBackgroundTexturePath);
-            InactiveWindowTexture = manager.Load<Texture2D>(InactiveWindowTexturePath);
+            ContentManager = manager;
+            PrimarySpriteFont = ContentManager.Load<SpriteFont>(PrimarySpriteFontPath);
+            SecondarySpriteFont = ContentManager.Load<SpriteFont>(SecondarySpriteFontPath);
+            LargeButtonTexture = ContentManager.Load<Texture2D>(LargeButtonTexturePath);
+            CloseButtonTexture = ContentManager.Load<Texture2D>(CloseButtonTexturePath);
+            WindowBackgroundTexture = ContentManager.Load<Texture2D>(WindowBackgroundTexturePath);
+            InactiveWindowTexture = ContentManager.Load<Texture2D>(InactiveWindowTexturePath);
         }
 
         public GameSettings(int windowWidth, int windowHeight, Color borderColor, string widowTitle)
@@ -105,6 +109,10 @@ namespace HyperLinkUI.GUI.Data_Handlers
             WindowHeight = windowHeight;
             BorderColor = borderColor;
             WindowTitle = widowTitle;
+        }
+        public void Dispose() 
+        {
+            ContentManager.Unload();
         }
     }
 }

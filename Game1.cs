@@ -4,13 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
-using HyperLinkUI.GameCode.OS;
-using HyperLinkUI.GameCode.Scripting;
-using HyperLinkUI.GameCode.Scripting.API;
 using HyperLinkUI.GUI.Data_Handlers;
 using HyperLinkUI.GUI.Containers;
 using HyperLinkUI.GUI.Interfaces;
 using HyperLinkUI.GUI.Widgets;
+using HyperLinkUI.GUI.Scenes;
+
 namespace HyperLinkUI
 {
     public class Game1 : Game
@@ -20,10 +19,11 @@ namespace HyperLinkUI
         //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
         private SpriteBatch UISpriteBatch;
-        private MouseState oldState;
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
         public static ContentManager UIContentManager; //manager for fonts and shit
+
+        UISceneManager SceneManager;
 
         GameSettings Settings;
         
@@ -45,6 +45,7 @@ namespace HyperLinkUI
             // test for button click events
             UIEventHandler.OnButtonClick += Game1_HandleOnButtonClick;
             // check if the Loader throws an exception
+            
             try
             {
                 Settings = Settings.Load(UI_SAVES_DIRECTORY, "settings.xml");
@@ -62,10 +63,13 @@ namespace HyperLinkUI
             graphicsManager.PreferredBackBufferHeight = Settings.WindowHeight;
             graphicsManager.ApplyChanges();
 
+            SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager);
+            SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
+            SceneManager.LoadScene("mainmenu"); 
             base.Initialize();
         }
 
-        private void Game1_HandleOnButtonClick(Object sender, OnButtonClickEventArgs e)
+        private void Game1_HandleOnButtonClick(object sender, OnButtonClickEventArgs e)
         {
             Button Sender = (Button)sender;
             Debug.WriteLine(Sender.DebugLabel + " was pressed with event type " + e.event_type);
@@ -85,31 +89,29 @@ namespace HyperLinkUI
         }
         protected override void Update(GameTime gameTime)
         {
-            MouseState newState = Mouse.GetState();
             KeyboardState newKeyboardState = Keyboard.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            screenRoot.Draw(UISpriteBatch); 
+            SceneManager.Update(); 
             // check for f5, if so hot reload settings
             if (oldKeyboardState.IsKeyUp(Keys.F5) && newKeyboardState.IsKeyDown(Keys.F5))
             {
                 // do something here
-                // this will only be called when the key is first pressed
                 Debug.WriteLine("Hot Reloading Settings ...");
-                UIEventHandler.onHotReload(this, null);
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                UIEventHandler.onHotReload(this, new HotReloadEventArgs() { graphicsDeviceReference = graphicsManager });
+                SceneManager.LoadScene("mainmenu"); 
                 Window.Title = Settings.WindowTitle;
-                graphicsManager.PreferredBackBufferWidth = Settings.WindowWidth;
-                graphicsManager.PreferredBackBufferHeight = Settings.WindowHeight;
-                graphicsManager.ApplyChanges();
-                Debug.WriteLine("Done.");
+                sw.Stop();
+                Debug.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
             }
             if (oldKeyboardState.IsKeyUp(Keys.F2) && newKeyboardState.IsKeyDown(Keys.F2))
             {
             }
             base.Update(gameTime);
             oldKeyboardState = newKeyboardState;
-            oldState = newState;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -117,7 +119,8 @@ namespace HyperLinkUI
             GraphicsDevice.Clear(Color.Black);
             UISpriteBatch.Begin(SpriteSortMode.Deferred);
             Window.Title = Settings.WindowTitle + ", FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
-            screenRoot.Draw(UISpriteBatch); 
+            SceneManager.Draw(UISpriteBatch );
+            //screenRoot.Draw(UISpriteBatch); 
             UISpriteBatch.End();
             base.Draw(gameTime);
         }

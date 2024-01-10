@@ -16,8 +16,11 @@ namespace HyperLinkUI.GUI.Containers
     [XmlRoot("Root")]
     public class UIRoot : IContainer
     {
-        private Vector2 oldmousepos;
-        private Vector2 newmousepos;
+        private MouseState oldmousestate;
+        private MouseState newmousestate;
+
+        private KeyboardState oldkstate;
+        private KeyboardState newkstate;
 
         private int width;
         private int height;
@@ -47,7 +50,7 @@ namespace HyperLinkUI.GUI.Containers
             Settings = new GameSettings();
             try
             { Settings = Settings.Load(settingsPath, settingsFile); }
-            catch { Settings.Save(settingsPath, settingsFile); Settings.Load(settingsPath, settingsFile); }
+            catch { Settings = new GameSettings();  Settings.Save(settingsPath, settingsFile); Settings.Load(settingsPath, settingsFile); }
             Settings.LoadAllContent(manager);
             ApplyNewSettings(Settings);
         }
@@ -55,6 +58,7 @@ namespace HyperLinkUI.GUI.Containers
         {
             ChildContainers = new List<Container>();
             Settings = settings;
+            
             Width = Settings.WindowWidth;
             Height = Settings.WindowHeight;
         }
@@ -72,23 +76,31 @@ namespace HyperLinkUI.GUI.Containers
             Height = graphicsInfo.PreferredBackBufferHeight;
         }
 
-        public void Update(MouseState oldState, MouseState newState, KeyboardState oldKeyboardState, KeyboardState newKeyboardState)
+        public void Update()
         {
             draggedWindow = null;
-            oldmousepos = oldState.Position.ToVector2();
+            newkstate = Keyboard.GetState();
+            newmousestate = Mouse.GetState();
+            
             foreach (Container container in base_containers.ToList())
-                container.Update(oldState, newState);
+                container.Update(oldmousestate, newmousestate);
 
-            if (newState.RightButton == ButtonState.Pressed && oldState.RightButton == ButtonState.Released)
+            if (newmousestate.RightButton == ButtonState.Pressed && oldmousestate.RightButton == ButtonState.Released)
                 PrintUITree();
-            newmousepos = newState.Position.ToVector2();
+            if (newkstate.GetPressedKeyCount() == 0 && oldkstate.GetPressedKeyCount() > 0) 
+            {
+                UIEventHandler.onKeyReleased(this, new KeyReleasedEventArgs() { pressed_keys=oldkstate.GetPressedKeys()});
+            }
+            
+            oldkstate = newkstate;
+            oldmousestate = newmousestate;
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
             foreach (Container container in ChildContainers)
                 container.Draw(guiSpriteBatch);
-            guiSpriteBatch.DrawCircle(oldmousepos, 5, 3, Color.Green);
-            guiSpriteBatch.DrawCircle(newmousepos, 5, 3, Color.Purple);
+            guiSpriteBatch.DrawCircle(newmousestate.Position.ToVector2(), 5, 3, Color.Green);
+            guiSpriteBatch.DrawCircle(oldmousestate.Position.ToVector2(), 5, 3, Color.Purple);
         }
 
         public void AddContainer(Container containerToAdd)
@@ -137,6 +149,15 @@ namespace HyperLinkUI.GUI.Containers
                 }
                 return abovecontainers;
             }
+        }
+
+        public void Dispose() 
+        {
+            base_containers.ForEach(c => c.Dispose());
+            base_containers.Clear();
+            Width = 640; Height = 480;//reset to default values
+            Settings.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
+            // ALSO remember to unsubscribe from events if applicable in future!
         }
     }
 }

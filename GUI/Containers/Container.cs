@@ -175,6 +175,7 @@ namespace HyperLinkUI.GUI.Containers
 
             if (DrawBorder)
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.BorderColor);
+
             foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
 

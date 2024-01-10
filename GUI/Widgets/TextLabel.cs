@@ -31,7 +31,8 @@ namespace HyperLinkUI.GUI.Widgets
             Font = spriteFont;
             this.Text = text;
             DebugLabel = text;
-            
+            LocalX = relativex;
+            LocalY = relativey;
             localOrigin = new Vector2(fontwidth / 2, fontheight / 2);
             Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, fontwidth, fontheight);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, fontwidth, fontheight);
@@ -42,7 +43,8 @@ namespace HyperLinkUI.GUI.Widgets
             Font = Settings.PrimarySpriteFont;
             int fontwidth = (int)Font.MeasureString(text).X;
             int fontheight = (int)Font.MeasureString(text).Y;
-
+            LocalX = relativex;
+            LocalY = relativey;
             this.Text = text;
             DebugLabel = text;
 
