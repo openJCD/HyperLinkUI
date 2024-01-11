@@ -18,7 +18,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 namespace HyperLinkUI.GUI.Widgets
 {
     [XmlInclude(typeof(TextLabel))]
-    [XmlInclude(typeof(Button))]
+    [XmlInclude(typeof(ImageButton))]
     public class Widget : Anchorable
     {
         protected string debug_label;

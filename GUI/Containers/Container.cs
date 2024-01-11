@@ -1,12 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Forms;
 using System.Xml.Serialization;
 using HyperLinkUI.GUI.Data_Handlers;
 using HyperLinkUI.GUI.Interfaces;
@@ -188,13 +186,11 @@ namespace HyperLinkUI.GUI.Containers
 
         public void TransferWidget(Widget widget)
         {
-            if (widget.Parent != null)
-            {
-                widget.SetNewParent(this);
-                child_widgets.Add(widget);
-            }
+            widget.SetNewParent(this);
+            widget.Parent.RemoveChildWidget(widget);
+            child_widgets.Add(widget);
         }
-
+        private void RemoveChildWidget(Widget w) { ChildWidgets.Remove(w); }
         /// <summary>
         /// Transfer ownershiip of the Container from wherever it was previously to this particular Container.
         /// </summary>

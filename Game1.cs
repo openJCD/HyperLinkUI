@@ -63,9 +63,9 @@ namespace HyperLinkUI
             graphicsManager.PreferredBackBufferHeight = Settings.WindowHeight;
             graphicsManager.ApplyChanges();
 
-            SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager);
+            SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, GraphicsDevice);
             SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
-            SceneManager.LoadScene("mainmenu"); 
+            SceneManager.LoadScene("mainmenu.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
             base.Initialize();
         }
 
@@ -93,24 +93,18 @@ namespace HyperLinkUI
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            SceneManager.Update(); 
+            SceneManager.Update();
             // check for f5, if so hot reload settings
             if (oldKeyboardState.IsKeyUp(Keys.F5) && newKeyboardState.IsKeyDown(Keys.F5))
             {
-                // do something here
                 Debug.WriteLine("Hot Reloading Settings ...");
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                UIEventHandler.onHotReload(this, new HotReloadEventArgs() { graphicsDeviceReference = graphicsManager });
-                SceneManager.LoadScene("mainmenu"); 
-                Window.Title = Settings.WindowTitle;
+                UIEventHandler.onHotReload(this, new HotReloadEventArgs() { graphicsDeviceReference = graphicsManager });// global event called so application can hot-reload itself
+                SceneManager.LoadScene("mainmenu.scene");
                 sw.Stop();
                 Debug.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
             }
-            if (oldKeyboardState.IsKeyUp(Keys.F2) && newKeyboardState.IsKeyDown(Keys.F2))
-            {
-            }
-            base.Update(gameTime);
             oldKeyboardState = newKeyboardState;
         }
 
@@ -120,7 +114,6 @@ namespace HyperLinkUI
             UISpriteBatch.Begin(SpriteSortMode.Deferred);
             Window.Title = Settings.WindowTitle + ", FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
             SceneManager.Draw(UISpriteBatch );
-            //screenRoot.Draw(UISpriteBatch); 
             UISpriteBatch.End();
             base.Draw(gameTime);
         }

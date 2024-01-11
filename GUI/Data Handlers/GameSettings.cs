@@ -86,8 +86,8 @@ namespace HyperLinkUI.GUI.Data_Handlers
             WindowTitle = "Window";
             PrimarySpriteFontPath = "Fonts/RobotoMono";
             SecondarySpriteFontPath = "Fonts/CPMono_v07_Light";
-            LargeButtonTexturePath = "Textures/Button/btn_large";
-            CloseButtonTexturePath = "Textures/Button/btn_close";
+            LargeButtonTexturePath = "Textures/ImageButton/btn_large";
+            CloseButtonTexturePath = "Textures/ImageButton/btn_close";
             WindowBackgroundTexturePath = "Textures/window_bg";
             InactiveWindowTexturePath = "Textures/Window/inactive";
         }
