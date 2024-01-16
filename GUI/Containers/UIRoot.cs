@@ -156,7 +156,7 @@ namespace HyperLinkUI.GUI.Containers
             base_containers.ForEach(c => c.Dispose());
             base_containers.Clear();
             Width = 640; Height = 480;//reset to default values
-            Settings.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
+            //Settings.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
             // ALSO remember to unsubscribe from events if applicable in future!
         }
     }

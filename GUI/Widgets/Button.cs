@@ -40,7 +40,7 @@ namespace HyperLinkUI.GUI.Widgets
             {
                 guiSpriteBatch.FillRectangle(BoundingRectangle,Color.Multiply(Settings.WidgetFillColor, 0.1f));
             }
-            guiSpriteBatch.DrawString(labelfont, Text, (AbsolutePosition + BoundingRectangle.Size.ToVector2()/2), Settings.TextColor);
+            guiSpriteBatch.DrawString(labelfont, Text, (AbsolutePosition + BoundingRectangle.Size.ToVector2()/2)-labelfont.MeasureString(Text)/2, Settings.TextColor);
             //base.Draw(guiSpriteBatch);
         }
         public override void Update(MouseState oldState, MouseState newState)

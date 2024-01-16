@@ -3,7 +3,9 @@ using HyperLinkUI.GUI.Data_Handlers;
 using HyperLinkUI.GUI.Widgets;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using NLua;
 using NLua.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,13 +17,17 @@ namespace HyperLinkUI.GUI.Scenes
     {
         // replace the object with a UIScene or something like that
         Dictionary<string, UIScene> SceneDictionary;
+        
         ContentManager SceneContentManager;
+        [LuaHide]
         public UIScene ActiveScene { get; private set; }
         private UIRoot activeSceneRoot;
         public string SceneFolderPath { get; set; }
 
         public string GlobalSettingsPath { get; set; }
+        [LuaHide]
         public GameSettings GlobalSettings { get; private set; }
+        [LuaHide]
         public GraphicsDevice GlobalGraphicsDeviceReference { get; private set; }
 
         public UISceneManager(GameSettings settings,string pathToSettings, ContentManager content, GraphicsDevice globalGraphicsDeviceReference)
@@ -39,7 +45,15 @@ namespace HyperLinkUI.GUI.Scenes
         public void CreateScenesFromFolder(string path)
         {
             SceneFolderPath = path;
-            List<string> files = Directory.EnumerateFiles(SceneFolderPath).ToList();
+            List<string> files;
+            try 
+            {
+                files = Directory.EnumerateFiles(SceneFolderPath).ToList();
+            } catch
+            {
+                Directory.CreateDirectory(SceneFolderPath);
+                files = Directory.EnumerateFiles(SceneFolderPath).ToList();
+            }
             List<string> validfiles =
                 (from f in files
                 where f.EndsWith(".scene.lua") 
@@ -51,7 +65,10 @@ namespace HyperLinkUI.GUI.Scenes
         }
         public void LoadScene(string name) 
         {
-            try { ActiveScene.Dispose(); } catch {  }
+            try 
+            {
+                ActiveScene.Dispose(); 
+            } catch {  }
             ActiveScene = SceneDictionary[name];
             activeSceneRoot = ActiveScene.Load(GlobalSettings, this);
         }
@@ -67,7 +84,7 @@ namespace HyperLinkUI.GUI.Scenes
         }
         public void Update() 
         {
-            activeSceneRoot.Update();
+             activeSceneRoot.Update();
         }
         public void Draw(SpriteBatch guiSpriteBatch) 
         {
@@ -87,13 +104,13 @@ namespace HyperLinkUI.GUI.Scenes
         public void UISceneManager_OnKeyReleased(object sender, KeyReleasedEventArgs e) 
         {
             try { ActiveScene.ScriptHandler.GetFunction("OnKeyReleased").Call(e); } 
-            catch (LuaScriptException ex) { Debug.WriteLine("Failed to execute function, exception thrown: " + ex.Message); }
+            catch (Exception ex) { Debug.WriteLine("Failed to execute function, exception thrown: " + ex.Message); }
         }
         public void UISceneManager_OnButtonClick(object sender, OnButtonClickEventArgs e) 
         {
             try { ActiveScene.ScriptHandler.GetFunction("OnButtonClick").Call((Button)sender, e); } 
-            catch (LuaScriptException ex) { Debug.WriteLine("Failed to execute function, exception thrown: " + ex.Message); }
+            catch (Exception ex) { Debug.WriteLine("Failed to execute function, exception thrown: " + ex.Message); }
         }
-
+        public void TestFunc() { Debug.WriteLine("TestFunc"); }
     }
 }

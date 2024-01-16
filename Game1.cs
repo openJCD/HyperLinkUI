@@ -65,7 +65,7 @@ namespace HyperLinkUI
 
             SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, GraphicsDevice);
             SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
-            SceneManager.LoadScene("mainmenu.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
+            SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
             base.Initialize();
         }
 
@@ -101,7 +101,7 @@ namespace HyperLinkUI
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
                 UIEventHandler.onHotReload(this, new HotReloadEventArgs() { graphicsDeviceReference = graphicsManager });// global event called so application can hot-reload itself
-                SceneManager.LoadScene("mainmenu.scene");
+                SceneManager.LoadScene("default.scene");
                 sw.Stop();
                 Debug.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
             }

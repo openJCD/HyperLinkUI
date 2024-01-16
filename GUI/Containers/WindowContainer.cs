@@ -21,6 +21,8 @@ namespace HyperLinkUI.GUI.Containers
         [XmlIgnore]
         new UIRoot parent;
 
+        public string Title { get => label.Text; set => label.Text = value; }
+
         [XmlElement("AnchorType")]
         public AnchorType AnchorType { get => Anchor.Type; }
         public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; protected set => anchor.AbsolutePosition = value; }
@@ -45,7 +47,7 @@ namespace HyperLinkUI.GUI.Containers
 
             headerbar = new Container(this, 0, 0, width, 20, AnchorType.TOPLEFT);
             close_button = new IconButton(headerbar, Settings.CloseButtonTexture, -2, 1, tag, EventType.CloseWindow, anchorType:AnchorType.TOPRIGHT);
-            label = new TextLabel(headerbar, DebugLabel, Settings.SecondarySpriteFont, 0,0, AnchorType.CENTRE);
+            label = new TextLabel(headerbar, DebugLabel, Settings.SecondarySpriteFont, 7, 3, AnchorType.TOPLEFT);
             localOrigin = new Vector2(Width / 2, Height / 2);
         }
         public void WindowContainer_OnButtonClick (Object sender, OnButtonClickEventArgs e)
@@ -100,6 +102,11 @@ namespace HyperLinkUI.GUI.Containers
                 return;
             guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Black);
             base.Draw(guiSpriteBatch);
+        }
+        public void SetTitle(string t)
+        {
+            Title = t;
+            
         }
     }
 }
