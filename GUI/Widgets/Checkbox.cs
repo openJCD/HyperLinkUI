@@ -32,9 +32,9 @@ namespace HyperLinkUI.GUI.Widgets
             LocalX = relativex;
             LocalY = relativey;
             container = new Container(parent, relativex, relativey, 10, 10, anchorType, "Checkbox");
-            label = new TextLabel(container, text, relativex, relativey, anchorType);
+            label = new TextLabel(container, text, 0, 0, AnchorType.CENTRE);
             container.Width = label.Width + btnwidth;
-            container.Height = label.Height;
+            container.Height = btnheight;
             container.DrawBorder = false;
             Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, Width, Height);
             BoundingRectangle = container.BoundingRectangle;
@@ -43,7 +43,7 @@ namespace HyperLinkUI.GUI.Widgets
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
             container.Draw(guiSpriteBatch);
-            label.Draw(guiSpriteBatch);
+            //label.Draw(guiSpriteBatch);
             guiSpriteBatch.DrawRectangle(BoundingRectangle, Color.Green);
             if (IsUnderMouseFocus)
                 guiSpriteBatch.DrawRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(4)), Settings.WidgetBorderColor);

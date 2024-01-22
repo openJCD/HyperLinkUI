@@ -19,8 +19,6 @@ namespace HyperLinkUI.GUI.Widgets
         [XmlElement]
         public string Text { get=>text; set=>text=value; }
 
-
-        
         public TextLabel () { }
 
         public TextLabel(Container parent, string text, SpriteFont spriteFont, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT) : base(parent)

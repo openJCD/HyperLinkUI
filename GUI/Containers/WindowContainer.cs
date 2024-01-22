@@ -21,6 +21,8 @@ namespace HyperLinkUI.GUI.Containers
         [XmlIgnore]
         new UIRoot parent;
 
+        public string Title { get => label.Text; set => label.Text = value; }
+
         [XmlElement("AnchorType")]
         public AnchorType AnchorType { get => Anchor.Type; }
         public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; protected set => anchor.AbsolutePosition = value; }
@@ -104,6 +106,11 @@ namespace HyperLinkUI.GUI.Containers
                 return;
             guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Black);
             base.Draw(guiSpriteBatch);
+        }
+        public void SetTitle(string t)
+        {
+            Title = t;
+            
         }
 
         public void ToggleCloseButtonEnabled ()

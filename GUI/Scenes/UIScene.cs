@@ -9,6 +9,9 @@ using HyperLinkUI.GUI.Widgets;
 using System;
 using NLua.Exceptions;
 using System.Diagnostics;
+using NLua.Exceptions;
+using HyperLinkUI.GUI.Widgets;
+using System;
 
 namespace HyperLinkUI.GUI.Scenes
 {
@@ -36,30 +39,37 @@ namespace HyperLinkUI.GUI.Scenes
         /// <param name="contentManager">Xna ContentManager used to load all scene stuff under </param>
         public UIRoot Load(GameSettings settings, UISceneManager sceneManager) 
         {
+            // init and re-init instances 
             SceneRoot = new UIRoot(settings);
             ScriptHandler = new Lua();
             ScriptCaller = ScriptHandler.LoadFile(scenefilepath);
-            
-            ScriptStringData = File.ReadAllText(scenefilepath);
+
+            // set up lua globals
             ScriptHandler["scene_manager"] = sceneManager;
             ScriptHandler["scene_root"] = SceneRoot;
             ScriptHandler["game_graphics"] = sceneManager.GlobalGraphicsDeviceManager;
             ScriptHandler["global_settings"] = sceneManager.GlobalSettings;
-            new UISceneAPI().ExposeTo(ScriptHandler);
+
+            // expose API to lua instance
+            new UISceneAPI().ExposeTo(ScriptHandler); 
+
+            // actually call the script itself
+            ScriptCaller.Call();
+            // call required "Init()" function
             try
             {
-                ScriptCaller.Call();
                 ScriptHandler.GetFunction("Init").Call();
-            } catch (LuaScriptException e)
-            {
-                var ew = new WindowContainer(SceneRoot, 0, 0, 200, 200, "error_dialog", "There was an error");
-                var em = new TextLabel(ew, e.Message, 0, 0, Interfaces.AnchorType.CENTRE);
-                Debug.WriteLine(ScriptStringData);
+            } catch (Exception ex) 
+            { 
+                var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, 0, "There was an error...", Interfaces.AnchorType.CENTRE);
+                var dtl = new TextLabel(dc, ex.Message, 0, 0, Interfaces.AnchorType.CENTRE);
             }
             return SceneRoot;
         }
         public void Dispose()
         {
+            ScriptCaller.Dispose();
+            ScriptHandler.Close();
             SceneRoot.Dispose();
 
             /////// DANGER ZONE //////

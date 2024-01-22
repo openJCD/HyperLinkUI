@@ -25,6 +25,8 @@ namespace HyperLinkUI.GUI.Scenes
 
             lua.RegisterFunction("new_plain_button", GetType().GetMethod("newPlainButton"));
 
+            lua.RegisterFunction("new_checkbox", GetType().GetMethod("newCheckbox"));
+
             lua.RegisterFunction("print_vs22_debug_message", GetType().GetMethod("print_vs22_debug_message"));
             lua.RegisterFunction("load_new_scene", GetType().GetMethod("loadNewScene"));
         }
@@ -58,6 +60,12 @@ namespace HyperLinkUI.GUI.Scenes
         {
             return new Button(parent, text, x, y, width, height, GetEnumFromString<AnchorType>(anchor), GetEnumFromString<EventType>(etype), tag);
         }
+
+        public static Checkbox newCheckbox(Container parent, string text, int x, int y, int btnsizex, int btnsizey, string anchor, int tag) 
+        {
+            return new Checkbox(parent, text, x, y, tag, btnsizex, btnsizey, GetEnumFromString<AnchorType>(anchor));
+        }
+
         public static void print_vs22_debug_message(string msg) 
         {
             Debug.WriteLine(msg);
