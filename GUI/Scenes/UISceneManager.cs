@@ -1,8 +1,10 @@
 ﻿using HyperLinkUI.GUI.Containers;
 using HyperLinkUI.GUI.Data_Handlers;
 using HyperLinkUI.GUI.Widgets;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using NLua;
 using NLua.Exceptions;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,15 +18,23 @@ namespace HyperLinkUI.GUI.Scenes
         // replace the object with a UIScene or something like that
         Dictionary<string, UIScene> SceneDictionary;
         ContentManager SceneContentManager;
+        [LuaHide]
         public UIScene ActiveScene { get; private set; }
+        [LuaHide]
         private UIRoot activeSceneRoot;
+
         public string SceneFolderPath { get; set; }
 
         public string GlobalSettingsPath { get; set; }
+        [LuaHide]
         public GameSettings GlobalSettings { get; private set; }
+        [LuaHide]
         public GraphicsDevice GlobalGraphicsDeviceReference { get; private set; }
 
-        public UISceneManager(GameSettings settings,string pathToSettings, ContentManager content, GraphicsDevice globalGraphicsDeviceReference)
+        [LuaHide]
+        public GraphicsDeviceManager GlobalGraphicsDeviceManager { get; private set; }
+
+        public UISceneManager(GameSettings settings,string pathToSettings, ContentManager content, GraphicsDeviceManager globalGraphicsReference)
         {
             GlobalSettingsPath = pathToSettings;
             SceneContentManager = content;
@@ -33,7 +43,11 @@ namespace HyperLinkUI.GUI.Scenes
             UIEventHandler.OnKeyReleased += UISceneManager_OnKeyReleased;
             UIEventHandler.OnButtonClick += UISceneManager_OnButtonClick;
             SceneDictionary = new Dictionary<string, UIScene>();
-            GlobalGraphicsDeviceReference = globalGraphicsDeviceReference;
+            GlobalGraphicsDeviceReference = globalGraphicsReference.GraphicsDevice;
+            GlobalGraphicsDeviceManager = globalGraphicsReference;
+            GlobalGraphicsDeviceManager.PreferredBackBufferWidth = settings.WindowWidth;
+            GlobalGraphicsDeviceManager.PreferredBackBufferHeight = settings.WindowHeight;
+            GlobalGraphicsDeviceManager.ApplyChanges();
         }
 
         public void CreateScenesFromFolder(string path)
@@ -51,13 +65,16 @@ namespace HyperLinkUI.GUI.Scenes
         }
         public void LoadScene(string name) 
         {
-            try { ActiveScene.Dispose(); } catch {  }
+            ActiveScene?.Dispose();
             ActiveScene = SceneDictionary[name];
+
             activeSceneRoot = ActiveScene.Load(GlobalSettings, this);
+
         }
         public void LoadScene(UIScene scene)
         {
-            try { ActiveScene.Dispose(); } catch {  }
+            if (ActiveScene != null)
+                ActiveScene.Dispose();
             ActiveScene = SceneDictionary[scene.Name];
             activeSceneRoot = ActiveScene.Load(GlobalSettings, this);
         }
@@ -67,6 +84,8 @@ namespace HyperLinkUI.GUI.Scenes
         }
         public void Update() 
         {
+            try { ActiveScene.ScriptHandler.GetFunction("OnUIUpdate").Call(); } 
+            catch { } 
             activeSceneRoot.Update();
         }
         public void Draw(SpriteBatch guiSpriteBatch) 
@@ -94,6 +113,5 @@ namespace HyperLinkUI.GUI.Scenes
             try { ActiveScene.ScriptHandler.GetFunction("OnButtonClick").Call((Button)sender, e); } 
             catch (LuaScriptException ex) { Debug.WriteLine("Failed to execute function, exception thrown: " + ex.Message); }
         }
-
     }
 }

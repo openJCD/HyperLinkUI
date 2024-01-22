@@ -12,10 +12,13 @@ namespace HyperLinkUI.GUI.Widgets
 {
     public class IconButton : ImageButton
     {
-        public IconButton (Container parent, Texture2D texture, int relativex, int relativey, int tag, EventType eventType, AnchorType anchorType = AnchorType.TOPLEFT) : base (parent, texture, relativex, relativey, tag, eventType, anchorType) { }
+        public IconButton (Container parent, Texture2D texture, int relativex, int relativey, string tag, EventType eventType, AnchorType anchorType = AnchorType.TOPLEFT) : base (parent, texture, relativex, relativey, tag, eventType, anchorType) { }
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
-            texturesheet.Draw(guiSpriteBatch, AbsolutePosition);
+            if (Enabled)
+                texturesheet.Draw(guiSpriteBatch, AbsolutePosition);
+            
         }
+        
     }
 }

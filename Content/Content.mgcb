@@ -21,7 +21,7 @@
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Color
-/build:GUI/Fonts/CPMono_v07_Light.spritefont
+/build:GUI/Fonts/CPMono_v07_Light.spritefont;GUI/Fonts/secondary.spritefont
 
 #begin GUI/Fonts/CPMono_v07_Plain.otf
 /copy:GUI/Fonts/CPMono_v07_Plain.otf
@@ -47,7 +47,14 @@
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=NoChange
-/build:GUI/Fonts/RobotoMono.spritefont
+/build:GUI/Fonts/RobotoMono.spritefont;GUI/Fonts/secondary.spritefont
+
+#begin GUI/Fonts/RobotoMono.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:GUI/Fonts/RobotoMono.spritefont;GUI/Fonts/primary.spritefont
 
 #begin GUI/Fonts/SometypeMono-Medium.spritefont
 /importer:FontDescriptionImporter

@@ -11,7 +11,7 @@ namespace HyperLinkUI.GUI.Containers
     public class FormContainer : Container 
     {
         public List<FormItem> FormItems;
-        public FormContainer(Container parent, int tag) : base(parent) 
+        public FormContainer(Container parent, string tag) : base(parent) 
         {
             FormItems = new List<FormItem>();
             Tag = tag;

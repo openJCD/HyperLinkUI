@@ -31,7 +31,7 @@ namespace HyperLinkUI.GUI.Widgets
         /// <param name="tag">Tag that links this button to other objects in the scene</param>
         /// <param name="text">Text to use for the button</param>
         /// <param name="anchorType">Type of anchor to use - relative positon based on TOPLEFT, TOPRIGHT, etc. of the object's parent</param>
-        public ImageButton(Container parent, Texture2D texture, int relativex, int relativey, int tag, EventType eventType, string text = "ImageButton!", AnchorType anchorType = AnchorType.TOPLEFT) 
+        public ImageButton(Container parent, Texture2D texture, int relativex, int relativey, string tag, EventType eventType, string text = "ImageButton!", AnchorType anchorType = AnchorType.TOPLEFT) 
         {
             this.texture = texture;
             Parent = parent;
@@ -51,7 +51,7 @@ namespace HyperLinkUI.GUI.Widgets
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
 
-        public ImageButton(Container parent, Texture2D texture, int relativex, int relativey, int tag, EventType eventType, AnchorType anchorType = AnchorType.TOPLEFT) 
+        public ImageButton(Container parent, Texture2D texture, int relativex, int relativey, string tag, EventType eventType, AnchorType anchorType = AnchorType.TOPLEFT) 
         {
             this.texture = texture;
             parent.TransferWidget(this);
@@ -71,7 +71,7 @@ namespace HyperLinkUI.GUI.Widgets
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
 
-        public ImageButton (Container parent, int relativex, int relativey, int tag, EventType eventType, AnchorType anchorType) : this (parent, parent.Settings.LargeButtonTexture, relativex, relativey, tag, eventType, anchorType) { }
+        public ImageButton (Container parent, int relativex, int relativey, string tag, EventType eventType, AnchorType anchorType) : this (parent, parent.Settings.LargeButtonTexture, relativex, relativey, tag, eventType, anchorType) { }
         public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);

@@ -79,7 +79,7 @@ namespace HyperLinkUI.GUI.Containers
         public bool IsOpen { get; set; } = true;
         public bool DrawBorder { get; set; } = true;
 
-        public int Tag { get; protected set; }
+        public string Tag { get; protected set; }
         #endregion
         public bool IsSticky { get; set; } = true;
 
@@ -154,11 +154,17 @@ namespace HyperLinkUI.GUI.Containers
         }
         public virtual void Update(MouseState oldState, MouseState newState)
         {
-            if (IsSticky)
-                 Anchor = new AnchorCoord(LocalX, LocalY, Anchor.Type, Parent, Width, Height);
-            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));            
             if (!IsOpen)
                 return;
+            
+            if (IsSticky)
+                 Anchor = new AnchorCoord(LocalX, LocalY, Anchor.Type, Parent, Width, Height);
+            
+            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));            
+            
+            if (BoundingRectangle.Contains(newState.Position))
+                isUnderMouseFocus = true;
+            else isUnderMouseFocus = false; 
 
             foreach (var container in child_containers.ToList())
                 container.Update(oldState, newState);

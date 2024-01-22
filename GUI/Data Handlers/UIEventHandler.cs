@@ -9,7 +9,7 @@ namespace HyperLinkUI.GUI.Data_Handlers
 {
     #nullable enable
     // classes for EventArgs
-    public class OnButtonClickEventArgs : EventArgs { public EventType? event_type; public int? tag; }
+    public class OnButtonClickEventArgs : EventArgs { public EventType? event_type; public string? tag; }
     public class HotReloadEventArgs : EventArgs { public GraphicsDeviceManager graphicsDeviceReference; }
     public class KeyReleasedEventArgs : EventArgs 
     {
@@ -27,7 +27,7 @@ namespace HyperLinkUI.GUI.Data_Handlers
         {
             OnKeyReleased?.Invoke(sender, e); 
         }
-        public static void onHotReload (object sender, HotReloadEventArgs e)
+        public static void onHotReload(object sender, HotReloadEventArgs e)
         {
             OnHotReload?.Invoke(sender, e);
         } 

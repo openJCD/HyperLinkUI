@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace HyperLinkUI
 {
-    public static class Primitives2D
+    internal static class Primitives2D
     {
 
         #region Private Members

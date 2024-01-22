@@ -15,7 +15,7 @@ namespace HyperLinkUI.GUI.Containers
     {
         [XmlIgnore]
         private Container headerbar;
-        private Widget close_button;
+        private IconButton close_button;
         private TextLabel label;
 
         [XmlIgnore]
@@ -25,11 +25,13 @@ namespace HyperLinkUI.GUI.Containers
         public AnchorType AnchorType { get => Anchor.Type; }
         public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; protected set => anchor.AbsolutePosition = value; }
 
+        private Rectangle dragZone;
+
         public WindowContainer ()
         {
 
         }
-        public WindowContainer (UIRoot parent, int relx, int rely, int width, int height, int tag, string title = "window", AnchorType anchorType=AnchorType.CENTRE) : base(parent) 
+        public WindowContainer (UIRoot parent, int relx, int rely, int width, int height, string tag, string title = "window", AnchorType anchorType=AnchorType.CENTRE) : base(parent) 
         {
             this.parent = parent;
             UIEventHandler.OnButtonClick += WindowContainer_OnButtonClick;
@@ -46,6 +48,7 @@ namespace HyperLinkUI.GUI.Containers
             headerbar = new Container(this, 0, 0, width, 20, AnchorType.TOPLEFT);
             close_button = new IconButton(headerbar, Settings.CloseButtonTexture, -2, 1, tag, EventType.CloseWindow, anchorType:AnchorType.TOPRIGHT);
             label = new TextLabel(headerbar, DebugLabel, Settings.SecondarySpriteFont, 0,0, AnchorType.CENTRE);
+            dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size - new Point(close_button.Width, 0));
             localOrigin = new Vector2(Width / 2, Height / 2);
         }
         public void WindowContainer_OnButtonClick (Object sender, OnButtonClickEventArgs e)
@@ -70,7 +73,9 @@ namespace HyperLinkUI.GUI.Containers
         }
         public override void Update (MouseState oldState, MouseState newState)
         {
-            if (headerbar.BoundingRectangle.Contains(oldState.Position))
+            dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size - new Point(close_button.Width, 0));
+            List<Container> containers_above_me = parent.GetContainersAbove(this);
+            if (dragZone.Contains(oldState.Position))
             {                
                 if (oldState.LeftButton == ButtonState.Pressed)
                 {
@@ -83,7 +88,6 @@ namespace HyperLinkUI.GUI.Containers
                     }
                 }
             }
-            List<Container> containers_above_me = parent.GetContainersAbove(this);
             foreach (Container window in containers_above_me)
             {
                 if (window.BoundingRectangle.Intersects(this.BoundingRectangle) && window != this)
@@ -100,6 +104,11 @@ namespace HyperLinkUI.GUI.Containers
                 return;
             guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Black);
             base.Draw(guiSpriteBatch);
+        }
+
+        public void ToggleCloseButtonEnabled ()
+        {
+            close_button.Enabled = !close_button.Enabled;
         }
     }
 }

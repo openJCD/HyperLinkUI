@@ -37,7 +37,7 @@ namespace HyperLinkUI.GUI.Scenes
             return new Container(parent, x, y, width, height, GetEnumFromString<AnchorType>(anchor));
         }
 
-        public static WindowContainer newWindowContainer(UIRoot parent, string title, int x, int y, int width, int height, string anchor, int tag) 
+        public static WindowContainer newWindowContainer(UIRoot parent, string title, int x, int y, int width, int height, string anchor, string tag) 
         {
             return new WindowContainer(parent, x, y, width, height, tag, title, GetEnumFromString<AnchorType>(anchor));
         }
@@ -54,7 +54,7 @@ namespace HyperLinkUI.GUI.Scenes
         {
             manager.LoadScene(scenename);
         }
-        public static Button newPlainButton(Container parent, string text, int x, int y, int width, int height, string anchor, string etype, int tag) 
+        public static Button newPlainButton(Container parent, string text, int x, int y, int width, int height, string anchor, string etype, string tag) 
         {
             return new Button(parent, text, x, y, width, height, GetEnumFromString<AnchorType>(anchor), GetEnumFromString<EventType>(etype), tag);
         }

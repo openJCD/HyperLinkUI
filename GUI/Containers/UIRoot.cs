@@ -97,10 +97,10 @@ namespace HyperLinkUI.GUI.Containers
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
+            guiSpriteBatch.DrawCircle(oldmousestate.Position.ToVector2(), 5, 3, Color.Purple);
             foreach (Container container in ChildContainers)
                 container.Draw(guiSpriteBatch);
             guiSpriteBatch.DrawCircle(newmousestate.Position.ToVector2(), 5, 3, Color.Green);
-            guiSpriteBatch.DrawCircle(oldmousestate.Position.ToVector2(), 5, 3, Color.Purple);
         }
 
         public void AddContainer(Container containerToAdd)
@@ -153,10 +153,10 @@ namespace HyperLinkUI.GUI.Containers
 
         public void Dispose() 
         {
-            base_containers.ForEach(c => c.Dispose());
+            base_containers.ToList().ForEach(c => c.Dispose());
             base_containers.Clear();
             Width = 640; Height = 480;//reset to default values
-            Settings.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
+            //Settings.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
             // ALSO remember to unsubscribe from events if applicable in future!
         }
     }

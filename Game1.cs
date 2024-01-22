@@ -12,7 +12,7 @@ using HyperLinkUI.GUI.Scenes;
 
 namespace HyperLinkUI
 {
-    public class Game1 : Game
+    internal class Game1 : Game
     {
         //CONSTANTS
         public const string UI_SAVES_DIRECTORY = "Content/GUI/Saves/";
@@ -34,7 +34,7 @@ namespace HyperLinkUI
             Content.RootDirectory = "Content";
             graphicsManager = new GraphicsDeviceManager(this);
             UIContentManager = new ContentManager(Content.ServiceProvider);
-            UIContentManager.RootDirectory = "Content/GUI";
+            UIContentManager.RootDirectory = "Content/GUI/";
             IsMouseVisible = true;
         }
 
@@ -45,27 +45,16 @@ namespace HyperLinkUI
             // test for button click events
             UIEventHandler.OnButtonClick += Game1_HandleOnButtonClick;
             // check if the Loader throws an exception
-            
-            try
-            {
-                Settings = Settings.Load(UI_SAVES_DIRECTORY, "settings.xml");
-            }
-            catch
-            {
-                Settings = new GameSettings();
-                Settings.Save(UI_SAVES_DIRECTORY, "settings.xml");
-                Settings = Settings.Load(UI_SAVES_DIRECTORY, "settings.xml");
-            }
 
+            Settings = GameSettings.TryLoadSettings(UI_SAVES_DIRECTORY, "/settings.xml");
             Settings.LoadAllContent(UIContentManager);
+            
             Window.Title = Settings.WindowTitle;
-            graphicsManager.PreferredBackBufferWidth = Settings.WindowWidth;
-            graphicsManager.PreferredBackBufferHeight = Settings.WindowHeight;
             graphicsManager.ApplyChanges();
 
-            SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, GraphicsDevice);
+            SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, graphicsManager);
             SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
-            SceneManager.LoadScene("mainmenu.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
+            SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
             base.Initialize();
         }
 
@@ -90,10 +79,7 @@ namespace HyperLinkUI
         protected override void Update(GameTime gameTime)
         {
             KeyboardState newKeyboardState = Keyboard.GetState();
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            SceneManager.Update();
+            if (IsActive) SceneManager.Update();
             // check for f5, if so hot reload settings
             if (oldKeyboardState.IsKeyUp(Keys.F5) && newKeyboardState.IsKeyDown(Keys.F5))
             {
@@ -101,7 +87,8 @@ namespace HyperLinkUI
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
                 UIEventHandler.onHotReload(this, new HotReloadEventArgs() { graphicsDeviceReference = graphicsManager });// global event called so application can hot-reload itself
-                SceneManager.LoadScene("mainmenu.scene");
+                Settings = GameSettings.TryLoadSettings(UI_SAVES_DIRECTORY, "/settings.xml");
+                SceneManager.LoadScene("default.scene");
                 sw.Stop();
                 Debug.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
             }
@@ -113,7 +100,7 @@ namespace HyperLinkUI
             GraphicsDevice.Clear(Color.Black);
             UISpriteBatch.Begin(SpriteSortMode.Deferred);
             Window.Title = Settings.WindowTitle + ", FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
-            SceneManager.Draw(UISpriteBatch );
+            SceneManager.Draw(UISpriteBatch);
             UISpriteBatch.End();
             base.Draw(gameTime);
         }

@@ -23,7 +23,7 @@ namespace HyperLinkUI.GUI.Containers
 
         Model testmodel;
         public Texture3D modelTexture { get; set; }
-        public ViewPortWindow (UIRoot parent, int relx, int rely, int width, int height, int tag, Model testmodel, GraphicsDevice graphics, string title = "Viewport Window", AnchorType anchorType = AnchorType.TOPLEFT) :base (parent, relx, rely, width, height, tag, title, anchorType)
+        public ViewPortWindow (UIRoot parent, int relx, int rely, int width, int height, string tag, Model testmodel, GraphicsDevice graphics, string title = "Viewport Window", AnchorType anchorType = AnchorType.TOPLEFT) :base (parent, relx, rely, width, height, tag, title, anchorType)
         {
 
             this.testmodel = testmodel;

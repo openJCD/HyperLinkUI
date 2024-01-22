@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using FontStashSharp;
+using NLua;
+using System.IO;
 
 namespace HyperLinkUI.GUI.Data_Handlers
 {
@@ -13,7 +16,10 @@ namespace HyperLinkUI.GUI.Data_Handlers
     {
 
         [XmlIgnore]
+        [LuaHide]
         public ContentManager ContentManager { get; set; }
+
+        public string FullFilePath;
 
         #region window settings
         [XmlElement("WindowTitle")]
@@ -66,14 +72,13 @@ namespace HyperLinkUI.GUI.Data_Handlers
 
         [XmlElement("WindowBackgroundTexturePath")]
         public string WindowBackgroundTexturePath { get; set; }
-        [XmlIgnore]
-        public Texture2D WindowBackgroundTexture { get; set; }
-        
         public string InactiveWindowTexturePath { get; set; }
         [XmlIgnore]
         public Texture2D InactiveWindowTexture { get; set; }
         #endregion
-
+        /// <summary>
+        /// Set up GameSettings with defaults 
+        /// </summary>
         public GameSettings()
         {
             BorderColor = new Color(Color.Red, 255f);
@@ -84,22 +89,20 @@ namespace HyperLinkUI.GUI.Data_Handlers
             WindowWidth = 640;
             WindowHeight = 480;
             WindowTitle = "Window";
-            PrimarySpriteFontPath = "Fonts/RobotoMono";
-            SecondarySpriteFontPath = "Fonts/CPMono_v07_Light";
-            LargeButtonTexturePath = "Textures/ImageButton/btn_large";
-            CloseButtonTexturePath = "Textures/ImageButton/btn_close";
-            WindowBackgroundTexturePath = "Textures/window_bg";
-            InactiveWindowTexturePath = "Textures/Window/inactive";
+            PrimarySpriteFontPath = @"Fonts/primary";
+            SecondarySpriteFontPath = @"Fonts/secondary";
+            LargeButtonTexturePath = @"Textures/Button/btn_large";
+            CloseButtonTexturePath = @"Textures/Button/btn_close";
+            InactiveWindowTexturePath = @"Textures/Window/inactive";
         }
 
         public void LoadAllContent (ContentManager manager)
         {
             ContentManager = manager;
-            PrimarySpriteFont = ContentManager.Load<SpriteFont>(PrimarySpriteFontPath);
+            PrimarySpriteFont = ContentManager.Load<SpriteFont>(PrimarySpriteFontPath); 
             SecondarySpriteFont = ContentManager.Load<SpriteFont>(SecondarySpriteFontPath);
             LargeButtonTexture = ContentManager.Load<Texture2D>(LargeButtonTexturePath);
             CloseButtonTexture = ContentManager.Load<Texture2D>(CloseButtonTexturePath);
-            WindowBackgroundTexture = ContentManager.Load<Texture2D>(WindowBackgroundTexturePath);
             InactiveWindowTexture = ContentManager.Load<Texture2D>(InactiveWindowTexturePath);
         }
 
@@ -113,6 +116,18 @@ namespace HyperLinkUI.GUI.Data_Handlers
         public void Dispose() 
         {
             ContentManager.Unload();
+        }
+        /// <summary>
+        /// Try to load a settings file from correctly formatted XML. If it fails, create a file from defaults and try to load from it.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="filename"></param>
+        public static GameSettings TryLoadSettings(string path, string filename)
+        {
+            GameSettings returnvalue = new GameSettings();
+            try { returnvalue = returnvalue.Load(path, filename); }
+            catch { returnvalue = new GameSettings(); returnvalue.Save(path, filename); returnvalue.Load(path, filename); }
+            return returnvalue;
         }
     }
 }

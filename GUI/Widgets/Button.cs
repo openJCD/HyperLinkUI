@@ -4,6 +4,7 @@ using HyperLinkUI.GUI.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics.Eventing.Reader;
 
 namespace HyperLinkUI.GUI.Widgets
 {
@@ -11,15 +12,18 @@ namespace HyperLinkUI.GUI.Widgets
     {
         protected SpriteFont labelfont;
         protected EventType event_type;
+        protected bool clicked;
+        protected float fillMultiplier;
+        public bool Enabled { get; set; } = true;
         
         public string Text { get; set; }
 
-        public int Tag { get; set; }
+        public string Tag { get; set; }
         
         public Button() 
         {
         }
-        public Button(Container parent, string text, int x, int y, int width, int height, AnchorType anchorType, EventType etype, int tag) : base(parent)
+        public Button(Container parent, string text, int x, int y, int width, int height, AnchorType anchorType, EventType etype, string tag) : base(parent)
         {
             LocalX = x; LocalY = y;
             Width = width; Height = height;
@@ -33,25 +37,26 @@ namespace HyperLinkUI.GUI.Widgets
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
             guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
-            if (isUnderMouseFocus) 
-            {
-                guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Multiply(Settings.WidgetFillColor, 0.5f)); 
-            } else
-            {
-                guiSpriteBatch.FillRectangle(BoundingRectangle,Color.Multiply(Settings.WidgetFillColor, 0.1f));
-            }
-            guiSpriteBatch.DrawString(labelfont, Text, (AbsolutePosition + BoundingRectangle.Size.ToVector2()/2), Settings.TextColor);
+
+            guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Multiply(Settings.WidgetFillColor, fillMultiplier)); 
+            guiSpriteBatch.DrawString(labelfont, Text, (AbsolutePosition + BoundingRectangle.Size.ToVector2()/2-labelfont.MeasureString(Text)/2), Settings.TextColor);
             //base.Draw(guiSpriteBatch);
         }
         public override void Update(MouseState oldState, MouseState newState)
         {
+            if (!Enabled)
+                return;
             base.Update(oldState, newState);
+            
+            
             if (BoundingRectangle.Contains(newState.Position))
             {
                 isUnderMouseFocus = true;
-
+                fillMultiplier = 0.45f;
                 if (oldState.LeftButton == ButtonState.Pressed)
                 {
+                    clicked = true;
+                    fillMultiplier = 0f;
                     if (newState.LeftButton == ButtonState.Released)
                     {
                         UIEventHandler.onButtonClick(this, new OnButtonClickEventArgs { event_type = event_type, tag = Tag });
@@ -60,7 +65,9 @@ namespace HyperLinkUI.GUI.Widgets
             }
             else
             {
+                clicked = false;
                 isUnderMouseFocus = false;
+                fillMultiplier = 0.15f;
             }
         }
     }
