@@ -18,11 +18,14 @@ namespace HyperLinkUI
         public const string UI_SAVES_DIRECTORY = "Content/GUI/Saves/";
         //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
+        
         private SpriteBatch UISpriteBatch;
+        private SpriteBatch GameSpriteBatch;
+
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
         public static ContentManager UIContentManager; //manager for fonts and shit
-
+        private Texture2D MAP;
         UISceneManager SceneManager;
 
         GameSettings Settings;
@@ -50,9 +53,10 @@ namespace HyperLinkUI
             Settings.LoadAllContent(UIContentManager);
             
             Window.Title = Settings.WindowTitle;
+            Window.AllowUserResizing = true;
             graphicsManager.ApplyChanges();
 
-            SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, graphicsManager);
+            SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, graphicsManager, Window);
             SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
             SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
             base.Initialize();
@@ -71,8 +75,9 @@ namespace HyperLinkUI
         protected override void LoadContent()
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
+            GameSpriteBatch = new SpriteBatch(GraphicsDevice);
             screenRoot = new UIRoot(Settings);
-
+            MAP = Content.Load<Texture2D>("Game/WORLDMAP");
             Container debugtextcontainer = new Container(screenRoot, -10, -10, 500, 30, AnchorType.BOTTOMRIGHT, "DebugContainer") { IsSticky = true };
             debug = new TextLabel(debugtextcontainer, "Hello Monogame!", Settings.PrimarySpriteFont, 0, -5, anchorType: AnchorType.BOTTOMLEFT);
         }
@@ -98,8 +103,11 @@ namespace HyperLinkUI
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+            GameSpriteBatch.Begin();
+            GameSpriteBatch.Draw(MAP, new Rectangle(MAP.Bounds.Location, new Point(graphicsManager.PreferredBackBufferWidth, graphicsManager.PreferredBackBufferHeight)), Color.AliceBlue);
+            GameSpriteBatch.End();
             UISpriteBatch.Begin(SpriteSortMode.Deferred);
-            Window.Title = Settings.WindowTitle + ", FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
+            Window.Title = "FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
             SceneManager.Draw(UISpriteBatch);
             UISpriteBatch.End();
             base.Draw(gameTime);

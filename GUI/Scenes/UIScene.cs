@@ -61,7 +61,7 @@ namespace HyperLinkUI.GUI.Scenes
                 ScriptHandler.GetFunction("Init").Call();
             } catch (Exception ex) 
             { 
-                var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, 0, "There was an error...", Interfaces.AnchorType.CENTRE);
+                var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, "dialog_error", "There was an error...", Interfaces.AnchorType.CENTRE);
                 var dtl = new TextLabel(dc, ex.Message, 0, 0, Interfaces.AnchorType.CENTRE);
             }
             return SceneRoot;
@@ -69,8 +69,6 @@ namespace HyperLinkUI.GUI.Scenes
         public void Dispose()
         {
             ScriptCaller.Dispose();
-            ScriptHandler.Close();
-            SceneRoot.Dispose();
 
             /////// DANGER ZONE //////
             // ScriptHandler.Close();

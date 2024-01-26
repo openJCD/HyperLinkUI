@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
+using Button = HyperLinkUI.GUI.Widgets.Button;
 
 namespace HyperLinkUI.GUI.Scenes
 {
@@ -32,18 +34,22 @@ namespace HyperLinkUI.GUI.Scenes
         public GameSettings GlobalSettings { get; private set; }
         [LuaHide]
         public GraphicsDevice GlobalGraphicsDeviceReference { get; private set; }
+        
+        public GameWindow GlobalWindowReference { get; private set; }
 
         [LuaHide]
         public GraphicsDeviceManager GlobalGraphicsDeviceManager { get; private set; }
 
-        public UISceneManager(GameSettings settings,string pathToSettings, ContentManager content, GraphicsDeviceManager globalGraphicsReference)
+        public UISceneManager(GameSettings settings,string pathToSettings, ContentManager content, GraphicsDeviceManager globalGraphicsReference, GameWindow window)
         {
             GlobalSettingsPath = pathToSettings;
             SceneContentManager = content;
             GlobalSettings = settings;
+            GlobalWindowReference = window;
             UIEventHandler.OnHotReload += UISceneManager_OnHotReload;
             UIEventHandler.OnKeyReleased += UISceneManager_OnKeyReleased;
             UIEventHandler.OnButtonClick += UISceneManager_OnButtonClick;
+            window.ClientSizeChanged += UISceneManager_OnResize;
             SceneDictionary = new Dictionary<string, UIScene>();
             GlobalGraphicsDeviceReference = globalGraphicsReference.GraphicsDevice;
             GlobalGraphicsDeviceManager = globalGraphicsReference;
@@ -77,8 +83,8 @@ namespace HyperLinkUI.GUI.Scenes
         {
             ActiveScene?.Dispose();
             ActiveScene = SceneDictionary[name];
-
             activeSceneRoot = ActiveScene.Load(GlobalSettings, this);
+            activeSceneRoot.OnWindowResize(GlobalWindowReference);
 
         }
         public void LoadScene(UIScene scene)
@@ -87,6 +93,7 @@ namespace HyperLinkUI.GUI.Scenes
                 ActiveScene.Dispose();
             ActiveScene = SceneDictionary[scene.Name];
             activeSceneRoot = ActiveScene.Load(GlobalSettings, this);
+            activeSceneRoot.OnWindowResize(GlobalWindowReference);
         }
         public void AddSceneToList(UIScene scene) 
         {
@@ -94,13 +101,16 @@ namespace HyperLinkUI.GUI.Scenes
         }
         public void Update() 
         {
-            try { ActiveScene.ScriptHandler.GetFunction("OnUIUpdate").Call(); } 
-            catch { } 
+            TryLuaFunction("OnUIUpdate", null);
             activeSceneRoot.Update();
         }
         public void Draw(SpriteBatch guiSpriteBatch) 
         {
             activeSceneRoot.Draw(guiSpriteBatch);
+        }
+        public void UISceneManager_OnResize(object sender, EventArgs e) 
+        {
+            activeSceneRoot.OnWindowResize(GlobalWindowReference);
         }
         public void UISceneManager_OnHotReload(object sender, HotReloadEventArgs e)
         {
@@ -112,6 +122,7 @@ namespace HyperLinkUI.GUI.Scenes
             e.graphicsDeviceReference.PreferredBackBufferWidth = GlobalSettings.WindowWidth;
             e.graphicsDeviceReference.PreferredBackBufferHeight = GlobalSettings.WindowHeight;
             e.graphicsDeviceReference.ApplyChanges();
+            GlobalWindowReference.Title = GlobalSettings.WindowTitle;
         }
         public void UISceneManager_OnKeyReleased(object sender, KeyReleasedEventArgs e) 
         {
@@ -122,6 +133,10 @@ namespace HyperLinkUI.GUI.Scenes
         {
             try { ActiveScene.ScriptHandler.GetFunction("OnButtonClick").Call((Button)sender, e); } 
             catch (Exception ex) { Debug.WriteLine("Failed to execute function, exception thrown: " + ex.Message); }
+        }
+        private void TryLuaFunction(string func, params object[]? args) 
+        {
+            ActiveScene.ScriptHandler.DoString($"if {func} then {func}({args}); end");
         }
     }
 }

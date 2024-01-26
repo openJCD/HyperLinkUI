@@ -49,7 +49,7 @@ namespace HyperLinkUI.GUI.Widgets
             base.Update(oldState, newState);
             
             
-            if (BoundingRectangle.Contains(newState.Position))
+            if (Parent.IsUnderMouseFocus && BoundingRectangle.Contains(newState.Position))
             {
                 isUnderMouseFocus = true;
                 fillMultiplier = 0.45f;

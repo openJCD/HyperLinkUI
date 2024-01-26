@@ -81,6 +81,8 @@ namespace HyperLinkUI.GUI.Containers
 
         public string Tag { get; protected set; }
         #endregion
+        public bool RenderBackgroundColor { get; set; } = false;
+
         public bool IsSticky { get; set; } = true;
 
         public bool IsActive { get; set; } = true;
@@ -177,12 +179,15 @@ namespace HyperLinkUI.GUI.Containers
             if (!IsOpen)
                 return;
 
+            if (RenderBackgroundColor)
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.ContainerFillColor);
+
             if (DrawBorder)
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.BorderColor);
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.ContainerBorderColor);
+
 
             foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
-
             foreach (var child in ChildWidgets)
                 child.Draw(guiSpriteBatch);
             
@@ -280,6 +285,10 @@ namespace HyperLinkUI.GUI.Containers
             AnchorCoord newAnchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height) { AbsolutePosition = new Vector2(x, y) };
             
             Anchor = newAnchor;
+        }
+        public void ResetPosition() 
+        {
+            Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height);
         }
     }
 }

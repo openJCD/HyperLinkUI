@@ -8,7 +8,8 @@ using System.Linq;
 using System.Xml.Serialization;
 using HyperLinkUI.GUI.Data_Handlers;
 using Microsoft.Xna.Framework.Content;
-using System.Configuration;
+using NLua;
+using System.Reflection.Metadata.Ecma335;
 
 namespace HyperLinkUI.GUI.Containers
 {
@@ -22,8 +23,9 @@ namespace HyperLinkUI.GUI.Containers
         private KeyboardState oldkstate;
         private KeyboardState newkstate;
 
-        private int width;
-        private int height;
+        private int width, windowwidth, paddingx;
+        
+        private int height, windowheight, paddingy;
         private List<Container> base_containers;
         private GraphicsDeviceManager graphicsInfo;
 
@@ -36,9 +38,33 @@ namespace HyperLinkUI.GUI.Containers
         [XmlIgnore]
         public int Height { get { return height; } set => height = value; }
         [XmlIgnore]
-        public int XPos { get => 0; set => XPos = 0; }
+        public int XPos { get; set; }
         [XmlIgnore]
-        public int YPos { get => 0; set => YPos = 0; }
+        public int YPos { get; set; }
+        public int PaddingX
+        {
+            get { return paddingx; }
+            set
+            {
+                paddingx = value;
+                XPos = value;
+                Width = windowwidth - value*2;
+            }
+        }
+        public int PaddingY
+        {
+            get { return paddingy; }
+            set
+            {
+                paddingy = value;
+                YPos = value;
+                Height = windowheight - value*2;
+            }
+        }
+
+        [XmlIgnore]
+        [LuaHide]
+        public List<Container> ContainersUnderMouseHover { get; set; }
         [XmlIgnore]
         public GameSettings Settings { get; private set; }
 
@@ -47,6 +73,7 @@ namespace HyperLinkUI.GUI.Containers
         public UIRoot(string settingsPath, string settingsFile, ContentManager manager)
         {
             ChildContainers = new List<Container>();
+            ContainersUnderMouseHover = new List<Container>();
             Settings = new GameSettings();
             try
             { Settings = Settings.Load(settingsPath, settingsFile); }
@@ -59,14 +86,17 @@ namespace HyperLinkUI.GUI.Containers
             ChildContainers = new List<Container>();
             Settings = settings;
             
-            Width = Settings.WindowWidth;
-            Height = Settings.WindowHeight;
+            windowwidth = Width = Settings.WindowWidth;
+            windowheight = Height = Settings.WindowHeight;
         }
-
+        
         public UIRoot(GraphicsDeviceManager graphicsInfo, GameSettings settings)
         {
             Initialise(graphicsInfo);
             Settings = settings;
+            windowwidth = Width = Settings.WindowWidth;
+            windowheight = Height = Settings.WindowHeight;
+
             ChildContainers = new List<Container>();
         }
         public void Initialise(GraphicsDeviceManager graphicsInfo)
@@ -81,10 +111,13 @@ namespace HyperLinkUI.GUI.Containers
             draggedWindow = null;
             newkstate = Keyboard.GetState();
             newmousestate = Mouse.GetState();
-            
-            foreach (Container container in base_containers.ToList())
-                container.Update(oldmousestate, newmousestate);
 
+            foreach (Container container in base_containers.ToList()) 
+            {
+                ContainersUnderMouseHover = GetHoveredContainers();
+                // ContainersUnderMouseHover.ForEach(c=>c.Settings.BorderColor = Color.DarkBlue);
+                container.Update(oldmousestate, newmousestate);
+            }
             if (newmousestate.RightButton == ButtonState.Pressed && oldmousestate.RightButton == ButtonState.Released)
                 PrintUITree();
             if (newkstate.GetPressedKeyCount() == 0 && oldkstate.GetPressedKeyCount() > 0) 
@@ -149,6 +182,29 @@ namespace HyperLinkUI.GUI.Containers
                 }
                 return abovecontainers;
             }
+        }
+        
+        public List<Container> GetHoveredContainers() 
+        {
+            List<Container> returnc = new List<Container>();
+            foreach(Container c in ChildContainers)
+            {
+                if (c.IsUnderMouseFocus) 
+                {
+                    returnc.Add(c);
+                    return returnc;
+                } 
+            }
+            return returnc;
+        }
+
+        public void OnWindowResize(GameWindow w) 
+        {
+            windowwidth = w.ClientBounds.Width;
+            windowheight = w.ClientBounds.Height;
+            Height = w.ClientBounds.Height - PaddingY * 2;
+            Width = w.ClientBounds.Width - PaddingX * 2;
+            ChildContainers.ForEach(cont => cont.ResetPosition());
         }
 
         public void Dispose() 

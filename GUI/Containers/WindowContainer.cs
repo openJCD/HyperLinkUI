@@ -50,7 +50,7 @@ namespace HyperLinkUI.GUI.Containers
             headerbar = new Container(this, 0, 0, width, 20, AnchorType.TOPLEFT);
             close_button = new IconButton(headerbar, Settings.CloseButtonTexture, -2, 1, tag, EventType.CloseWindow, anchorType:AnchorType.TOPRIGHT);
             label = new TextLabel(headerbar, DebugLabel, Settings.SecondarySpriteFont, 0,0, AnchorType.CENTRE);
-            dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size - new Point(close_button.Width, 0));
+            dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size - new Point(close_button.Width-3, 0));
             localOrigin = new Vector2(Width / 2, Height / 2);
         }
         public void WindowContainer_OnButtonClick (Object sender, OnButtonClickEventArgs e)

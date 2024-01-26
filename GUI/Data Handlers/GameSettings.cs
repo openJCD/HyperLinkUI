@@ -33,8 +33,10 @@ namespace HyperLinkUI.GUI.Data_Handlers
         #endregion
 
         #region colours
-        [XmlElement("Border")]
-        public Color BorderColor { get; set; }
+        [XmlElement("ContainerBorderColor")]
+        public Color ContainerBorderColor { get; set; }
+
+        public Color ContainerFillColor { get; set; }
 
         [XmlElement("Taskbar")]
         public Color TaskbarColor { get; set; }
@@ -81,7 +83,8 @@ namespace HyperLinkUI.GUI.Data_Handlers
         /// </summary>
         public GameSettings()
         {
-            BorderColor = new Color(Color.Red, 255f);
+            ContainerBorderColor = new Color(Color.Red, 255f);
+            ContainerFillColor = new Color(Color.Navy, 200f);
             TaskbarColor = new Color(Color.DodgerBlue, 200f);
             WidgetBorderColor = Color.GhostWhite;
             WidgetFillColor = Color.SlateGray;
@@ -110,7 +113,7 @@ namespace HyperLinkUI.GUI.Data_Handlers
         {
             WindowWidth = windowWidth;
             WindowHeight = windowHeight;
-            BorderColor = borderColor;
+            ContainerBorderColor = borderColor;
             WindowTitle = widowTitle;
         }
         public void Dispose() 

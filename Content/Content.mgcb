@@ -13,6 +13,18 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Game/WORLDMAP.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=True
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Game/WORLDMAP.png
+
 #begin GUI/Fonts/CPMono_v07_Light.otf
 /copy:GUI/Fonts/CPMono_v07_Light.otf
 
@@ -41,13 +53,6 @@
 
 #begin GUI/Fonts/RobotoMono-VariableFont_wght.ttf
 /copy:GUI/Fonts/RobotoMono-VariableFont_wght.ttf
-
-#begin GUI/Fonts/RobotoMono.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=NoChange
-/build:GUI/Fonts/RobotoMono.spritefont;GUI/Fonts/secondary.spritefont
 
 #begin GUI/Fonts/RobotoMono.spritefont
 /importer:FontDescriptionImporter
