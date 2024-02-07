@@ -365,3 +365,4 @@ FodyWeavers.xsd
 # Auto-Generated error suppression code
 GlobalSuppressions.cs
 /GlobalSuppressions.cs
+/GUI/Interfaces/FormItem.cs
