@@ -4,11 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
-using HyperLinkUI.GUI.Data_Handlers;
-using HyperLinkUI.GUI.Containers;
-using HyperLinkUI.GUI.Interfaces;
-using HyperLinkUI.GUI.Widgets;
-using HyperLinkUI.GUI.Scenes;
+using HyperLinkUI.Engine.GameSystems;
+using HyperLinkUI.Scenes;
+using HyperLinkUI.Engine.GUI;
 
 namespace HyperLinkUI
 {
@@ -22,11 +20,16 @@ namespace HyperLinkUI
         private SpriteBatch UISpriteBatch;
         private SpriteBatch GameSpriteBatch;
 
+        Camera WorldViewCam;
+
+        Texture2D test_mask_tx;
+        CollisionMask test_mask;
+
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
         public static ContentManager UIContentManager; //manager for fonts and shit
         private Texture2D MAP;
-        UISceneManager SceneManager;
+        SceneManager SceneManager;
 
         GameSettings Settings;
         
@@ -45,10 +48,13 @@ namespace HyperLinkUI
         {
             // TODO: Add your initialization logic here
 
+            //WorldViewCam = new Camera();
+            //WorldViewCam.ViewportWidth = graphicsManager.GraphicsDevice.Viewport.Width;
+            //WorldViewCam.ViewportHeight = graphicsManager.GraphicsDevice.Viewport.Height;
             // test for button click events
             UIEventHandler.OnButtonClick += Game1_HandleOnButtonClick;
+            
             // check if the Loader throws an exception
-
             Settings = GameSettings.TryLoadSettings(UI_SAVES_DIRECTORY, "/settings.xml");
             Settings.LoadAllContent(UIContentManager);
             
@@ -56,7 +62,7 @@ namespace HyperLinkUI
             Window.AllowUserResizing = true;
             graphicsManager.ApplyChanges();
 
-            SceneManager = new UISceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, graphicsManager, Window);
+            SceneManager = new SceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, graphicsManager, Window);
             SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
             SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
             base.Initialize();
@@ -80,37 +86,61 @@ namespace HyperLinkUI
             MAP = Content.Load<Texture2D>("Game/WORLDMAP");
             Container debugtextcontainer = new Container(screenRoot, -10, -10, 500, 30, AnchorType.BOTTOMRIGHT, "DebugContainer") { IsSticky = true };
             debug = new TextLabel(debugtextcontainer, "Hello Monogame!", Settings.PrimarySpriteFont, 0, -5, anchorType: AnchorType.BOTTOMLEFT);
+            test_mask_tx = Content.Load<Texture2D>("test");
+            test_mask = new CollisionMask(test_mask_tx, MaskType.Precise);
+            //WorldViewCam.SetMoveTo(new Vector2(MAP.Bounds.Width / 2, MAP.Bounds.Height / 2));
+            //WorldViewCam.CreateCamTarget("MapViewTarget", new Vector2(), 1.0f);
+            //WorldViewCam.SetActiveCamTarget("MapViewTarget");
         }
+        Color test_mask_col = Color.White;
         protected override void Update(GameTime gameTime)
         {
+            //WorldViewCam.Update(gameTime);
             KeyboardState newKeyboardState = Keyboard.GetState();
-            if (IsActive) SceneManager.Update();
+            if (IsActive) SceneManager.Update(gameTime);
             // check for f5, if so hot reload settings
             if (oldKeyboardState.IsKeyUp(Keys.F5) && newKeyboardState.IsKeyDown(Keys.F5))
             {
                 Debug.WriteLine("Hot Reloading Settings ...");
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
+                Settings.Dispose();
                 UIEventHandler.onHotReload(this, new HotReloadEventArgs() { graphicsDeviceReference = graphicsManager });// global event called so application can hot-reload itself
                 Settings = GameSettings.TryLoadSettings(UI_SAVES_DIRECTORY, "/settings.xml");
+                Settings.LoadAllContent(UIContentManager);
                 SceneManager.LoadScene("default.scene");
                 sw.Stop();
                 Debug.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
             }
+
+            if (test_mask.ContainsPoint(Mouse.GetState().X, Mouse.GetState().Y))
+            {
+                test_mask_col = Color.DarkRed;
+            }
+            else test_mask_col = Color.White;
+
             oldKeyboardState = newKeyboardState;
+            //WorldViewCam.ViewportWidth = graphicsManager.GraphicsDevice.Viewport.Width;
+            //WorldViewCam.ViewportHeight = graphicsManager.GraphicsDevice.Viewport.Height;
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+
+            // world map is drawn
+            //GameSpriteBatch.Begin(sortMode:SpriteSortMode.BackToFront, blendState:BlendState.AlphaBlend, transformMatrix:WorldViewCam.TranslationMatrix);
+            //GameSpriteBatch.Draw(MAP, new Rectangle(MAP.Bounds.Location, new Point(graphicsManager.PreferredBackBufferWidth, graphicsManager.PreferredBackBufferHeight)), Color.AliceBlue);
+            //GameSpriteBatch.End();
+
+            //draw test thing in uh yeah whoopee
             GameSpriteBatch.Begin();
-            GameSpriteBatch.Draw(MAP, new Rectangle(MAP.Bounds.Location, new Point(graphicsManager.PreferredBackBufferWidth, graphicsManager.PreferredBackBufferHeight)), Color.AliceBlue);
+            GameSpriteBatch.Draw(test_mask_tx, test_mask_tx.Bounds, test_mask_col);
             GameSpriteBatch.End();
-            UISpriteBatch.Begin(SpriteSortMode.Deferred);
-            Window.Title = "FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
+            // automatically performs begin and end calls
             SceneManager.Draw(UISpriteBatch);
-            UISpriteBatch.End();
             base.Draw(gameTime);
+            Window.Title = "FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
         }
     }
 }
