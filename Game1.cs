@@ -22,13 +22,10 @@ namespace HyperLinkUI
 
         Camera WorldViewCam;
 
-        Texture2D test_mask_tx;
-        CollisionMask test_mask;
 
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
         public static ContentManager UIContentManager; //manager for fonts and shit
-        private Texture2D MAP;
         SceneManager SceneManager;
 
         GameSettings Settings;
@@ -72,7 +69,6 @@ namespace HyperLinkUI
         {
             Button Sender = (Button)sender;
             Debug.WriteLine(Sender.DebugLabel + " was pressed with event type " + e.event_type);
-            debug.Text = Sender.DebugLabel + " was pressed with event type " + e.event_type;
 
             if (e.event_type == EventType.QuitGame)
                 Exit();
@@ -83,11 +79,6 @@ namespace HyperLinkUI
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
             GameSpriteBatch = new SpriteBatch(GraphicsDevice);
             screenRoot = new UIRoot(Settings);
-            MAP = Content.Load<Texture2D>("Game/WORLDMAP");
-            Container debugtextcontainer = new Container(screenRoot, -10, -10, 500, 30, AnchorType.BOTTOMRIGHT, "DebugContainer") { IsSticky = true };
-            debug = new TextLabel(debugtextcontainer, "Hello Monogame!", Settings.PrimarySpriteFont, 0, -5, anchorType: AnchorType.BOTTOMLEFT);
-            test_mask_tx = Content.Load<Texture2D>("test");
-            test_mask = new CollisionMask(test_mask_tx, MaskType.Precise);
             //WorldViewCam.SetMoveTo(new Vector2(MAP.Bounds.Width / 2, MAP.Bounds.Height / 2));
             //WorldViewCam.CreateCamTarget("MapViewTarget", new Vector2(), 1.0f);
             //WorldViewCam.SetActiveCamTarget("MapViewTarget");
@@ -113,12 +104,6 @@ namespace HyperLinkUI
                 Debug.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
             }
 
-            if (test_mask.ContainsPoint(Mouse.GetState().X, Mouse.GetState().Y))
-            {
-                test_mask_col = Color.DarkRed;
-            }
-            else test_mask_col = Color.White;
-
             oldKeyboardState = newKeyboardState;
             //WorldViewCam.ViewportWidth = graphicsManager.GraphicsDevice.Viewport.Width;
             //WorldViewCam.ViewportHeight = graphicsManager.GraphicsDevice.Viewport.Height;
@@ -133,10 +118,6 @@ namespace HyperLinkUI
             //GameSpriteBatch.Draw(MAP, new Rectangle(MAP.Bounds.Location, new Point(graphicsManager.PreferredBackBufferWidth, graphicsManager.PreferredBackBufferHeight)), Color.AliceBlue);
             //GameSpriteBatch.End();
 
-            //draw test thing in uh yeah whoopee
-            GameSpriteBatch.Begin();
-            GameSpriteBatch.Draw(test_mask_tx, test_mask_tx.Bounds, test_mask_col);
-            GameSpriteBatch.End();
             // automatically performs begin and end calls
             SceneManager.Draw(UISpriteBatch);
             base.Draw(gameTime);
