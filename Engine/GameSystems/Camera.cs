@@ -61,7 +61,7 @@ namespace HyperLinkUI.Engine.GameSystems
         {
             get
             {
-                return Matrix.CreateTranslation(-(int)Position.X, -(int)Position.Y, 0) *
+                return Matrix.CreateTranslation(-Position.X, -Position.Y, 0) *
                     Matrix.CreateRotationZ(Rotation) *
                     Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
                     Matrix.CreateTranslation(new Vector3(ViewportCentre, 0));
@@ -139,7 +139,7 @@ namespace HyperLinkUI.Engine.GameSystems
                 ActiveTarget.ResetPosition();
             }
         }
-        public void CreateCamTarget(string nametag, int x, int y, float lz)
+        public void CreateCamTarget(string nametag, float x, float y, float lz)
         {
             CreateCamTarget(nametag, new Vector2(x, y), lz);
         }
@@ -151,7 +151,7 @@ namespace HyperLinkUI.Engine.GameSystems
             ActiveTarget.SetActive(true);
         }
 
-        public void Update(GameTime gt)
+        public void Update()
         {
             if (ActiveTarget != null)
             {

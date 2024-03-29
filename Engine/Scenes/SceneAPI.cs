@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Runtime.CompilerServices;
 
 namespace HyperLinkUI.Engine.Scenes
 {
@@ -33,8 +34,13 @@ namespace HyperLinkUI.Engine.Scenes
 
             lua.RegisterFunction("inherit_scene_function", GetType().GetMethod("inherit_scene_function"));
 
+            // input
             lua.RegisterFunction("is_key_down", GetType().GetMethod("is_key_down"));
-
+            lua.RegisterFunction("get_mouse_x", GetType().GetMethod("get_mouse_x"));
+            lua.RegisterFunction("get_mouse_y", GetType().GetMethod("get_mouse_y"));
+            lua.RegisterFunction("get_mouse_left", GetType().GetMethod("get_mouse_left"));
+            lua.RegisterFunction("get_mouse_right", GetType().GetMethod("get_mouse_right"));
+            
             lua.RegisterFunction("print_vs22_debug_message", GetType().GetMethod("print_vs22_debug_message"));
             lua.RegisterFunction("load_new_scene", GetType().GetMethod("loadNewScene"));
         }
@@ -117,6 +123,24 @@ namespace HyperLinkUI.Engine.Scenes
             else return false;
         }
 
+        public static int get_mouse_x(UIRoot root)
+        {
+            return root.MouseState.X;
+        }
+
+        public static int get_mouse_y(UIRoot root)
+        {
+            return root.MouseState.Y;
+        }
+        public static bool get_mouse_left(UIRoot root)
+        {
+            return root.MouseState.LeftButton == ButtonState.Pressed;
+        }
+
+        public static bool get_mouse_right(UIRoot root)
+        {
+            return root.MouseState.RightButton == ButtonState.Pressed;
+        }
         public static Type GetEnumFromString<Type>(string valueToConvert)
         {
             Type en = (Type)Enum.Parse(typeof(Type), valueToConvert, true);
@@ -129,7 +153,8 @@ namespace HyperLinkUI.Engine.Scenes
         }
         
         /// <summary>
-        /// If the given function given exists in the given lua state, execute it.
+        /// If the given function given exists in the given lua state, execute it. Does not perform error checking. Causes catastrophic performance loss if the 
+        /// requested function does not exist. It is best practice to use an error checker method first to check if a given function is not present or has errors. 
         /// </summary>
         /// <param name="handler">NLua Lua state/instance</param>
         /// <param name="func">Name of function without parenthesis in string form</param>
@@ -147,16 +172,57 @@ namespace HyperLinkUI.Engine.Scenes
         /// end
         /// </code>
         /// </example>
-        public static void TryLuaFunction(Lua scripthandler, string func, params object[]? args)
+        public static void TryLuaFunction(Lua scripthandler, string func, params object[] args)
         {
-            var exists = scripthandler.DoString($"if {func} then return true else return false; end");
-            if ((bool)exists[0])
+            // replace this PLEASEGOD ARGH
+            scripthandler["_function_exists_"] = false;
+            
+            if (args == null)
+                scripthandler.DoString($"if {func} then  _function_exists_ = true; {func}() end");
+            else
             {
-                if (args != null)
-                    scripthandler.GetFunction(func).Call(args);
-                else
-                    scripthandler.GetFunction(func).Call();
+                scripthandler.DoString($"if {func} then _function_exists_= true end");
+                if ((bool)scripthandler["_function_exists_"]) scripthandler.GetFunction(func).Call(args);
             }
+            return;
+        }
+
+        /// <summary>
+        /// Basic Lua error checker function. Returns true if a module and all engine-related functions within contain no errors when executed once. Not foolproof.
+        /// Should also only be performed ONCE at script load-time. Exceptions can be handled outside. Doesn't work with functions that 
+        /// </summary>
+        /// <param name="path">Path to the Lua script file</param>
+        /// <param name="function_paths">Paths (names) of functions to check in the script.</param>
+        /// <param name="message">Optional message from internal caught exception to do whatever with</param>
+        public static bool DoLuaErrorCheck(string path, string[] function_paths, out string? message)
+        {
+            Lua lstate = new Lua();
+            // first basic exception check - see if it runs at all, regardless of functions.
+            try{ lstate.DoFile(path); } catch(Exception e) { message = "An error occurred on first run in " + path + ". Message:" + e.Message; return false; }
+            foreach(string f in function_paths)
+            {
+                try { lstate.DoString($"if {f} not nil then {f}() end"); } catch (Exception e)
+                {
+                    message = "An error occurred in function #" + f + "#. Message : " + e.Message;
+                    return false;
+                }
+            }
+            lstate.Close();
+            lstate.Dispose();
+            message = ""; return true;
+        }
+        public static bool PauseOnError (bool initial, Lua handler, string func, out string message, params object[] args)
+        {
+            if (!initial)
+            {
+                try { TryLuaFunction(handler, func, args); } catch (Exception e) 
+                {
+                    Debug.WriteLine(e.Message); message = e.Message; 
+                    return true; 
+                }
+            }
+            message = "";
+            return false;
         }
     }
 }

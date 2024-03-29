@@ -7,6 +7,7 @@ using System.Diagnostics;
 using HyperLinkUI.Engine.GameSystems;
 using HyperLinkUI.Scenes;
 using HyperLinkUI.Engine.GUI;
+using HyperLinkUI.Engine.Audio;
 
 namespace HyperLinkUI
 {
@@ -22,6 +23,7 @@ namespace HyperLinkUI
 
         Camera WorldViewCam;
 
+        AudioManager AudioSystem;
 
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
@@ -62,9 +64,10 @@ namespace HyperLinkUI
             SceneManager = new SceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, graphicsManager, Window);
             SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
             SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
+            AudioSystem = AudioManager.Instance;
+            AudioSystem.Init();
             base.Initialize();
         }
-
         private void Game1_HandleOnButtonClick(object sender, OnButtonClickEventArgs e)
         {
             Button Sender = (Button)sender;
@@ -73,7 +76,6 @@ namespace HyperLinkUI
             if (e.event_type == EventType.QuitGame)
                 Exit();
         }
-
         protected override void LoadContent()
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
@@ -83,7 +85,6 @@ namespace HyperLinkUI
             //WorldViewCam.CreateCamTarget("MapViewTarget", new Vector2(), 1.0f);
             //WorldViewCam.SetActiveCamTarget("MapViewTarget");
         }
-        Color test_mask_col = Color.White;
         protected override void Update(GameTime gameTime)
         {
             //WorldViewCam.Update(gameTime);
@@ -120,6 +121,7 @@ namespace HyperLinkUI
 
             // automatically performs begin and end calls
             SceneManager.Draw(UISpriteBatch);
+            
             base.Draw(gameTime);
             Window.Title = "FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
         }

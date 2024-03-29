@@ -17,7 +17,12 @@ namespace HyperLinkUI.Scenes
 {
     public class SceneManager
     {
-        // replace the object with a Scene or something like that
+        [LuaHide]
+        bool _haltLuaVMUpdate;
+
+        [LuaHide]
+        string _haltedErrorMsg = "";
+
         Dictionary<string, Scene> SceneDictionary;
 
         ContentManager SceneContentManager;
@@ -26,6 +31,8 @@ namespace HyperLinkUI.Scenes
         [LuaHide]
         private UIRoot activeSceneUIRoot;
 
+        [LuaHide]
+        private string[] ScriptPaths;
         public string SceneFolderPath { get; set; }
 
         public string GlobalSettingsPath { get; set; }
@@ -83,9 +90,11 @@ namespace HyperLinkUI.Scenes
         public void LoadScene(string name)
         {
             ActiveScene?.Dispose();
+            
             ActiveScene = SceneDictionary[name];
             activeSceneUIRoot = ActiveScene.Load(GlobalSettings, this);
             activeSceneUIRoot.OnWindowResize(GlobalWindowReference);
+            _haltLuaVMUpdate = false;
         }
         public Scene GetScene(string scene_name)
         {
@@ -98,6 +107,7 @@ namespace HyperLinkUI.Scenes
             ActiveScene = SceneDictionary[scene.Name];
             activeSceneUIRoot = ActiveScene.Load(GlobalSettings, this);
             activeSceneUIRoot.OnWindowResize(GlobalWindowReference);
+            _haltLuaVMUpdate = false;
         }
         public void AddSceneToList(Scene scene)
         {
@@ -105,13 +115,13 @@ namespace HyperLinkUI.Scenes
         }
         public void Update(GameTime gt)
         {
-            SceneAPI.TryLuaFunction(ActiveScene.ScriptHandler, "OnUIUpdate", null);
+            if (!_haltLuaVMUpdate) _haltLuaVMUpdate = SceneAPI.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnUIUpdate", out _haltedErrorMsg, null);
             activeSceneUIRoot.Update();
-            SceneAPI.TryLuaFunction(ActiveScene.ScriptHandler, "OnGameUpdate", gt);
+            if (!_haltLuaVMUpdate)  _haltLuaVMUpdate = SceneAPI.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameUpdate", out _haltedErrorMsg, null);
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
-            SceneAPI.TryLuaFunction(ActiveScene.ScriptHandler, "OnGameDraw", null);
+             if (!_haltLuaVMUpdate) _haltLuaVMUpdate = SceneAPI.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
             guiSpriteBatch.Begin(SpriteSortMode.Deferred);
             activeSceneUIRoot.Draw(guiSpriteBatch);
             guiSpriteBatch.End();
@@ -131,6 +141,7 @@ namespace HyperLinkUI.Scenes
             e.graphicsDeviceReference.PreferredBackBufferHeight = GlobalSettings.WindowHeight;
             e.graphicsDeviceReference.ApplyChanges();
             GlobalWindowReference.Title = GlobalSettings.WindowTitle;
+            _haltLuaVMUpdate = false;
         }
         public void UISceneManager_OnKeyReleased(object sender, KeyReleasedEventArgs e)
         {

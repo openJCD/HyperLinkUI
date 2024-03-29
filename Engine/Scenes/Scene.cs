@@ -22,11 +22,13 @@ namespace HyperLinkUI.Engine.Scenes
         LuaFunction ScriptCaller;
         UIRoot SceneRoot;
         public string Name;
+        public string FullPath { get; private set; }
         public Scene(string scenefilepath)
         {
             this.scenefilepath = scenefilepath;
             ScriptHandler = new Lua();
             Name = Path.GetFileNameWithoutExtension(scenefilepath);
+            FullPath = Path.GetFullPath(scenefilepath);
             ScriptStringData = File.ReadAllText(scenefilepath);
             ScriptCaller = ScriptHandler.LoadFile(scenefilepath);
         }

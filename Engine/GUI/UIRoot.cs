@@ -18,6 +18,8 @@ namespace HyperLinkUI.Engine.GUI
     {
         private MouseState oldmousestate;
         private MouseState newmousestate;
+        
+        public MouseState MouseState { get => newmousestate; }
 
         private KeyboardState oldkstate;
         private KeyboardState newkstate;
