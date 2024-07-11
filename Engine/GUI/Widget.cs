@@ -23,6 +23,10 @@ namespace HyperLinkUI.Engine.GUI
         protected Rectangle bounding_rectangle;
         protected bool isUnderMouseFocus;
 
+        public bool DrawDebugRect { get; set; } = false;
+
+        public bool Enabled { get; set; } = true;
+
         [XmlIgnore]
         public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; }
         [XmlIgnore]
@@ -83,16 +87,24 @@ namespace HyperLinkUI.Engine.GUI
             Anchor = new AnchorCoord(LocalX, LocalY, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, height);
             parent.TransferWidget(this);
+            UpdatePos();
         }
 
         public virtual void Draw(SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
-            guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.WidgetFillColor);
+            if (!Enabled)
+                return;
+            if (DrawDebugRect)
+            {
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.WidgetFillColor);
+            }
         }
 
         public virtual void Update(MouseState oldState, MouseState newState)
         {
+            if (!Enabled)
+                return;
             // change stuff here, position, etc. it will then be updated by the function below.            
             UpdatePos();
         }

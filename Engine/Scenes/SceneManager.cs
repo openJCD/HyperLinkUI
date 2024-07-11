@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Windows.Forms;
 using Button = HyperLinkUI.Engine.GUI.Button;
 
@@ -18,7 +19,11 @@ namespace HyperLinkUI.Scenes
     public class SceneManager
     {
         [LuaHide]
+        DebugConsole dbc;
+        [LuaHide]
         bool _haltLuaVMUpdate;
+
+        
 
         [LuaHide]
         string _haltedErrorMsg = "";
@@ -29,7 +34,7 @@ namespace HyperLinkUI.Scenes
         [LuaHide]
         public Scene ActiveScene { get; private set; }
         [LuaHide]
-        private UIRoot activeSceneUIRoot;
+        public UIRoot activeSceneUIRoot;
 
         [LuaHide]
         private string[] ScriptPaths;
@@ -56,6 +61,7 @@ namespace HyperLinkUI.Scenes
             UIEventHandler.OnKeyReleased += UISceneManager_OnKeyReleased;
             UIEventHandler.OnButtonClick += UISceneManager_OnButtonClick;
             UIEventHandler.OnKeyPressed += UISceneManager_OnKeyPressed;
+            UIEventHandler.DebugMessage += UISceneManager_OnDebugMessage;
             window.ClientSizeChanged += UISceneManager_OnResize;
             SceneDictionary = new Dictionary<string, Scene>();
             GlobalGraphicsDeviceReference = globalGraphicsReference.GraphicsDevice;
@@ -89,12 +95,13 @@ namespace HyperLinkUI.Scenes
         }
         public void LoadScene(string name)
         {
+            _haltLuaVMUpdate = false;
             ActiveScene?.Dispose();
-            
+            dbc?.Dispose();
             ActiveScene = SceneDictionary[name];
             activeSceneUIRoot = ActiveScene.Load(GlobalSettings, this);
             activeSceneUIRoot.OnWindowResize(GlobalWindowReference);
-            _haltLuaVMUpdate = false;
+            dbc = new DebugConsole(activeSceneUIRoot);
         }
         public Scene GetScene(string scene_name)
         {
@@ -102,12 +109,12 @@ namespace HyperLinkUI.Scenes
         }
         public void LoadScene(Scene scene)
         {
+            _haltLuaVMUpdate = false;
             if (ActiveScene != null)
                 ActiveScene.Dispose();
             ActiveScene = SceneDictionary[scene.Name];
             activeSceneUIRoot = ActiveScene.Load(GlobalSettings, this);
             activeSceneUIRoot.OnWindowResize(GlobalWindowReference);
-            _haltLuaVMUpdate = false;
         }
         public void AddSceneToList(Scene scene)
         {
@@ -115,13 +122,16 @@ namespace HyperLinkUI.Scenes
         }
         public void Update(GameTime gt)
         {
-            if (!_haltLuaVMUpdate) _haltLuaVMUpdate = SceneAPI.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnUIUpdate", out _haltedErrorMsg, null);
+            // very messy function that returns true to signal a pause if a function causes an exception to be thrown.
+            if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnUIUpdate", out _haltedErrorMsg, null);
             activeSceneUIRoot.Update();
-            if (!_haltLuaVMUpdate)  _haltLuaVMUpdate = SceneAPI.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameUpdate", out _haltedErrorMsg, null);
+            if (!_haltLuaVMUpdate)  _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameUpdate", out _haltedErrorMsg, null);
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
-             if (!_haltLuaVMUpdate) _haltLuaVMUpdate = SceneAPI.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
+            //run the lua draw thing if possible
+             if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
+            
             guiSpriteBatch.Begin(SpriteSortMode.Deferred);
             activeSceneUIRoot.Draw(guiSpriteBatch);
             guiSpriteBatch.End();
@@ -145,15 +155,33 @@ namespace HyperLinkUI.Scenes
         }
         public void UISceneManager_OnKeyReleased(object sender, KeyReleasedEventArgs e)
         {
-            SceneAPI.TryLuaFunction(ActiveScene.ScriptHandler, "OnKeyReleased", sender, e);
+            LuaHelper.TryLuaFunction(ActiveScene.ScriptHandler, "OnKeyReleased", sender, e);
         }
         public void UISceneManager_OnKeyPressed(object sender, KeyPressedEventArgs e)
         {
-            SceneAPI.TryLuaFunction(ActiveScene.ScriptHandler, "OnKeyPressed", sender, e);
+            LuaHelper.TryLuaFunction(ActiveScene.ScriptHandler, "OnKeyPressed", sender, e);
         }
         public void UISceneManager_OnButtonClick(object sender, OnButtonClickEventArgs e)
         {
-            SceneAPI.TryLuaFunction(ActiveScene.ScriptHandler, "OnButtonClick", sender, e); 
+            LuaHelper.TryLuaFunction(ActiveScene.ScriptHandler, "OnButtonClick", sender, e); 
+        }
+        public void UISceneManager_OnDebugMessage(object sender, MiscTextEventArgs e)
+        {
+            LuaHelper.TryLuaFunction(ActiveScene.ScriptHandler, "OnDebugMessage", sender, e);
+        }
+
+        public static bool IsLuaHalted(SceneManager sm)
+        {
+            return sm._haltLuaVMUpdate;
+        }
+
+        public void HaltLuaUpdate()
+        {
+            _haltLuaVMUpdate = true;
+        }
+        public void ResumeLuaUpdate()
+        {
+            _haltLuaVMUpdate = false;
         }
     }
 }

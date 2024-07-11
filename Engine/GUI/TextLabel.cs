@@ -32,6 +32,7 @@ namespace HyperLinkUI.Engine.GUI
             localOrigin = new Vector2(fontwidth / 2, fontheight / 2);
             Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, fontwidth, fontheight);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, fontwidth, fontheight);
+            UpdatePos();       
         }
 
         public TextLabel(Container parent, string text, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT) : base(parent)
@@ -47,6 +48,7 @@ namespace HyperLinkUI.Engine.GUI
             localOrigin = new Vector2(fontwidth / 2, fontheight / 2);
             Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, fontwidth, fontheight);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, fontwidth, fontheight);
+            UpdatePos();
         }
 
         public override void Update(MouseState oldState, MouseState newState)
@@ -58,6 +60,8 @@ namespace HyperLinkUI.Engine.GUI
         {
             Vector2 position = new Vector2(XPos, YPos);
             guiSpriteBatch.DrawString(font, text, position, Settings.TextColor);
+            if (DrawDebugRect)
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Color.Green);
         }
         public override void UpdatePos()
         {

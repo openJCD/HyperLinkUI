@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics.Eventing.Reader;
+using Windows.Graphics.Imaging;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -11,7 +12,7 @@ namespace HyperLinkUI.Engine.GUI
         protected EventType event_type;
         protected bool clicked;
         protected float fillMultiplier;
-        public bool Enabled { get; set; } = true;
+        
 
         public string Text { get; set; }
 
@@ -33,6 +34,8 @@ namespace HyperLinkUI.Engine.GUI
         }
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
+            if (!Enabled)
+                return;
             guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
 
             guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Multiply(Settings.WidgetFillColor, fillMultiplier));
@@ -41,8 +44,6 @@ namespace HyperLinkUI.Engine.GUI
         }
         public override void Update(MouseState oldState, MouseState newState)
         {
-            if (!Enabled)
-                return;
             base.Update(oldState, newState);
 
 

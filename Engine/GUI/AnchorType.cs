@@ -11,20 +11,14 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace HyperLinkUI.Engine.GUI
 {
-    [Serializable()]
-    public enum AnchorType
-    {
-        [XmlEnum("TOPLEFT")]
+     public enum AnchorType
+     {
         TOPLEFT,
-        [XmlEnum("TOPRIGHT")]
-        TOPRIGHT,
-        [XmlEnum("BOTTOMLEFT")]
+        TOPRIGHT,       
         BOTTOMLEFT,
-        [XmlEnum("BOTTOMRIGHT")]
         BOTTOMRIGHT,
-        [XmlEnum("CENTRE")]
         CENTRE
-    }
+     }
 
     public struct AnchorCoord
     {
@@ -66,6 +60,7 @@ namespace HyperLinkUI.Engine.GUI
 
         public Vector2 AnchorLocation { get; private set; }
         public Vector2 OffsetFromAnchor { get; set; }
+
         public Vector2 AbsolutePosition { get; set; }
         public AnchorType Type { get; set; }
 

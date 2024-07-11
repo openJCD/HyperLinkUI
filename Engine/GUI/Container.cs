@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
 using NLua;
+using Newtonsoft.Json;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -28,6 +29,7 @@ namespace HyperLinkUI.Engine.GUI
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
 
         [XmlIgnore]
+        [JsonIgnore]
         public virtual IContainer Parent { get => parent; protected set => parent = value; }
 
         [XmlElement("Containers")]
@@ -94,7 +96,7 @@ namespace HyperLinkUI.Engine.GUI
 
         ~Container()
         {
-            Dispose();
+            //Dispose();
         }
         public void Dispose()
         {
@@ -112,12 +114,16 @@ namespace HyperLinkUI.Engine.GUI
         }
         protected Container(IContainer parent)
         {
+            ChildWidgets = new List<Widget>();
+            ChildContainers = new List<Container>();
             Parent = parent;
             parent.AddContainer(this);
         }
 
         protected Container(UIRoot parent)
         {
+            ChildWidgets = new List<Widget>();
+            ChildContainers = new List<Container>();
             Parent = parent;
             parent.AddContainer(this);
         }
@@ -287,6 +293,12 @@ namespace HyperLinkUI.Engine.GUI
         public void ResetPosition()
         {
             Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height);
+        }
+
+        public void PushToTop(Container c)
+        {
+            ChildContainers.Remove(c);
+            ChildContainers.Insert(0,c);
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using HyperLinkUI.Engine.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using SharpDX.WIC;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -15,12 +15,12 @@ namespace HyperLinkUI.Engine.GUI
     public class KeyReleasedEventArgs : EventArgs
     {
         public Keys[] released_keys;
-        public string released_key_as_string { get => SceneAPI.GetStringFromEnum(released_keys[0]); }
+        public string released_key_as_string { get => LuaHelper.GetStringFromEnum(released_keys[0]); }
     }
     public class KeyPressedEventArgs : EventArgs
     {
         public Keys[] pressed_keys;
-        public string first_key_as_string { get => SceneAPI.GetStringFromEnum(pressed_keys[0]); }
+        public string first_key_as_string { get => LuaHelper.GetStringFromEnum(pressed_keys[0]); }
         public List<string> pressed_keys_as_list
         {
             get
@@ -30,7 +30,7 @@ namespace HyperLinkUI.Engine.GUI
                 lk = pressed_keys.ToList<Keys>();
                 foreach(Keys k in lk)
                 {
-                    ls.Add(SceneAPI.GetStringFromEnum(k));
+                    ls.Add(LuaHelper.GetStringFromEnum(k));
                 }
                 return ls;
             }
@@ -38,6 +38,8 @@ namespace HyperLinkUI.Engine.GUI
     }
     
     public class MouseClickArgs : EventArgs { public MouseState mouse_data; }
+
+    public class MiscTextEventArgs : EventArgs { public string txt; }
     public static class UIEventHandler
     {
         public static event EventHandler<OnButtonClickEventArgs> OnButtonClick;
@@ -45,6 +47,8 @@ namespace HyperLinkUI.Engine.GUI
         public static event EventHandler<HotReloadEventArgs> OnHotReload;
         public static event EventHandler<KeyReleasedEventArgs> OnKeyReleased;
         public static event EventHandler<KeyPressedEventArgs> OnKeyPressed;
+        public static event EventHandler<MiscTextEventArgs> DebugMessage;
+        public static event EventHandler<MiscTextEventArgs> OnTextFieldSubmit;
 
         public static void onKeyReleased(object sender, KeyReleasedEventArgs e)
         {
@@ -65,6 +69,22 @@ namespace HyperLinkUI.Engine.GUI
         public static void onMouseClick(object sender, MouseClickArgs e)
         {
             OnMouseClick?.Invoke(sender, e);
+        }
+
+        public static void sendDebugMessage(object sender, MiscTextEventArgs e)
+        {
+            DebugMessage?.Invoke(sender, e);
+        }
+        public static void sendDebugMessage(object sender, string e)
+        {
+            MiscTextEventArgs s = new MiscTextEventArgs { txt = e };
+            DebugMessage?.Invoke(sender, s);
+        }
+
+        public static void submitTextField(object sender, string e)
+        {
+            MiscTextEventArgs s = new MiscTextEventArgs { txt = e };
+            OnTextFieldSubmit?.Invoke(sender, s);
         }
     }
 }

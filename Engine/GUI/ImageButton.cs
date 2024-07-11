@@ -79,10 +79,6 @@ namespace HyperLinkUI.Engine.GUI
                 if (oldState.LeftButton == ButtonState.Pressed)
                 {
                     texturesheet.forceFrame(2);
-                    if (newState.LeftButton == ButtonState.Released)
-                    {
-                        UIEventHandler.onButtonClick(this, new OnButtonClickEventArgs { event_type = event_type, tag = Tag });
-                    }
                 }
             }
             else

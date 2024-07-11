@@ -1,0 +1,62 @@
+﻿using Newtonsoft.Json.Bson;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HyperLinkUI.Engine.GUI
+{
+    public class DebugConsole
+    {
+        WindowContainer window;
+        TextInput textbox;
+        TextLabel  textlog;
+        public DebugConsole(UIRoot parent)
+        {
+            window = new WindowContainer(parent, 0, 0, 300, 450, "dialog_debug_console", "Debug Console", AnchorType.BOTTOMRIGHT);
+            textbox = new TextInput(window, parent.Settings.PrimarySpriteFont, 0, 0, window.Width, hint:"...");
+            textlog = new TextLabel(window, "Debug mode is enabled. \nPress F11 to disable again.", 0, 20);
+            window.Close();
+            window.ToggleCloseButtonEnabled();
+            UIEventHandler.DebugMessage += ReceiveMessage;
+            UIEventHandler.OnKeyReleased += CheckF11;
+            UIEventHandler.OnTextFieldSubmit += CheckCommandGiven;
+            textlog.DrawDebugRect = true;
+        }
+        public void Dispose()
+        {
+            window.Dispose();
+        }
+        public void ReceiveMessage(object sender, MiscTextEventArgs e)
+        {
+            if (textlog.BoundingRectangle.Height > window.Height-55)
+                textlog.Text = "";
+            textlog.Text += ('\n'+e.txt);
+        }
+        public void CheckF11(object sender, KeyReleasedEventArgs e)
+        {
+            if (e.released_key_as_string == "F11")
+            {
+                window.IsSticky = true;
+                window.IsOpen = !window.IsOpen;
+                window.IsSticky = false;
+            }
+        }
+
+        private void CheckCommandGiven(object sender, MiscTextEventArgs e)
+        {
+            if (sender != textbox) return; 
+            InterpretDebugCommand(e.txt);
+        }
+        private void InterpretDebugCommand(string cmd)
+        {
+            List<string> tokens = cmd.Split(" ").ToList();
+            if (tokens[0] == "echo" && tokens.Count() > 1)
+            {
+                tokens.RemoveAt(0);
+                UIEventHandler.sendDebugMessage(this, string.Join(" ", tokens));
+            }
+        }
+    }
+}

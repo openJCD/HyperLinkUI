@@ -35,9 +35,6 @@ namespace HyperLinkUI.Engine.Scenes
         /// <summary>Script
         /// Instantiate a new UIRoot with a GameSettings xml file using a Content Manager
         /// </summary>
-        /// <param name="settingsPath">Directory path to the settings file</param>
-        /// <param name="settingsFile">Xml file within the settingsPath directory to load</param>
-        /// <param name="contentManager">Xna ContentManager used to load all scene stuff under </param>
         public UIRoot Load(GameSettings settings, SceneManager sceneManager)
         {
             // init and re-init instances 
@@ -63,8 +60,10 @@ namespace HyperLinkUI.Engine.Scenes
             }
             catch (Exception ex)
             {
+                UIEventHandler.sendDebugMessage(this, new MiscTextEventArgs { txt="Error: " + ex.Message });
                 var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, "dialog_error", "There was an error...", AnchorType.CENTRE);
                 var dtl = new TextLabel(dc, ex.Message, 0, 0, AnchorType.CENTRE);
+                sceneManager.HaltLuaUpdate();
             }
             return SceneRoot;
         }

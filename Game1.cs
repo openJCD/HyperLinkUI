@@ -7,7 +7,6 @@ using System.Diagnostics;
 using HyperLinkUI.Engine.GameSystems;
 using HyperLinkUI.Scenes;
 using HyperLinkUI.Engine.GUI;
-using HyperLinkUI.Engine.Audio;
 
 namespace HyperLinkUI
 {
@@ -19,16 +18,17 @@ namespace HyperLinkUI
         private GraphicsDeviceManager graphicsManager;
         
         private SpriteBatch UISpriteBatch;
-        private SpriteBatch GameSpriteBatch;
 
-        Camera WorldViewCam;
+        public static GameWindow GameWindow;
 
-        AudioManager AudioSystem;
+        Texture2D txNode;
+
+        GlobalMap Map;
 
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
         public static ContentManager UIContentManager; //manager for fonts and shit
-        SceneManager SceneManager;
+        public static SceneManager SceneManager { get; private set; }
 
         GameSettings Settings;
         
@@ -40,16 +40,12 @@ namespace HyperLinkUI
             graphicsManager = new GraphicsDeviceManager(this);
             UIContentManager = new ContentManager(Content.ServiceProvider);
             UIContentManager.RootDirectory = "Content/GUI/";
+            GameWindow = Window;
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
-            //WorldViewCam = new Camera();
-            //WorldViewCam.ViewportWidth = graphicsManager.GraphicsDevice.Viewport.Width;
-            //WorldViewCam.ViewportHeight = graphicsManager.GraphicsDevice.Viewport.Height;
             // test for button click events
             UIEventHandler.OnButtonClick += Game1_HandleOnButtonClick;
             
@@ -64,8 +60,6 @@ namespace HyperLinkUI
             SceneManager = new SceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, graphicsManager, Window);
             SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
             SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
-            AudioSystem = AudioManager.Instance;
-            AudioSystem.Init();
             base.Initialize();
         }
         private void Game1_HandleOnButtonClick(object sender, OnButtonClickEventArgs e)
@@ -79,11 +73,14 @@ namespace HyperLinkUI
         protected override void LoadContent()
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
-            GameSpriteBatch = new SpriteBatch(GraphicsDevice);
-            screenRoot = new UIRoot(Settings);
-            //WorldViewCam.SetMoveTo(new Vector2(MAP.Bounds.Width / 2, MAP.Bounds.Height / 2));
-            //WorldViewCam.CreateCamTarget("MapViewTarget", new Vector2(), 1.0f);
-            //WorldViewCam.SetActiveCamTarget("MapViewTarget");
+
+            txNode = Content.Load<Texture2D>("Game/node");
+            Map = new GlobalMap(SceneManager.activeSceneUIRoot.ChildContainers[0]);
+            Map.TexturePath = "Game/WORLDMAP";
+            //Map = GlobalMap.Load(SceneManager.activeSceneUIRoot.ChildContainers[0], "Content/Game/MapData.json", Content);
+            Map.AddChild(new NetworkNode(Map, txNode,"MapNode 1", 100, 100));
+            Map.Children[0].AddChild(new NetworkNode(Map.Children[0], txNode, "MapNode 2", 150, 100));
+            Map.Children[0].Children[0].AddChild(new NetworkNode(Map.Children[0].Children[0], txNode, "MapNode 3", 150, 150));
         }
         protected override void Update(GameTime gameTime)
         {
@@ -114,12 +111,6 @@ namespace HyperLinkUI
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // world map is drawn
-            //GameSpriteBatch.Begin(sortMode:SpriteSortMode.BackToFront, blendState:BlendState.AlphaBlend, transformMatrix:WorldViewCam.TranslationMatrix);
-            //GameSpriteBatch.Draw(MAP, new Rectangle(MAP.Bounds.Location, new Point(graphicsManager.PreferredBackBufferWidth, graphicsManager.PreferredBackBufferHeight)), Color.AliceBlue);
-            //GameSpriteBatch.End();
-
-            // automatically performs begin and end calls
             SceneManager.Draw(UISpriteBatch);
             
             base.Draw(gameTime);
