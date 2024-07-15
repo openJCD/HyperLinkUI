@@ -28,22 +28,22 @@ namespace HyperLinkUI.Engine.GUI
         Slice BM;
         Slice BR;
 
-        public NineSlice(Texture2D tex, GraphicsDevice g, Rectangle bind)
+        public NineSlice(Texture2D tex, Rectangle bind)
         {
             BaseTexture = tex;
             tex_W = tex.Width / 3;
             tex_H = tex.Height / 3;
             BindRect = bind;
             slice_size = new Point(tex_W, tex_H);
-            TL = new Slice(g, SliceType.TopLeft, tex);
-            TM = new Slice(g, SliceType.TopMid, tex);
-            TR = new Slice(g, SliceType.TopRight, tex);
-            ML = new Slice(g, SliceType.MiddleLeft, tex);
-            C  = new Slice(g, SliceType.Center, tex);
-            MR = new Slice(g, SliceType.MiddleRight, tex);
-            BL = new Slice(g, SliceType.BottomLeft, tex);
-            BM = new Slice(g, SliceType.BottomMid, tex);
-            BR = new Slice(g, SliceType.BottomRight, tex);
+            TL = new Slice( SliceType.TopLeft, tex);
+            TM = new Slice( SliceType.TopMid, tex);
+            TR = new Slice( SliceType.TopRight, tex);
+            ML = new Slice(SliceType.MiddleLeft, tex);
+            C  = new Slice(SliceType.Center, tex);
+            MR = new Slice( SliceType.MiddleRight, tex);
+            BL = new Slice( SliceType.BottomLeft, tex);
+            BM = new Slice(SliceType.BottomMid, tex);
+            BR = new Slice(SliceType.BottomRight, tex);
         }
 
         public void Draw(SpriteBatch sb)
@@ -80,7 +80,7 @@ namespace HyperLinkUI.Engine.GUI
         //public Rectangle Bounds { get => SliceTexture.Bounds; }
         public Texture2D SliceTexture { get; private set; }
         public SliceType SliceType { get; private set; }
-        public Slice(GraphicsDevice g, SliceType st, Texture2D slice_tx)
+        public Slice( SliceType st, Texture2D slice_tx)
         {
             int slice_tx_w = slice_tx.Width/3;
             int slice_tx_h = slice_tx.Height/3; 

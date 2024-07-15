@@ -8,6 +8,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using NLua;
 using Newtonsoft.Json;
+using HyperLinkUI.Scenes;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -19,77 +20,79 @@ namespace HyperLinkUI.Engine.GUI
         private List<Widget> child_widgets;
         private string debug_label;
         protected IContainer parent;
-        private Rectangle bounding_rectangle;
+        protected Rectangle bounding_rectangle;
         protected AnchorCoord anchor;
         private bool isUnderMouseFocus;
         private GameSettings settings;
         RasterizerState rstate;
 
         #region Properties/Members
-        [XmlIgnore]
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
 
-        [XmlIgnore]
-        [JsonIgnore]
         public virtual IContainer Parent { get => parent; protected set => parent = value; }
-
-        [XmlElement("Containers")]
+       
         public List<Container> ChildContainers { get => child_containers; set => child_containers = value; }
 
-        [XmlElement("Widgets")]
         public List<Widget> ChildWidgets { get => child_widgets; set => child_widgets = value; }
-
-        [XmlAttribute("debuglabel")]
+       
         public string DebugLabel { get => debug_label; set => debug_label = value; }
-
-        [XmlAttribute("width")]
+       
         public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Width = value; }
-
-        [XmlAttribute("height")]
+       
         public int Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height = value; }
 
-        [XmlIgnore]
         public int XPos { get => bounding_rectangle.X; set => bounding_rectangle.X = value; }
 
-        [XmlIgnore]
         public int YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = value; }
 
-        [XmlIgnore]
         public Rectangle BoundingRectangle { get => bounding_rectangle; set => bounding_rectangle = value; }
 
-        [XmlIgnore]
         public AnchorCoord Anchor { get => anchor; set => anchor = value; }
-
-        [XmlElement("Anchor")]
+        
         public AnchorType AnchorType { get => anchor.Type; set => anchor.Type = value; }
-
-        [XmlAttribute("relativex")]
+        
         public int LocalX { get; set; }
 
-        [XmlAttribute("relativey")]
         public int LocalY { get; set; }
 
-        [XmlIgnore]
-        [LuaHide]
         public Vector2 localOrigin { get; set; }
 
-        [XmlIgnore]
         public virtual GameSettings Settings { get => Parent.Settings; protected set => settings = value; }
 
         public bool IsOpen { get; set; } = true;
         public bool DrawBorder { get; set; } = true;
 
         public string Tag { get; protected set; }
-        #endregion
+
         public bool RenderBackgroundColor { get; set; } = false;
-
         public bool IsSticky { get; set; } = true;
-
         public bool IsActive { get; set; } = true;
 
         public bool ClipContents = false;
 
         public int ClipPadding = 1;
+
+        #endregion
+
+        #region NineSlice
+        public bool NineSliceEnabled { get; private set; } = false;
+
+        public NineSlice NineSlice { get; private set; }
+
+        public void EnableNineSlice(NineSlice n)
+        {
+            NineSliceEnabled = true;
+            DrawBorder = false;
+            NineSlice = n;
+        }
+        public void EnableNineSlice(Texture2D ns_tx)
+        {
+            NineSliceEnabled = true;
+            DrawBorder = false;
+            NineSlice = new NineSlice(ns_tx, BoundingRectangle);
+        }
+        #endregion
+
         #region overload for Containers as parent
 
         public Container()
@@ -150,6 +153,7 @@ namespace HyperLinkUI.Engine.GUI
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
         #endregion
+
         public Container(UIRoot myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container")
         {
             ChildContainers = new List<Container>();
@@ -194,7 +198,7 @@ namespace HyperLinkUI.Engine.GUI
             if (ClipContents)
             {
                 Rectangle srect = BoundingRectangle;
-                srect.Size -= new Point(ClipPadding);
+                srect.Size -= new Point(ClipPadding*2);
                 srect.Location += new Point(ClipPadding);
                 guiSpriteBatch.GraphicsDevice.ScissorRectangle = srect;
             }
@@ -210,11 +214,18 @@ namespace HyperLinkUI.Engine.GUI
                 guiSpriteBatch.Draw(Settings.InactiveWindowTexture, BoundingRectangle, Settings.InactiveWindowTexture.Bounds, Color.White);
 
             guiSpriteBatch.End();
-            guiSpriteBatch.Begin(SpriteSortMode.Deferred, rasterizerState:new RasterizerState { ScissorTestEnable = true});
-            
+            guiSpriteBatch.GraphicsDevice.ScissorRectangle = scissor_reset;
+            guiSpriteBatch.Begin(rasterizerState:new RasterizerState { ScissorTestEnable = true});
+
             if (DrawBorder)
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.ContainerBorderColor);
-            guiSpriteBatch.GraphicsDevice.ScissorRectangle = scissor_reset;
+
+            if (NineSliceEnabled)
+            {
+                NineSlice.BindRect = BoundingRectangle;
+                
+                NineSlice.Draw(guiSpriteBatch);
+            }
         }
 
         public void TransferWidget(Widget widget)
@@ -223,7 +234,9 @@ namespace HyperLinkUI.Engine.GUI
             widget.Parent.RemoveChildWidget(widget);
             child_widgets.Add(widget);
         }
+
         private void RemoveChildWidget(Widget w) { ChildWidgets.Remove(w); }
+
         /// <summary>
         /// Transfer ownershiip of the Container from wherever it was previously to this particular Container.
         /// </summary>
@@ -233,20 +246,8 @@ namespace HyperLinkUI.Engine.GUI
             ChildContainers.Add(containerToAdd);
             containerToAdd.SetNewContainerParent(this);
         }
-        public void SetNewContainerParent(Container container)
-        {
-            parent = container;
-            Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, parent, Width, Height);
-            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
-        }
 
-        public void SetNewContainerParent(UIRoot container)
-        {
-            parent = container;
-            Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, parent, Width, Height);
-            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
-        }
-
+        
         public void PrintChildren(int layer)
         {
             string indent1 = "----";
@@ -274,6 +275,7 @@ namespace HyperLinkUI.Engine.GUI
             return parent;
         }
 
+        #region close/open
         public void Close()
         {
             IsOpen = false;
@@ -282,6 +284,24 @@ namespace HyperLinkUI.Engine.GUI
         {
             IsOpen = true;
         }
+        #endregion
+
+        #region setnewcontainerparent
+                public void SetNewContainerParent(Container container)
+                {
+                    parent = container;
+                    Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, parent, Width, Height);
+                    BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
+                }
+
+                public void SetNewContainerParent(UIRoot container)
+                {
+                    parent = container;
+                    Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, parent, Width, Height);
+                    BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
+                }
+                #endregion
+
         public List<Container> GetContainersAbove(Container window)
         {
 
@@ -312,7 +332,6 @@ namespace HyperLinkUI.Engine.GUI
         {
             Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height);
         }
-
         public void PushToTop(Container c)
         {
             ChildContainers.Remove(c);

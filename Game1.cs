@@ -71,7 +71,7 @@ namespace HyperLinkUI
             SceneManager = new SceneManager(Settings, UI_SAVES_DIRECTORY + @"\settings.xml", UIContentManager, graphicsManager, Window);
             SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
             SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
-            ns_test = new NineSlice(Content.Load<Texture2D>("GUI/Textures/NS_WINDOW_2X"), GraphicsDevice, new Rectangle(0, 0, 300, 500));
+            ns_test = new NineSlice(Content.Load<Texture2D>("GUI/Textures/NS_WINDOW_2X"), new Rectangle(0, 0, 300, 500));
 
         }
         protected override void Update(GameTime gameTime)
@@ -105,7 +105,7 @@ namespace HyperLinkUI
 
             UISpriteBatch.Begin(rasterizerState:new RasterizerState() { ScissorTestEnable = true });
             SceneManager.Draw(UISpriteBatch);
-            ns_test.Draw(UISpriteBatch);
+            //ns_test.Draw(UISpriteBatch);
             UISpriteBatch.End();
             base.Draw(gameTime);
             Window.Title = "FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;

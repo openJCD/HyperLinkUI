@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
+using Windows.Devices.Input;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -25,6 +26,7 @@ namespace HyperLinkUI.Engine.GUI
         public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; protected set => anchor.AbsolutePosition = value; }
 
         private Rectangle dragZone;
+        public bool Resizeable = false;
 
         public WindowContainer()
         {
@@ -74,6 +76,7 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!IsOpen)
                 return;
+            Vector2 mouseDelta = newState.Position.ToVector2() - oldState.Position.ToVector2();
             dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size - new Point(close_button.Width, 0));
             List<Container> containers_above_me = parent.GetContainersAbove(this);
             if (dragZone.Contains(oldState.Position))
@@ -83,12 +86,12 @@ namespace HyperLinkUI.Engine.GUI
                     parent.BringWindowToTop(this);
                     if (parent.draggedWindow == this)
                     {
-                        Vector2 mouseDelta = newState.Position.ToVector2() - oldState.Position.ToVector2();
                         anchor.AbsolutePosition += mouseDelta;
                         headerbar.IsSticky = true;
                     }
                 }
             }
+
             foreach (Container window in containers_above_me)
             {
                 if (window.BoundingRectangle.Intersects(BoundingRectangle) && window != this)
@@ -96,6 +99,24 @@ namespace HyperLinkUI.Engine.GUI
                     IsActive = false; return;
                 }
                 else IsActive = true;
+            }
+            if (NineSliceEnabled)
+            {
+                headerbar.Height = NineSlice.BaseTexture.Height / 3;
+            }
+            if (!IsActive)
+                return;
+            if (Resizeable)
+            {
+                headerbar.Width = Width;
+                Rectangle resizeArea = new Rectangle(new Point(BoundingRectangle.Right - 10, BoundingRectangle.Bottom - 10), new Point(10, 10));
+                if (resizeArea.Contains(oldState.Position) )
+                {
+                    Mouse.SetCursor(MouseCursor.SizeNWSE);
+                    if (oldState.LeftButton == ButtonState.Pressed)
+                        bounding_rectangle.Size += mouseDelta.ToPoint();
+                }
+                else Mouse.SetCursor(MouseCursor.Arrow);
             }
             base.Update(oldState, newState);
         }
