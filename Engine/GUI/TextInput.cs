@@ -15,6 +15,7 @@ namespace HyperLinkUI.Engine.GUI
         public string Hint;
         string _input_text;
         SpriteFont fnt;
+        public bool FillParent { get => container.FillParentWidth; set => container.FillParentWidth = value; }
         Vector2 cursor_pos { get => new Vector2(cursor_pos_x, 0) + _txt_widget.Anchor.AbsolutePosition; }
         int cursor_pos_x;
         int cursor_pos_index;

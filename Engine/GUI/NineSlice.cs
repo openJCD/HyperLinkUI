@@ -35,13 +35,13 @@ namespace HyperLinkUI.Engine.GUI
             tex_H = tex.Height / 3;
             BindRect = bind;
             slice_size = new Point(tex_W, tex_H);
-            TL = new Slice( SliceType.TopLeft, tex);
-            TM = new Slice( SliceType.TopMid, tex);
-            TR = new Slice( SliceType.TopRight, tex);
+            TL = new Slice(SliceType.TopLeft, tex);
+            TM = new Slice(SliceType.TopMid, tex);
+            TR = new Slice(SliceType.TopRight, tex);
             ML = new Slice(SliceType.MiddleLeft, tex);
             C  = new Slice(SliceType.Center, tex);
-            MR = new Slice( SliceType.MiddleRight, tex);
-            BL = new Slice( SliceType.BottomLeft, tex);
+            MR = new Slice(SliceType.MiddleRight, tex);
+            BL = new Slice(SliceType.BottomLeft, tex);
             BM = new Slice(SliceType.BottomMid, tex);
             BR = new Slice(SliceType.BottomRight, tex);
         }

@@ -19,11 +19,14 @@ namespace HyperLinkUI.Engine.GUI
             textbox = new TextInput(window, 0, 0, window.Width, hint:"...");
             textlog = new TextLabel(window, "Debug mode is enabled. \nPress F11 to disable again.", 0, 20);
             window.Close();
+            
+            window.Resizeable = true;
             window.ToggleCloseButtonEnabled();
             UIEventHandler.DebugMessage += ReceiveMessage;
             UIEventHandler.OnKeyReleased += CheckF11;
             UIEventHandler.OnTextFieldSubmit += CheckCommandGiven;
             textlog.DrawDebugRect = true;
+            textbox.FillParent = true;
             textlog.WrapText = true;
         }
         public void Dispose()
@@ -73,6 +76,16 @@ namespace HyperLinkUI.Engine.GUI
                     {
                         try { UIEventHandler.sendDebugMessage(this, SceneManager.ActiveScene.ScriptHandler[tokens[1]].ToString()); }
                         catch { UIEventHandler.sendDebugMessage(this, "Could not find the requested value in current lua script"); }
+                    }
+                    return;
+                default:
+                    try
+                    {
+                        var msg = SceneManager.ActiveScene.ScriptHandler.DoString(string.Join("", tokens));
+                        UIEventHandler.sendDebugMessage(this, msg.ToString());
+                    } catch (Exception e)
+                    {
+                        UIEventHandler.sendDebugMessage(this, e.Message);
                     }
                     return;
             }

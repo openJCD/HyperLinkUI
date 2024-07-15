@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using NLua;
 using Newtonsoft.Json;
 using HyperLinkUI.Scenes;
+using System.Diagnostics.Eventing.Reader;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -71,6 +72,10 @@ namespace HyperLinkUI.Engine.GUI
         public bool ClipContents = false;
 
         public int ClipPadding = 1;
+
+        public bool FillParentWidth = false;
+
+        public bool FillParentHeight = false;
 
         #endregion
 
@@ -180,6 +185,11 @@ namespace HyperLinkUI.Engine.GUI
             if (BoundingRectangle.Contains(newState.Position))
                 isUnderMouseFocus = true;
             else isUnderMouseFocus = false;
+
+            if (FillParentWidth)
+                Width = parent.Width;
+            if (FillParentHeight)
+                Height = parent.Height;
 
             BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
 

@@ -50,7 +50,7 @@ namespace HyperLinkUI.Scenes
             scripthandler["_function_exists_"] = false;
 
             if (args == null)
-                scripthandler.DoString($"if {func} then  _function_exists_ = true; {func}() end");
+                scripthandler.DoString($"if {func} then _function_exists_ = true; {func}() end");
             else
             {
                 scripthandler.DoString($"if {func} then _function_exists_= true end");

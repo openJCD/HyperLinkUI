@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics.Eventing.Reader;
-using Windows.Graphics.Imaging;
 
 namespace HyperLinkUI.Engine.GUI
 {
