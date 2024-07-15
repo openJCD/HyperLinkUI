@@ -23,6 +23,7 @@ namespace HyperLinkUI.Engine.GUI
         protected AnchorCoord anchor;
         private bool isUnderMouseFocus;
         private GameSettings settings;
+        RasterizerState rstate;
 
         #region Properties/Members
         [XmlIgnore]
@@ -85,6 +86,10 @@ namespace HyperLinkUI.Engine.GUI
         public bool IsSticky { get; set; } = true;
 
         public bool IsActive { get; set; } = true;
+
+        public bool ClipContents = false;
+
+        public int ClipPadding = 1;
         #region overload for Containers as parent
 
         public Container()
@@ -117,6 +122,7 @@ namespace HyperLinkUI.Engine.GUI
             ChildWidgets = new List<Widget>();
             ChildContainers = new List<Container>();
             Parent = parent;
+
             parent.AddContainer(this);
         }
 
@@ -125,6 +131,7 @@ namespace HyperLinkUI.Engine.GUI
             ChildWidgets = new List<Widget>();
             ChildContainers = new List<Container>();
             Parent = parent;
+
             parent.AddContainer(this);
         }
 
@@ -182,13 +189,17 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!IsOpen)
                 return;
-
+            
+            Rectangle scissor_reset = guiSpriteBatch.GraphicsDevice.ScissorRectangle ;
+            if (ClipContents)
+            {
+                Rectangle srect = BoundingRectangle;
+                srect.Size -= new Point(ClipPadding);
+                srect.Location += new Point(ClipPadding);
+                guiSpriteBatch.GraphicsDevice.ScissorRectangle = srect;
+            }
             if (RenderBackgroundColor)
                 guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.ContainerFillColor);
-
-            if (DrawBorder)
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.ContainerBorderColor);
-
 
             foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
@@ -197,6 +208,13 @@ namespace HyperLinkUI.Engine.GUI
 
             if (!IsActive)
                 guiSpriteBatch.Draw(Settings.InactiveWindowTexture, BoundingRectangle, Settings.InactiveWindowTexture.Bounds, Color.White);
+
+            guiSpriteBatch.End();
+            guiSpriteBatch.Begin(SpriteSortMode.Deferred, rasterizerState:new RasterizerState { ScissorTestEnable = true});
+            
+            if (DrawBorder)
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.ContainerBorderColor);
+            guiSpriteBatch.GraphicsDevice.ScissorRectangle = scissor_reset;
         }
 
         public void TransferWidget(Widget widget)

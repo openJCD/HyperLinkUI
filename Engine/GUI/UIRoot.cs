@@ -17,9 +17,9 @@ namespace HyperLinkUI.Engine.GUI
     public class UIRoot : IContainer
     {
         private MouseState oldmousestate;
-        private MouseState newmousestate;
+        private static MouseState newmousestate;
         
-        public MouseState MouseState { get => newmousestate; }
+        public static MouseState MouseState { get => newmousestate; }
 
         private KeyboardState oldkstate;
         private KeyboardState newkstate;
@@ -141,10 +141,8 @@ namespace HyperLinkUI.Engine.GUI
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.DrawCircle(oldmousestate.Position.ToVector2(), 5, 3, Color.Purple);
             foreach (Container container in ChildContainers)
                 container.Draw(guiSpriteBatch);
-            guiSpriteBatch.DrawCircle(newmousestate.Position.ToVector2(), 5, 10, Color.Green);
         }
 
         public void AddContainer(Container containerToAdd)
@@ -208,9 +206,9 @@ namespace HyperLinkUI.Engine.GUI
                 if (c.IsUnderMouseFocus)
                 {
                     returnc.Add(c);
-                    c.DrawBorder = false;
+                    //c.DrawBorder = false;
                 }
-                else c.DrawBorder = true;
+                //else c.DrawBorder = true;
             }
             return returnc;
         }

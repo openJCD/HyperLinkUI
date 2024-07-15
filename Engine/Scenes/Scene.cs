@@ -12,7 +12,7 @@ using HyperLinkUI.Engine.GUI;
 using HyperLinkUI.Scenes;
 using HyperLinkUI.Engine;
 
-namespace HyperLinkUI.Engine.Scenes
+namespace HyperLinkUI.Scenes
 {
     public class Scene
     {
@@ -45,8 +45,8 @@ namespace HyperLinkUI.Engine.Scenes
             // set up lua globals
             ScriptHandler["scene_manager"] = sceneManager;
             ScriptHandler["scene_root"] = SceneRoot;
-            ScriptHandler["game_graphics"] = sceneManager.GlobalGraphicsDeviceManager;
-            ScriptHandler["global_settings"] = sceneManager.GlobalSettings;
+            ScriptHandler["game_graphics"] = SceneManager.GlobalGraphicsDeviceManager;
+            ScriptHandler["global_settings"] = SceneManager.GlobalSettings;
 
             // expose API to lua instance
             new SceneAPI().ExposeTo(ScriptHandler);
@@ -75,7 +75,7 @@ namespace HyperLinkUI.Engine.Scenes
             // ScriptHandler.Close();
             // ScriptHandler.Dispose();
             // these cause an AccessViolationException on scene reload. silly me! for some damn reason this error isnt always triggered??
-            // END OF DANGER ZONE ////
+            /// END OF DANGER ZONE ///
         }
     }
 }

@@ -16,13 +16,11 @@ namespace HyperLinkUI
         public const string UI_SAVES_DIRECTORY = "Content/GUI/Saves/";
         //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
-        
+
         private SpriteBatch UISpriteBatch;
 
-        public static GameWindow GameWindow;
-
         Texture2D txNode;
-
+        NineSlice ns_test;
         GlobalMap Map;
 
         private KeyboardState oldKeyboardState;
@@ -40,7 +38,6 @@ namespace HyperLinkUI
             graphicsManager = new GraphicsDeviceManager(this);
             UIContentManager = new ContentManager(Content.ServiceProvider);
             UIContentManager.RootDirectory = "Content/GUI/";
-            GameWindow = Window;
             IsMouseVisible = true;
         }
 
@@ -50,16 +47,6 @@ namespace HyperLinkUI
             UIEventHandler.OnButtonClick += Game1_HandleOnButtonClick;
             
             // check if the Loader throws an exception
-            Settings = GameSettings.TryLoadSettings(UI_SAVES_DIRECTORY, "/settings.xml");
-            Settings.LoadAllContent(UIContentManager);
-            
-            Window.Title = Settings.WindowTitle;
-            Window.AllowUserResizing = true;
-            graphicsManager.ApplyChanges();
-
-            SceneManager = new SceneManager(Settings, UI_SAVES_DIRECTORY+@"\settings.xml", UIContentManager, graphicsManager, Window);
-            SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
-            SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
             base.Initialize();
         }
         private void Game1_HandleOnButtonClick(object sender, OnButtonClickEventArgs e)
@@ -74,13 +61,18 @@ namespace HyperLinkUI
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            txNode = Content.Load<Texture2D>("Game/node");
-            Map = new GlobalMap(SceneManager.activeSceneUIRoot.ChildContainers[0]);
-            Map.TexturePath = "Game/WORLDMAP";
-            //Map = GlobalMap.Load(SceneManager.activeSceneUIRoot.ChildContainers[0], "Content/Game/MapData.json", Content);
-            Map.AddChild(new NetworkNode(Map, txNode,"MapNode 1", 100, 100));
-            Map.Children[0].AddChild(new NetworkNode(Map.Children[0], txNode, "MapNode 2", 150, 100));
-            Map.Children[0].Children[0].AddChild(new NetworkNode(Map.Children[0].Children[0], txNode, "MapNode 3", 150, 150));
+            Settings = GameSettings.TryLoadSettings(UI_SAVES_DIRECTORY, "/settings.xml");
+            Settings.LoadAllContent(UIContentManager);
+
+            Window.Title = Settings.WindowTitle;
+            Window.AllowUserResizing = true;
+            graphicsManager.ApplyChanges();
+
+            SceneManager = new SceneManager(Settings, UI_SAVES_DIRECTORY + @"\settings.xml", UIContentManager, graphicsManager, Window);
+            SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
+            SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
+            ns_test = new NineSlice(Content.Load<Texture2D>("GUI/Textures/NS_WINDOW_2X"), GraphicsDevice, new Rectangle(0, 0, 300, 500));
+
         }
         protected override void Update(GameTime gameTime)
         {
@@ -111,8 +103,10 @@ namespace HyperLinkUI
         {
             GraphicsDevice.Clear(Color.Black);
 
+            UISpriteBatch.Begin(rasterizerState:new RasterizerState() { ScissorTestEnable = true });
             SceneManager.Draw(UISpriteBatch);
-            
+            ns_test.Draw(UISpriteBatch);
+            UISpriteBatch.End();
             base.Draw(gameTime);
             Window.Title = "FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
         }

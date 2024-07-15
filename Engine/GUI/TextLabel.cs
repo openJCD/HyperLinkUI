@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Linq;
 using System.Xml.Serialization;
-using HyperLinkUI.Engine.GUI;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -11,11 +11,13 @@ namespace HyperLinkUI.Engine.GUI
         private SpriteFont font;
         private string text;
 
+        public bool WrapText = false;
+
         [XmlIgnore]
         public SpriteFont Font { get => font; set => font = value; }
 
         [XmlElement]
-        public string Text { get => text; set => text = value; }
+        public string Text { get => text; set {text = Wrap(value);} }
 
         public TextLabel() { }
 
@@ -68,6 +70,25 @@ namespace HyperLinkUI.Engine.GUI
             Width = (int)font.MeasureString(Text).X;
             Height = (int)font.MeasureString(Text).Y;
             base.UpdatePos();
+        }
+
+        private string Wrap(string txt)
+        {
+            if (!WrapText) return txt;
+            string[] lines = txt.Split("\n");
+            string result = "";
+            int index = 0;
+            foreach (char letter in txt)
+            {
+                result += letter;
+                lines = result.Split("\n");
+                if (font.MeasureString(lines.Last()).X >= Parent.Width)
+                {
+                    result += "\n";
+                }
+                index++;
+            }
+            return result;
         }
     }
 }

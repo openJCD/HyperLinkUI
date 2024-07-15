@@ -1,18 +1,12 @@
 ﻿using HyperLinkUI.Engine.GUI;
-using HyperLinkUI.Engine.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using NLua;
-using NLua.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
-using System.Windows.Forms;
-using Button = HyperLinkUI.Engine.GUI.Button;
 
 namespace HyperLinkUI.Scenes
 {
@@ -21,9 +15,7 @@ namespace HyperLinkUI.Scenes
         [LuaHide]
         DebugConsole dbc;
         [LuaHide]
-        bool _haltLuaVMUpdate;
-
-        
+        static bool _haltLuaVMUpdate;
 
         [LuaHide]
         string _haltedErrorMsg = "";
@@ -32,7 +24,7 @@ namespace HyperLinkUI.Scenes
 
         ContentManager SceneContentManager;
         [LuaHide]
-        public Scene ActiveScene { get; private set; }
+        public static Scene ActiveScene { get; private set; }
         [LuaHide]
         public UIRoot activeSceneUIRoot;
 
@@ -42,14 +34,14 @@ namespace HyperLinkUI.Scenes
 
         public string GlobalSettingsPath { get; set; }
         [LuaHide]
-        public GameSettings GlobalSettings { get; private set; }
+        public static GameSettings GlobalSettings { get; private set; }
         [LuaHide]
         public GraphicsDevice GlobalGraphicsDeviceReference { get; private set; }
 
-        public GameWindow GlobalWindowReference { get; private set; }
+        public static GameWindow GlobalWindowReference { get; private set; }
 
         [LuaHide]
-        public GraphicsDeviceManager GlobalGraphicsDeviceManager { get; private set; }
+        public static GraphicsDeviceManager GlobalGraphicsDeviceManager { get; private set; }
 
         public SceneManager(GameSettings settings, string pathToSettings, ContentManager content, GraphicsDeviceManager globalGraphicsReference, GameWindow window)
         {
@@ -132,13 +124,13 @@ namespace HyperLinkUI.Scenes
             //run the lua draw thing if possible
              if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
             
-            guiSpriteBatch.Begin(SpriteSortMode.Deferred);
+            //guiSpriteBatch.Begin(SpriteSortMode.Deferred);
             activeSceneUIRoot.Draw(guiSpriteBatch);
-            guiSpriteBatch.End();
+            //guiSpriteBatch.End();
         }
         public void UISceneManager_OnResize(object sender, EventArgs e)
         {
-            activeSceneUIRoot.OnWindowResize(GlobalWindowReference);
+            activeSceneUIRoot?.OnWindowResize(GlobalWindowReference);
         }
         public void UISceneManager_OnHotReload(object sender, HotReloadEventArgs e)
         {
@@ -170,9 +162,9 @@ namespace HyperLinkUI.Scenes
             LuaHelper.TryLuaFunction(ActiveScene.ScriptHandler, "OnDebugMessage", sender, e);
         }
 
-        public static bool IsLuaHalted(SceneManager sm)
+        public static bool IsLuaHalted()
         {
-            return sm._haltLuaVMUpdate;
+            return _haltLuaVMUpdate;
         }
 
         public void HaltLuaUpdate()

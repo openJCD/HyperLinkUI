@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperLinkUI.Engine.Scenes
+namespace HyperLinkUI.Scenes
 {
     public static class LuaHelper
     {
@@ -45,7 +45,7 @@ namespace HyperLinkUI.Engine.Scenes
         /// </example>
         public static void TryLuaFunction(Lua scripthandler, string func, params object[] args)
         {
-            if (SceneManager.IsLuaHalted(Game1.SceneManager)) return;
+            if (SceneManager.IsLuaHalted()) return;
             // replace this PLEASEGOD ARGH
             scripthandler["_function_exists_"] = false;
 

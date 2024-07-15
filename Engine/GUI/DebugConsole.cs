@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Bson;
+﻿using HyperLinkUI.Scenes;
+using Newtonsoft.Json.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace HyperLinkUI.Engine.GUI
         public DebugConsole(UIRoot parent)
         {
             window = new WindowContainer(parent, 0, 0, 300, 450, "dialog_debug_console", "Debug Console", AnchorType.BOTTOMRIGHT);
-            textbox = new TextInput(window, parent.Settings.PrimarySpriteFont, 0, 0, window.Width, hint:"...");
+            textbox = new TextInput(window, 0, 0, window.Width, hint:"...");
             textlog = new TextLabel(window, "Debug mode is enabled. \nPress F11 to disable again.", 0, 20);
             window.Close();
             window.ToggleCloseButtonEnabled();
@@ -23,6 +24,7 @@ namespace HyperLinkUI.Engine.GUI
             UIEventHandler.OnKeyReleased += CheckF11;
             UIEventHandler.OnTextFieldSubmit += CheckCommandGiven;
             textlog.DrawDebugRect = true;
+            textlog.WrapText = true;
         }
         public void Dispose()
         {
@@ -56,6 +58,23 @@ namespace HyperLinkUI.Engine.GUI
             {
                 tokens.RemoveAt(0);
                 UIEventHandler.sendDebugMessage(this, string.Join(" ", tokens));
+            }
+            switch (tokens[0])
+            {
+                case ("echo"):
+                    if (tokens.Count()>1)
+                    {
+                        tokens.RemoveAt(0);
+                        UIEventHandler.sendDebugMessage(this, string.Join(" ", tokens));
+                    }
+                    return;
+                case ("getLuaItem"):
+                    if (tokens.Count()>1)
+                    {
+                        try { UIEventHandler.sendDebugMessage(this, SceneManager.ActiveScene.ScriptHandler[tokens[1]].ToString()); }
+                        catch { UIEventHandler.sendDebugMessage(this, "Could not find the requested value in current lua script"); }
+                    }
+                    return;
             }
         }
     }

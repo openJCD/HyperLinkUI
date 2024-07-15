@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using HyperLinkUI.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -21,6 +19,7 @@ namespace HyperLinkUI.Engine.GUI
         int cursor_pos_x;
         int cursor_pos_index;
         bool caps;
+        public int Padding;
 
         string charsBeforeCursor { get
             {
@@ -44,27 +43,54 @@ namespace HyperLinkUI.Engine.GUI
         bool active;
         public bool Active { get => active; private set => active = value; }
 
-        public TextInput(Container parent, SpriteFont font, int relx, int rely, int width, AnchorType anchorType = AnchorType.BOTTOMLEFT, string hint = "type here", int padding=2) : base(parent)
+        public TextInput(Container parent, int relx, int rely, int width, AnchorType anchorType = AnchorType.BOTTOMLEFT, string hint = "type here", int padding=2) : base(parent)
         {
+            fnt = parent.Settings.PrimarySpriteFont;
             _rstate = new RasterizerState() { ScissorTestEnable = true };
-            Height = (int)(font.MeasureString("|").Y + padding*2);
+            Padding = padding;
+            Height = (int)(fnt.MeasureString("|").Y + padding*2);
             Anchor = new AnchorCoord(relx, rely, anchorType, parent, width, Height);
             BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, Height);
             container = new Container(parent, relx, rely, width, Height, anchorType, hint);
-            _txt_widget = new TextLabel(container, hint, font, padding, padding, AnchorType.TOPLEFT);
+            _txt_widget = new TextLabel(container, hint, fnt, padding, padding, AnchorType.TOPLEFT);
             Hint = hint;
-            fnt = font;
 
             UIEventHandler.OnKeyPressed += TextInput_RegisterKeyPress;
-            Game1.GameWindow.TextInput += TextInput_RegsiterTextInput;
+            SceneManager.GlobalWindowReference.TextInput += TextInput_RegsiterTextInput;
             _txt_widget.UpdatePos();
             cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
             cursor_pos_index = 0;
+            container.ClipContents = true;
+            container.ClipPadding = padding/2;
+            SetNewParent(container);
+        }
+        public TextInput (Container parent):base(parent)
+        {
+            fnt = parent.Settings.PrimarySpriteFont;
+            anchorType = AnchorType.TOPLEFT;
+            _rstate = new RasterizerState() { ScissorTestEnable = true };
+            Padding = 2;
+            Height = (int)(fnt.MeasureString("|").Y + 4);
+            Anchor = new AnchorCoord(0, 0, anchorType, parent, 300, Height);
+            BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, 300, Height);
+            container = new Container(parent, 0, 0, 300, Height, anchorType, "Text input container");
+            _txt_widget = new TextLabel(container, "Text here...", fnt, 2, 2, AnchorType.TOPLEFT);
+            Hint = "Text here...";
+
+            UIEventHandler.OnKeyPressed += TextInput_RegisterKeyPress;
+            SceneManager.GlobalWindowReference.TextInput += TextInput_RegsiterTextInput;
+            _txt_widget.UpdatePos();
+            cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
+            cursor_pos_index = 0;
+            container.ClipContents = true;
+            container.ClipPadding = 2;
+            SetNewParent(container);
         }
         public override void Draw(SpriteBatch guiSpriteBatch) {
             if (Active)
             {
                 guiSpriteBatch.DrawString(fnt, "|", cursor_pos, Color.White);
+                //guiSpriteBatch.FillRectangle(new Rectangle(XPos, YPos, 300, 300), Color.BlueViolet);
                 _txt_widget.Text = InputText;
             }            
         }
@@ -76,7 +102,12 @@ namespace HyperLinkUI.Engine.GUI
             cursor_pos_index = MathHelper.Clamp(cursor_pos_index, 0, _input_chars.Count);
             if (Active)
             {
-                cursor_pos_x = (int)fnt.MeasureString(charsBeforeCursor).X;
+                if (!(cursor_pos_x >= container.BoundingRectangle.Right - 2))
+                    cursor_pos_x = (int)fnt.MeasureString(charsBeforeCursor).X; 
+                else
+                {
+
+                }
             }
         }
 
@@ -127,6 +158,12 @@ namespace HyperLinkUI.Engine.GUI
                 cursor_pos_index -= 1;
                 _input_chars.RemoveAt(cursor_pos_index);
             }
+        }
+
+        public void SetFont(SpriteFont font)
+        {
+            fnt = font;
+            Height = (int)fnt.MeasureString("|").Y + Padding * 2;
         }
     }
 }

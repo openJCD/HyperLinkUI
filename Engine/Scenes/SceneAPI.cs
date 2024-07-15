@@ -12,8 +12,9 @@ using System.Runtime.CompilerServices;
 using System.Reflection;
 using HyperLinkUI.Engine.GameSystems;
 using Microsoft.Xna.Framework.Content;
+using HyperLinkUI.Scenes;
 #nullable enable
-namespace HyperLinkUI.Engine.Scenes
+namespace HyperLinkUI.Scenes
 {
     public class SceneAPI
     {
@@ -22,8 +23,9 @@ namespace HyperLinkUI.Engine.Scenes
         {
             foreach (MethodInfo m in GetType().GetMethods())
             {
-                lua.RegisterFunction(m.Name, m);
+                lua.RegisterFunction(m.Name, this, m);
             }
+            
         }
         #endregion 
 
@@ -55,13 +57,13 @@ namespace HyperLinkUI.Engine.Scenes
         {
             return new Checkbox(parent, text, x, y, tag, btnsizex, btnsizey, LuaHelper.GetEnumFromString<AnchorType>(anchor));
         }
-        public static TextInput new_text_input(Container parent, string hint, SpriteFont font, int relx, int rely, int w, AnchorType at)
+        public static TextInput new_text_input(Container parent, string hint, int relx, int rely, int w, string at)
         {
-            return new TextInput(parent, font, relx, rely, w, at, hint);
+            return new TextInput(parent, relx, rely, w, LuaHelper.GetEnumFromString<AnchorType>(at), hint);
         }
         #endregion 
 
-        #region drawing
+        #region  drawing
         public static Camera new_camera()
         {
             return new Camera();
@@ -100,8 +102,8 @@ namespace HyperLinkUI.Engine.Scenes
             var func = man.GetScene(scene_name).ScriptHandler.GetFunction(function);
             func.Call(args);
         }
-
-        public static SpriteFont new_spritefont(ContentManager c, string path)
+            
+        public static SpriteFont load_spritefont(ContentManager c, string path)
         {
             return c.Load<SpriteFont>(path);
         }
@@ -128,23 +130,23 @@ namespace HyperLinkUI.Engine.Scenes
             else return false;
         }
 
-        public static int get_mouse_x(UIRoot root)
+        public static int get_mouse_x()
         {
-            return root.MouseState.X;
+            return UIRoot.MouseState.X;
         }
 
-        public static int get_mouse_y(UIRoot root)
+        public static int get_mouse_y()
         {
-            return root.MouseState.Y;
+            return UIRoot.MouseState.Y;
         }
-        public static bool get_mouse_left(UIRoot root)
+        public static bool get_mouse_left()
         {
-            return root.MouseState.LeftButton == ButtonState.Pressed;
+            return UIRoot.MouseState.LeftButton == ButtonState.Pressed;
         }
 
-        public static bool get_mouse_right(UIRoot root)
+        public static bool get_mouse_right()
         {
-            return root.MouseState.RightButton == ButtonState.Pressed;
+            return UIRoot.MouseState.RightButton == ButtonState.Pressed;
         }
         #endregion
 

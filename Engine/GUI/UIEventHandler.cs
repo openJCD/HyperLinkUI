@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HyperLinkUI.Engine.Scenes;
+using HyperLinkUI.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using SharpDX.WIC;
 
 namespace HyperLinkUI.Engine.GUI
 {
