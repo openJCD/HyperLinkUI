@@ -44,7 +44,7 @@ namespace HyperLinkUI.Engine.GUI
             if (e.released_key_as_string == "F11")
             {
                 window.IsSticky = true;
-                window.IsOpen = !window.IsOpen;
+                if (window.IsOpen) window.Close(); else window.Open();
                 window.IsSticky = false;
             }
         }

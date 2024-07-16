@@ -3,6 +3,7 @@ using HyperLinkUI.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SharpDX.DirectWrite;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -21,6 +22,8 @@ namespace HyperLinkUI.Engine.GUI
         int cursor_pos_index;
         bool caps;
         public int Padding;
+
+        bool NineSliceEnabled { get => container.NineSliceEnabled; }
 
         string charsBeforeCursor { get
             {
@@ -93,7 +96,8 @@ namespace HyperLinkUI.Engine.GUI
                 guiSpriteBatch.DrawString(fnt, "|", cursor_pos, Color.White);
                 //guiSpriteBatch.FillRectangle(new Rectangle(XPos, YPos, 300, 300), Color.BlueViolet);
                 _txt_widget.Text = InputText;
-            }            
+            }
+
         }
 
         public override void Update(MouseState oldState, MouseState newState)
@@ -105,10 +109,6 @@ namespace HyperLinkUI.Engine.GUI
             {
                 if (!(cursor_pos_x >= container.BoundingRectangle.Right - 2))
                     cursor_pos_x = (int)fnt.MeasureString(charsBeforeCursor).X; 
-                else
-                {
-
-                }
             }
         }
 
@@ -165,6 +165,11 @@ namespace HyperLinkUI.Engine.GUI
         {
             fnt = font;
             Height = (int)fnt.MeasureString("|").Y + Padding * 2;
+        }
+
+        public void EnableNineSlice(Texture2D t)
+        {
+            container.EnableNineSlice(t);
         }
     }
 }

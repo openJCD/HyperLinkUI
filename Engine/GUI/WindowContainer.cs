@@ -136,5 +136,16 @@ namespace HyperLinkUI.Engine.GUI
         {
             close_button.Enabled = !close_button.Enabled;
         }
+
+        public override void Open()
+        {
+            parent.BringWindowToTop(this);
+            base.Open();
+        }
+        public override void Close()
+        {
+            parent.PushWindowToBottom(this);
+            base.Close();
+        }
     }
 }

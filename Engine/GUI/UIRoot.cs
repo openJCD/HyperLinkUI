@@ -173,6 +173,11 @@ namespace HyperLinkUI.Engine.GUI
             draggedWindow = window;
         }
 
+        public void PushWindowToBottom(Container window)
+        {
+            ChildContainers.Remove(window);
+            ChildContainers.Insert(0, window);
+        }
         public List<Container> GetContainersAbove(Container window)
         {
             int index = ChildContainers.IndexOf(window);

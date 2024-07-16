@@ -215,6 +215,13 @@ namespace HyperLinkUI.Engine.GUI
             if (RenderBackgroundColor)
                 guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.ContainerFillColor);
 
+            if (NineSliceEnabled)
+            {
+                NineSlice.BindRect = BoundingRectangle;
+                
+                NineSlice.Draw(guiSpriteBatch);
+            }
+
             foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
             foreach (var child in ChildWidgets)
@@ -230,12 +237,6 @@ namespace HyperLinkUI.Engine.GUI
             if (DrawBorder)
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.ContainerBorderColor);
 
-            if (NineSliceEnabled)
-            {
-                NineSlice.BindRect = BoundingRectangle;
-                
-                NineSlice.Draw(guiSpriteBatch);
-            }
         }
 
         public void TransferWidget(Widget widget)
@@ -286,11 +287,11 @@ namespace HyperLinkUI.Engine.GUI
         }
 
         #region close/open
-        public void Close()
+        public virtual void Close()
         {
             IsOpen = false;
         }
-        public void Open()
+        public virtual void Open()
         {
             IsOpen = true;
         }
