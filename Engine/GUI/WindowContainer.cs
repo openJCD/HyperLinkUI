@@ -101,6 +101,7 @@ namespace HyperLinkUI.Engine.GUI
             if (NineSliceEnabled)
             {
                 headerbar.Height = NineSlice.BaseTexture.Height / 3;
+                headerbar.DrawBorder = false;
             }
             if (!IsActive)
                 return;

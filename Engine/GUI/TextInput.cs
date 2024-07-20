@@ -22,7 +22,7 @@ namespace HyperLinkUI.Engine.GUI
         int cursor_pos_index;
         bool caps;
         public int Padding;
-
+        Rectangle paddedRect;
         bool NineSliceEnabled { get => container.NineSliceEnabled; }
 
         string charsBeforeCursor { get
@@ -65,7 +65,8 @@ namespace HyperLinkUI.Engine.GUI
             cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
             cursor_pos_index = 0;
             container.ClipContents = true;
-            container.ClipPadding = padding/2;
+            container.ClipPadding = padding / 2;
+            paddedRect = create_padded_rect(BoundingRectangle, padding);
             SetNewParent(container);
         }
         public TextInput (Container parent):base(parent)
@@ -97,12 +98,14 @@ namespace HyperLinkUI.Engine.GUI
                 //guiSpriteBatch.FillRectangle(new Rectangle(XPos, YPos, 300, 300), Color.BlueViolet);
                 _txt_widget.Text = InputText;
             }
-
+            //guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
         }
 
         public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);
+            paddedRect = create_padded_rect(BoundingRectangle, Padding);
+            container.BoundingRectangle = paddedRect;
             if (BoundingRectangle.Contains(newState.Position)) Active = true; else Active = false;
             cursor_pos_index = MathHelper.Clamp(cursor_pos_index, 0, _input_chars.Count);
             if (Active)
@@ -145,6 +148,13 @@ namespace HyperLinkUI.Engine.GUI
                 }
             }
         }
+        private Rectangle create_padded_rect (Rectangle rectangle, int padding)
+        {
+            Rectangle p = rectangle;
+            p.Location -= new Point(padding);
+            p.Size += new Point(padding * 2);
+            return p;
+        }
 
         private void AddChar(char ch)
         {
@@ -170,6 +180,7 @@ namespace HyperLinkUI.Engine.GUI
         public void EnableNineSlice(Texture2D t)
         {
             container.EnableNineSlice(t);
+            //container.NineSlice.DrawMode = NSDrawMode.Padded;
         }
     }
 }

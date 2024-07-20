@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework.Graphics;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using static System.Net.Mime.MediaTypeNames;
-using System.Security.Cryptography.X509Certificates;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -27,7 +19,7 @@ namespace HyperLinkUI.Engine.GUI
         Slice BL;
         Slice BM;
         Slice BR;
-
+        public NSDrawMode DrawMode = NSDrawMode.Snug;
         public NineSlice(Texture2D tex, Rectangle bind)
         {
             BaseTexture = tex;
@@ -50,26 +42,48 @@ namespace HyperLinkUI.Engine.GUI
         {
             //each of these coords doesn't actually represent the corners, 
             //they represent the topleft of each texture's position at the corners.
-            int tr_x = BindRect.Right - tex_W;
-            int tr_y = BindRect.Top;
 
-            int bl_x = BindRect.Left;
-            int bl_y = BindRect.Bottom - tex_H;
+            Point tl;
+           
+            Point tr; 
 
-            int mid_w = BindRect.Width - tex_W * 2;
-            int mid_h = BindRect.Height - tex_H * 2;
+            int bl_x, bl_y;
+            Point bl;
 
-            Point br_pnt = new Point(tr_x, BindRect.Bottom - tex_H);
-            TL.Draw(sb, new Rectangle(BindRect.Location, slice_size));
-            TM.Draw(sb, new Rectangle(new Point(BindRect.X + tex_W, BindRect.Y), new Point(mid_w, tex_H)));
-            TR.Draw(sb, new Rectangle(new Point(tr_x, tr_y),slice_size));
-            ML.Draw(sb, new Rectangle(new Point(BindRect.X, BindRect.Y + tex_W), new Point(tex_W, mid_h)));
-            C.Draw(sb, new Rectangle(new Point(BindRect.X+tex_W, BindRect.Y + tex_H), BindRect.Size - slice_size));
-            MR.Draw(sb, new Rectangle(new Point(tr_x, tr_y + tex_H), new Point(tex_W, mid_h)));
-            BL.Draw(sb, new Rectangle(new Point(bl_x, bl_y), slice_size));
-            BM.Draw(sb, new Rectangle(new Point(bl_x + tex_W, bl_y), new Point(mid_w, tex_H)));
-            BR.Draw(sb, new Rectangle(br_pnt, slice_size));
+            Point br;
+            int mid_w, mid_h;
+            Point mid_size;
 
+            if (DrawMode == NSDrawMode.Snug)
+            {
+                tl = BindRect.Location;
+                tr = new Point(BindRect.Right - tex_W, BindRect.Top);
+
+                bl = new Point(BindRect.Left, BindRect.Bottom - tex_H);
+                mid_w = BindRect.Width - tex_W * 2;
+                mid_h = BindRect.Height - tex_H * 2;
+                br = new Point(tr.X, BindRect.Bottom - tex_H);
+            } else
+            {
+                tl = BindRect.Location - slice_size;
+                tr = new Point(BindRect.Right, BindRect.Top - tex_H);
+                bl = new Point(BindRect.Left - tex_W, BindRect.Bottom);
+                br = new Point(BindRect.Right, BindRect.Bottom);
+                mid_w = BindRect.Width;
+                mid_h = BindRect.Height;
+            }
+            mid_size = new Point(mid_w, mid_h);
+
+            Point br_pnt = new Point(tr.X, BindRect.Bottom - tex_H);
+            TL.Draw(sb, new Rectangle(tl, slice_size));
+            TM.Draw(sb, new Rectangle(new Point(tl.X + tex_W, tl.Y), new Point(mid_w, tex_H)));
+            TR.Draw(sb, new Rectangle(new Point(tr.X, tr.Y),slice_size));
+            ML.Draw(sb, new Rectangle(new Point(tl.X, tl.Y + tex_W), new Point(tex_W, mid_h)));
+            C.Draw(sb, new Rectangle(new Point(tl.X+tex_W, tl.Y + tex_H), BindRect.Size - slice_size));
+            MR.Draw(sb, new Rectangle(new Point(tr.X, tr.Y + tex_H), new Point(tex_W, mid_h)));
+            BL.Draw(sb, new Rectangle(bl, slice_size));
+            BM.Draw(sb, new Rectangle(new Point(bl.X + tex_W, bl.Y), new Point(mid_w, tex_H)));
+            BR.Draw(sb, new Rectangle(br, slice_size));
         }
     }
 
@@ -135,5 +149,10 @@ namespace HyperLinkUI.Engine.GUI
         BottomLeft=02,
         BottomMid=12,
         BottomRight=22
+    }
+    public enum NSDrawMode
+    {
+        Snug, 
+        Padded
     }
 }

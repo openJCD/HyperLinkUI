@@ -83,13 +83,8 @@ namespace HyperLinkUI.Engine.GUI
         public bool NineSliceEnabled { get; private set; } = false;
 
         public NineSlice NineSlice { get; private set; }
+      
 
-        public void EnableNineSlice(NineSlice n)
-        {
-            NineSliceEnabled = true;
-            DrawBorder = false;
-            NineSlice = n;
-        }
         public void EnableNineSlice(Texture2D ns_tx)
         {
             NineSliceEnabled = true;
@@ -218,7 +213,6 @@ namespace HyperLinkUI.Engine.GUI
             if (NineSliceEnabled)
             {
                 NineSlice.BindRect = BoundingRectangle;
-                
                 NineSlice.Draw(guiSpriteBatch);
             }
 
@@ -230,13 +224,12 @@ namespace HyperLinkUI.Engine.GUI
             if (!IsActive)
                 guiSpriteBatch.Draw(Settings.InactiveWindowTexture, BoundingRectangle, Settings.InactiveWindowTexture.Bounds, Color.White);
 
+
             guiSpriteBatch.End();
             guiSpriteBatch.GraphicsDevice.ScissorRectangle = scissor_reset;
             guiSpriteBatch.Begin(rasterizerState:new RasterizerState { ScissorTestEnable = true});
-
             if (DrawBorder)
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.ContainerBorderColor);
-
         }
 
         public void TransferWidget(Widget widget)
