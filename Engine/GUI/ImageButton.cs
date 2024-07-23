@@ -10,7 +10,7 @@ namespace HyperLinkUI.Engine.GUI
     public class ImageButton : Button
     {
         protected Texture2D texture;
-        protected AnimatedTextureAtlas texturesheet;
+        protected SpriteSheet texturesheet;
 
         public ImageButton()
         {
@@ -41,7 +41,7 @@ namespace HyperLinkUI.Engine.GUI
             // button atlas should ALWAYS be 3 even-width images. Frame 0 is static, 1 is under mouse and 2 is clicked.
             int width = texture.Width / 3;
             int height = texture.Height;
-            texturesheet = new AnimatedTextureAtlas(texture, 1, 3);
+            texturesheet = new SpriteSheet(texture, 1, 3);
             DebugLabel += ", " + tag;
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
@@ -61,7 +61,7 @@ namespace HyperLinkUI.Engine.GUI
             // button atlas should ALWAYS be 3 even-width images. Frame 0 is static, 1 is under mouse and 2 is clicked.
             int width = texture.Width / 3;
             int height = texture.Height;
-            texturesheet = new AnimatedTextureAtlas(texture, 1, 3);
+            texturesheet = new SpriteSheet(texture, 1, 3);
 
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
@@ -98,14 +98,14 @@ namespace HyperLinkUI.Engine.GUI
         public void SetTexture(Texture2D texture)
         {
             this.texture = texture;
-            texturesheet = new AnimatedTextureAtlas(texture, 1, 3);
+            texturesheet = new SpriteSheet(texture, 1, 3);
         }
         public void SetTextureFromFile(GraphicsDevice graphics, string txpath)
         {
             Stream sr = new FileStream(txpath, FileMode.Open);
 
             texture = Texture2D.FromStream(graphics, sr);
-            texturesheet = new AnimatedTextureAtlas(texture, 1, 3);
+            texturesheet = new SpriteSheet(texture, 1, 3);
         }
     }
 }

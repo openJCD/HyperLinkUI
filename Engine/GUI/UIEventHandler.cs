@@ -10,7 +10,7 @@ namespace HyperLinkUI.Engine.GUI
 #nullable enable
     // classes for EventArgs
     public class OnButtonClickEventArgs : EventArgs { public EventType? event_type; public string? tag; }
-    public class HotReloadEventArgs : EventArgs { public GraphicsDeviceManager graphicsDeviceReference; }
+    public class HotReloadEventArgs : EventArgs { public GraphicsDeviceManager graphicsDeviceReference { get; set; } }
     public class KeyReleasedEventArgs : EventArgs
     {
         public Keys[] released_keys;
@@ -43,11 +43,14 @@ namespace HyperLinkUI.Engine.GUI
     {
         public static event EventHandler<OnButtonClickEventArgs> OnButtonClick;
         public static event EventHandler<MouseClickArgs> OnMouseClick;
+        public static event EventHandler<MouseClickArgs> OnMouseUp;
         public static event EventHandler<HotReloadEventArgs> OnHotReload;
         public static event EventHandler<KeyReleasedEventArgs> OnKeyReleased;
         public static event EventHandler<KeyPressedEventArgs> OnKeyPressed;
         public static event EventHandler<MiscTextEventArgs> DebugMessage;
         public static event EventHandler<MiscTextEventArgs> OnTextFieldSubmit;
+
+        public static event EventHandler<MouseClickArgs> MousePropagationReceived;
 
         public static void onKeyReleased(object sender, KeyReleasedEventArgs e)
         {
@@ -84,6 +87,16 @@ namespace HyperLinkUI.Engine.GUI
         {
             MiscTextEventArgs s = new MiscTextEventArgs { txt = e };
             OnTextFieldSubmit?.Invoke(sender, s);
+        }
+
+        public static void onMouseUp(object sender, MouseClickArgs e)
+        {
+            OnMouseUp?.Invoke(sender, e);
+        }
+
+        public static void mousePropagationReceived(object sender, MouseClickArgs e)
+        {
+            MousePropagationReceived?.Invoke(sender, e);
         }
     }
 }

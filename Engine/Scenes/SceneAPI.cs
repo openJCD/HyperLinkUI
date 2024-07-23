@@ -13,6 +13,7 @@ using System.Reflection;
 using HyperLinkUI.Engine.GameSystems;
 using Microsoft.Xna.Framework.Content;
 using HyperLinkUI.Scenes;
+using HyperLinkUI.Engine.Animations;
 #nullable enable
 namespace HyperLinkUI.Scenes
 {
@@ -63,7 +64,7 @@ namespace HyperLinkUI.Scenes
         }
         #endregion 
 
-        #region  drawing
+        #region drawing
         public static Camera new_camera()
         {
             return new Camera();
@@ -72,10 +73,18 @@ namespace HyperLinkUI.Scenes
         {
             return new CameraTarget(parent, name, new Vector2(x, y), lz);
         }
-
         public static DrawLayer new_draw_layer(GraphicsDevice g, Camera c)
         {
             return new DrawLayer(g, c);
+        }
+        public static void enable_animation(IAnimateable a)
+        {
+            a.AnimationTarget = new AnimationTarget(a);
+            a.EnableAnimate = true;
+        }
+        public static void play_anim_oneshot(string animationKey, IAnimateable a)
+        {
+            AnimationManager.Instance.RunAnimation(animationKey, a);
         }
         #endregion
 

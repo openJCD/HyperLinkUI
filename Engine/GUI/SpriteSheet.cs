@@ -1,23 +1,21 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI.Engine.GUI
 {
-    public class AnimatedTextureAtlas
+    public class SpriteSheet : AnimationComponent
     {
-        //go visit rbwhitaker.wikidot.com/texture-atlases for this cuz it isn't my code
+        //go visit rbwhitaker.wikidot.com/texture-atlases for this cuz most of it isn't my code
         public Texture2D Texture { get; set; }
         public Rectangle InGameBounds { get; private set; }
         public int Rows { get; set; }
         public int Columns { get; set; }
         private int currentFrame;
         private int totalFrames;
-        public AnimatedTextureAtlas(Texture2D texture, int rows, int columns)
+        private bool animationComplete = true;
+        private bool isOneShot;
+        public SpriteSheet(Texture2D texture, int rows, int columns)
         {
             Texture = texture;
             Rows = rows;
@@ -48,6 +46,32 @@ namespace HyperLinkUI.Engine.GUI
         public void forceFrame(int frame)
         {
             currentFrame = frame;
+        }
+        /// <summary>
+        /// Update the animation every time the total game tick % onTick == 0.
+        /// </summary>
+        /// <param name="gameTick">Total number of ticks since the game</param>
+        public void UpdateTick(int t, int gameTick)
+        {
+            if (animationComplete) return;
+            if (gameTick % t == 0)
+            { 
+                currentFrame += 1;
+                if (currentFrame == totalFrames)
+                {
+                    currentFrame = 0;
+                    if (isOneShot)
+                    {
+                        animationComplete = true;
+                    }
+                }
+            }
+        }
+
+        public void PlayOneShot()
+        {
+            isOneShot = true;
+            animationComplete = false;
         }
     }
 }

@@ -10,12 +10,13 @@ using NLua;
 using Newtonsoft.Json;
 using HyperLinkUI.Scenes;
 using System.Diagnostics.Eventing.Reader;
+using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI.Engine.GUI
 {
     [XmlInclude(typeof(WindowContainer))]
     [XmlInclude(typeof(Taskbar))]
-    public class Container : IContainer, Anchorable
+    public class Container : IContainer, Anchorable, IAnimateable, IDisposable
     {
         private List<Container> child_containers;
         private List<Widget> child_widgets;
@@ -78,12 +79,15 @@ namespace HyperLinkUI.Engine.GUI
         public bool FillParentHeight = false;
 
         #endregion
+        public Color BlendColor { get; set; } = Color.White;
 
         #region NineSlice
         public bool NineSliceEnabled { get; private set; } = false;
 
         public NineSlice NineSlice { get; private set; }
-      
+        public bool EnableAnimate { get; set; }
+
+        public AnimationTarget AnimationTarget { get; set; } 
 
         public void EnableNineSlice(Texture2D ns_tx)
         {
@@ -99,12 +103,14 @@ namespace HyperLinkUI.Engine.GUI
         {
             ChildContainers = new List<Container>();
             ChildWidgets = new List<Widget>();
+            AnimationTarget = new AnimationTarget(this);
             DebugLabel = "container";
+            UIEventHandler.OnMouseUp += OnMouseClick;
         }
 
         ~Container()
         {
-            //Dispose();
+            Dispose();
         }
         public void Dispose()
         {
@@ -113,6 +119,7 @@ namespace HyperLinkUI.Engine.GUI
                 Debug.WriteLine("Decoupling Container from parent...");
                 Parent.ChildContainers.Remove(this);
                 Parent.ChildContainers = Parent.ChildContainers.ToList();
+                UIEventHandler.OnMouseUp -= OnMouseClick;
                 Debug.Write(" Done. Out of scope? \n");
             }
             catch
@@ -120,55 +127,23 @@ namespace HyperLinkUI.Engine.GUI
                 Debug.WriteLine("Failed to decouple container. Parent was likely null");
             }
         }
-        protected Container(IContainer parent)
+        protected Container(IContainer parent) : this()
         {
-            ChildWidgets = new List<Widget>();
-            ChildContainers = new List<Container>();
             Parent = parent;
-
             parent.AddContainer(this);
         }
-
-        protected Container(UIRoot parent)
+        public Container(IContainer parent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container"): this(parent)
         {
-            ChildWidgets = new List<Widget>();
-            ChildContainers = new List<Container>();
-            Parent = parent;
-
-            parent.AddContainer(this);
-        }
-
-        public Container(Container myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container")
-        {
-            ChildContainers = new List<Container>();
-            ChildWidgets = new List<Widget>();
             DebugLabel = debugLabel;
-            Parent = myParent;
             LocalX = paddingx;
             LocalY = paddingy;
-            Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
-            myParent.AddContainer(this);
+            Anchor = new AnchorCoord(paddingx, paddingy, anchorType, parent, width, height);
+            parent.AddContainer(this);
 
             localOrigin = new Vector2(Width / 2, Height / 2);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
         #endregion
-
-        public Container(UIRoot myParent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container")
-        {
-            ChildContainers = new List<Container>();
-            ChildWidgets = new List<Widget>();
-            DebugLabel = debugLabel;
-            Parent = myParent;
-            IsOpen = true;
-            LocalX = paddingx;
-            LocalY = paddingy;
-            Anchor = new AnchorCoord(paddingx, paddingy, anchorType, myParent, width, height);
-            myParent.AddContainer(this);
-
-            localOrigin = new Vector2(Width / 2, Height / 2);
-            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
-        }
         public virtual void Update(MouseState oldState, MouseState newState)
         {
             if (!IsOpen)
@@ -340,6 +315,32 @@ namespace HyperLinkUI.Engine.GUI
         {
             ChildContainers.Remove(c);
             ChildContainers.Insert(0,c);
+        }
+
+        public UIRoot FindRoot()
+        {
+            return Parent.FindRoot();
+        }
+
+        public void PropagateClickUp(Container c)
+        {
+            Parent.PropagateClickUp(c);
+        }
+
+        public void PropagateClickDown(Container c)
+        {
+            if (this == c)
+            {
+                ChildWidgets.ForEach(x => x.ReceivePropagatedClick(c));
+                UIEventHandler.mousePropagationReceived(this, new MouseClickArgs { mouse_data = UIRoot.MouseState });
+            }
+            ChildContainers.ForEach(x => x.PropagateClickDown(c));
+        }
+
+        private void OnMouseClick(object sender, MouseClickArgs e)
+        {
+            if (BoundingRectangle.Contains(e.mouse_data.Position))
+                PropagateClickUp(this);
         }
     }
 }

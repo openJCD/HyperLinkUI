@@ -37,8 +37,17 @@
     <PackageReference Include="NLua" Version="1.7.2" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Content\backgrounds\crosses.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\GUI\Scripts\Animations\readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\GUI\Textures\NS_TEXTINPUT.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Saves\settings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="fmod.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

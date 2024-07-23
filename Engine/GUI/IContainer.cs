@@ -21,5 +21,9 @@ namespace HyperLinkUI.Engine.GUI
         public void AddContainer(Container container) { }
 
         public List<Container> GetContainersAbove(Container window);
+
+        public UIRoot FindRoot();
+
+        public void PropagateClickUp(Container c);
     }
 }

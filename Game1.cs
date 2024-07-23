@@ -7,6 +7,8 @@ using System.Diagnostics;
 using HyperLinkUI.Engine.GameSystems;
 using HyperLinkUI.Scenes;
 using HyperLinkUI.Engine.GUI;
+using HyperLinkUI.Engine;
+using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI
 {
@@ -30,7 +32,7 @@ namespace HyperLinkUI
         public static ContentManager UIContentManager; //manager for fonts and shit
         public static SceneManager SceneManager { get; private set; }
 
-        GameSettings Settings;
+        GameSettings Settings { get => Core.Settings; set => Core.Settings = value; }
         
         public static UIRoot screenRoot;
 
@@ -48,6 +50,7 @@ namespace HyperLinkUI
             // test for button click events
             UIEventHandler.OnButtonClick += Game1_HandleOnButtonClick;
             
+            SceneManager = Core.Init(UIContentManager, graphicsManager, Window);
             // check if the Loader throws an exception
             base.Initialize();
         }
@@ -63,27 +66,9 @@ namespace HyperLinkUI
         {
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
             SpriteBatch = new SpriteBatch(GraphicsDevice);
-            Settings = GameSettings.TryLoadSettings(UI_SAVES_DIRECTORY, "/settings.xml");
-            Settings.LoadAllContent(UIContentManager);
 
-            Window.Title = Settings.WindowTitle;
-            Window.AllowUserResizing = true;
-            graphicsManager.ApplyChanges();
+            Core.LoadAll(SceneManager, "Content/GUI/Scenes/", "default.scene", "Content/GUI/Scripts/Animations");
 
-            SceneManager = new SceneManager(Settings, UI_SAVES_DIRECTORY + @"\settings.xml", UIContentManager, graphicsManager, Window);
-            SceneManager.CreateScenesFromFolder("Content/GUI/Scenes/");
-            SceneManager.LoadScene("default.scene"); //.scene extension must be used but .lua is ignored. idk why. cba to fix
-            //ns_test = new NineSlice(Content.Load<Texture2D>("GUI/Textures/NS_WINDOW_2X"), new Rectangle(0, 0, 300, 500));
-            Texture2D background_plus_large = Content.Load<Texture2D>("background_plus_large");
-            //BG = new Background(background_plus_large);
-            //BG.AddLayer("bg_plus_small", Content.Load<Texture2D>("background_plus_small"), BackgroundRenderMode.Tiled, BackgroundAnimateMode.ScrollSW, 10);
-            //BG.AddLayer("bg_plus_lrg", background_plus_large, BackgroundRenderMode.Tiled, BackgroundAnimateMode.ScrollSE);
-            //BG.SetLayerBlend("base", new Color(30, 30, 30));
-            //BG.SetLayerBlend("bg_plus_lrg", new Color(50, 50, 50));
-            //BG.SetLayerBlend("bg_plus_small", new Color(20,20,20));
-            //BG.SetLayerOffset("bg_plus_lrg", new Vector2(64, 64));
-            //BG.Layers["base"].AnimateSpeed = 15;
-            //BG.Export("Content/backgrounds/crosses.json");
             Background.Import("Content/backgrounds/crosses.json", Content, out BG);
         }
         protected override void Update(GameTime gameTime)
@@ -94,26 +79,9 @@ namespace HyperLinkUI
                 return;
             KeyboardState newKeyboardState = Keyboard.GetState();
             SceneManager.Update(gameTime);
-            // check for f5, if so hot reload settings
-            if (oldKeyboardState.IsKeyUp(Keys.F5) && newKeyboardState.IsKeyDown(Keys.F5))
-            {
-                Debug.WriteLine("Hot Reloading Settings ...");
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                Settings.Dispose();
-                UIEventHandler.onHotReload(this, new HotReloadEventArgs() { graphicsDeviceReference = graphicsManager });// global event called so application can hot-reload itself
-                Settings = GameSettings.TryLoadSettings(UI_SAVES_DIRECTORY, "/settings.xml");
-                Settings.LoadAllContent(UIContentManager);
-                Background.Import("Content/backgrounds/crosses.json", Content, out BG);
-                SceneManager.LoadScene("default.scene");
-                sw.Stop();
-                Debug.WriteLine("Done in " + sw.ElapsedMilliseconds + "ms");
-            }
-
             oldKeyboardState = newKeyboardState;
-            //WorldViewCam.ViewportWidth = graphicsManager.GraphicsDevice.Viewport.Width;
-            //WorldViewCam.ViewportHeight = graphicsManager.GraphicsDevice.Viewport.Height;
             BG.Animate(gameTime);
+            //AnimationManager.Instance.Update();
         }
 
         protected override void Draw(GameTime gameTime)
@@ -129,7 +97,6 @@ namespace HyperLinkUI
             //ns_test.Draw(UISpriteBatch);
             UISpriteBatch.End();
             base.Draw(gameTime);
-            Window.Title = "FPS:" + 1 / gameTime.ElapsedGameTime.TotalSeconds;
         }
     }
 }

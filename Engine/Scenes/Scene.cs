@@ -45,8 +45,8 @@ namespace HyperLinkUI.Scenes
             // set up lua globals
             ScriptHandler["scene_manager"] = sceneManager;
             ScriptHandler["scene_root"] = SceneRoot;
-            ScriptHandler["game_graphics"] = SceneManager.GlobalGraphicsDeviceManager;
-            ScriptHandler["global_settings"] = SceneManager.GlobalSettings;
+            ScriptHandler["game_graphics"] = Core.GraphicsManager;
+            ScriptHandler["global_settings"] = Core.Settings;
 
             // expose API to lua instance
             new SceneAPI().ExposeTo(ScriptHandler);
@@ -54,28 +54,22 @@ namespace HyperLinkUI.Scenes
             // actually call the script itself
             ScriptCaller.Call();
             // call required "Init()" function
-            try
-            {
+            //try
+            //{
                 ScriptHandler.GetFunction("Init").Call();
-            }
-            catch (Exception ex)
-            {
-                UIEventHandler.sendDebugMessage(this, new MiscTextEventArgs { txt="Error: " + ex.Message });
-                var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, "dialog_error", "There was an error...", AnchorType.CENTRE);
-                var dtl = new TextLabel(dc, ex.Message, 0, 0, AnchorType.CENTRE);
-                sceneManager.HaltLuaUpdate();
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    UIEventHandler.sendDebugMessage(this, new MiscTextEventArgs { txt="Error: " + ex.Message });
+            //    var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, "dialog_error", "There was an error...", AnchorType.CENTRE);
+            //    var dtl = new TextLabel(dc, ex.Message, 0, 0, AnchorType.CENTRE);
+            //    sceneManager.HaltLuaUpdate();
+            //}
             return SceneRoot;
         }
         public void Dispose()
         {
             ScriptCaller.Dispose();
-
-            /////// DANGER ZONE //////
-            // ScriptHandler.Close();
-            // ScriptHandler.Dispose();
-            // these cause an AccessViolationException on scene reload. silly me! for some damn reason this error isnt always triggered??
-            /// END OF DANGER ZONE ///
         }
     }
 }

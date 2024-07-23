@@ -102,6 +102,7 @@ namespace HyperLinkUI.Engine.GUI
         public void LoadAllContent(ContentManager manager)
         {
             ContentManager = manager;
+            
             PrimarySpriteFont = ContentManager.Load<SpriteFont>(PrimarySpriteFontPath);
             SecondarySpriteFont = ContentManager.Load<SpriteFont>(SecondarySpriteFontPath);
             LargeButtonTexture = ContentManager.Load<Texture2D>(LargeButtonTexturePath);

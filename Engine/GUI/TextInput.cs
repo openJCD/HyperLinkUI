@@ -9,12 +9,10 @@ namespace HyperLinkUI.Engine.GUI
 {
     public class TextInput : Widget
     {
-        RasterizerState _rstate;
         Container container;
         TextLabel _txt_widget;
         List<char> _input_chars = new List<char>();
         public string Hint;
-        string _input_text;
         SpriteFont fnt;
         public bool FillParent { get => container.FillParentWidth; set => container.FillParentWidth = value; }
         Vector2 cursor_pos { get => new Vector2(cursor_pos_x, 0) + _txt_widget.Anchor.AbsolutePosition; }
@@ -24,7 +22,6 @@ namespace HyperLinkUI.Engine.GUI
         public int Padding;
         Rectangle paddedRect;
         bool NineSliceEnabled { get => container.NineSliceEnabled; }
-
         string charsBeforeCursor { get
             {
                 if (_input_chars != null && _input_chars.Count>0)
@@ -50,7 +47,6 @@ namespace HyperLinkUI.Engine.GUI
         public TextInput(Container parent, int relx, int rely, int width, AnchorType anchorType = AnchorType.BOTTOMLEFT, string hint = "type here", int padding=2) : base(parent)
         {
             fnt = parent.Settings.PrimarySpriteFont;
-            _rstate = new RasterizerState() { ScissorTestEnable = true };
             Padding = padding;
             Height = (int)(fnt.MeasureString("|").Y + padding*2);
             Anchor = new AnchorCoord(relx, rely, anchorType, parent, width, Height);
@@ -60,20 +56,20 @@ namespace HyperLinkUI.Engine.GUI
             Hint = hint;
 
             UIEventHandler.OnKeyPressed += TextInput_RegisterKeyPress;
-            SceneManager.GlobalWindowReference.TextInput += TextInput_RegsiterTextInput;
+            Core.Window.TextInput += TextInput_RegsiterTextInput;
             _txt_widget.UpdatePos();
             cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
             cursor_pos_index = 0;
             container.ClipContents = true;
             container.ClipPadding = padding / 2;
             paddedRect = create_padded_rect(BoundingRectangle, padding);
+            container.BoundingRectangle = paddedRect;
             SetNewParent(container);
         }
         public TextInput (Container parent):base(parent)
         {
             fnt = parent.Settings.PrimarySpriteFont;
             anchorType = AnchorType.TOPLEFT;
-            _rstate = new RasterizerState() { ScissorTestEnable = true };
             Padding = 2;
             Height = (int)(fnt.MeasureString("|").Y + 4);
             Anchor = new AnchorCoord(0, 0, anchorType, parent, 300, Height);
@@ -83,7 +79,7 @@ namespace HyperLinkUI.Engine.GUI
             Hint = "Text here...";
 
             UIEventHandler.OnKeyPressed += TextInput_RegisterKeyPress;
-            SceneManager.GlobalWindowReference.TextInput += TextInput_RegsiterTextInput;
+            Core.Window.TextInput += TextInput_RegsiterTextInput;
             _txt_widget.UpdatePos();
             cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
             cursor_pos_index = 0;
@@ -104,8 +100,9 @@ namespace HyperLinkUI.Engine.GUI
         public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);
-            paddedRect = create_padded_rect(BoundingRectangle, Padding);
-            container.BoundingRectangle = paddedRect;
+            //paddedRect = create_padded_rect(container.BoundingRectangle, Padding);
+            //container.BoundingRectangle = paddedRect;
+            BoundingRectangle = container.BoundingRectangle;
             if (BoundingRectangle.Contains(newState.Position)) Active = true; else Active = false;
             cursor_pos_index = MathHelper.Clamp(cursor_pos_index, 0, _input_chars.Count);
             if (Active)

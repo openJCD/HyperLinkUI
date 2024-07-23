@@ -165,25 +165,25 @@ namespace HyperLinkUI.Engine.GUI
             {
                 case (BackgroundAnimateMode.ScrollN):
                     y -= AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
-                    if (y <= 0 - h)
+                    if (y < 0 - h)
                         y = h;
                     Offset = new Vector2(x, y);
                     return;
                 case (BackgroundAnimateMode.ScrollS):
                     y += AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
-                    if (y >= h)
+                    if (y > h)
                         y = -h;
                     Offset = new Vector2(x, y);
                     return;
                 case (BackgroundAnimateMode.ScrollW):
                     x -= AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
-                    if (x <= 0 - w)
+                    if (x < 0 - w)
                         x = w;
                     Offset = new Vector2(x, y);
                     return;
                 case (BackgroundAnimateMode.ScrollE):
                     x += AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
-                    if (x >= w)
+                    if (x > w)
                         x = -w;
                     Offset = new Vector2(x, y);
                     //Debug.WriteLine(Offset);
@@ -191,7 +191,7 @@ namespace HyperLinkUI.Engine.GUI
                 case (BackgroundAnimateMode.ScrollNW):
                     x -= AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
                     y -= AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
-                    if (x <= -w && y <= -h)
+                    if (x < -w && y < -h)
                     { 
                         x = w; y = h;
                     }
@@ -200,7 +200,7 @@ namespace HyperLinkUI.Engine.GUI
                 case (BackgroundAnimateMode.ScrollNE):
                     x += AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
                     y -= AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
-                    if (x >= w && y <= -h)
+                    if (x > w && y < -h)
                     {
                         x = -w;
                         y = h;
@@ -210,7 +210,7 @@ namespace HyperLinkUI.Engine.GUI
                 case (BackgroundAnimateMode.ScrollSE):
                     x += AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
                     y += AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
-                    if (x >= w && y >= h)
+                    if (x > w && y > h)
                     {
                         x = -w; y = -h;
                     }
@@ -219,7 +219,7 @@ namespace HyperLinkUI.Engine.GUI
                 case (BackgroundAnimateMode.ScrollSW):
                     x -= AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
                     y += AnimateSpeed * (float)gt.ElapsedGameTime.TotalSeconds;
-                    if (x <= -w && y >= h)
+                    if (x < -w && y > h)
                     {
                         x = w; y = -h;
                     }

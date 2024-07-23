@@ -1,0 +1,43 @@
+{
+  "Layers": {
+    "base": {      
+      "BlendColor": {
+        "B": 25,
+        "G": 21,
+        "R": 21,
+        "A": 255
+      },
+      "RenderMode": 0,
+      "AnimateMode": 8,
+      "TexturePath": "background_plus_small",
+      "Offset": "1, 1",
+      "AnimateSpeed": 15
+    },    
+    "bg_plus_lrg_slow": {
+      "BlendColor": {
+        "B": 50,
+        "G": 50,
+        "R": 50,
+        "A": 200
+      },
+      "RenderMode": 0,
+      "AnimateMode": 7,
+      "TexturePath": "background_plus_large",
+      "Offset": "64, 64",
+      "AnimateSpeed": 21
+    },
+    "plus_large_fast": {
+      "BlendColor": {
+        "B": 75,
+        "G": 75,
+        "R": 75,
+        "A": 200
+      },
+      "RenderMode": 0,
+      "AnimateMode": 7,
+      "TexturePath": "background_plus_large",
+      "Offset": "0, 0",
+      "AnimateSpeed": 30
+    }
+  }
+}

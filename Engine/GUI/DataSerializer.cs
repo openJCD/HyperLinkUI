@@ -15,18 +15,9 @@ namespace HyperLinkUI.Engine.GUI
             XmlSerializer serializer = new XmlSerializer(typeof(GameSettings));
             if (Directory.Exists(savePath))
             {
-                if (File.Exists(savePath + saveName))
-                {
-                    FileStream streamWriter = new FileStream(savePath + "/" + saveName, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
-                    serializer.Serialize(streamWriter, myself);
-                    streamWriter.Close();
-                }
-                else
-                {
-                    File.Create(savePath + saveName);
-                    // Try saving again if the file exists.
-                    myself.Save(savePath, saveName);
-                }
+                FileStream streamWriter = new FileStream(savePath + "/" + saveName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+                serializer.Serialize(streamWriter, myself);
+                streamWriter.Close();
             }
             else
             {
@@ -40,7 +31,7 @@ namespace HyperLinkUI.Engine.GUI
             XmlSerializer serializer = new XmlSerializer(typeof(GameSettings));
             if (Directory.Exists(savePath))
             {
-                if (File.Exists(savePath + saveName))
+                if (File.Exists(savePath + "/" + saveName))
                 {
                     FileStream streamReader = new FileStream(savePath + "/" + saveName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     myself = (GameSettings)serializer.Deserialize(streamReader);
@@ -50,7 +41,7 @@ namespace HyperLinkUI.Engine.GUI
                 }
                 else
                 {
-                    File.Create(savePath + saveName);
+                    File.Create(savePath + "/" + saveName);
                     // Try saving/loading again if now the file exists.
                     myself.Save(savePath, saveName);
                     myself = myself.Load(savePath, saveName);

@@ -16,7 +16,7 @@ namespace HyperLinkUI.Engine.GUI
         public DebugConsole(UIRoot parent)
         {
             window = new WindowContainer(parent, 0, 0, 300, 450, "dialog_debug_console", "Debug Console", AnchorType.BOTTOMRIGHT);
-            textbox = new TextInput(window, 0, 0, window.Width, hint:"...");
+            textbox = new TextInput(window, 0, 0, window.Width, hint:"...", padding:2);
             textlog = new TextLabel(window, "Debug mode is enabled. \nPress F11 to disable again.", 0, 20);
             window.Close();
             
@@ -27,7 +27,10 @@ namespace HyperLinkUI.Engine.GUI
             UIEventHandler.OnTextFieldSubmit += CheckCommandGiven;
             textlog.DrawDebugRect = true;
             textbox.FillParent = true;
-            textlog.WrapText = true;
+            //
+            //
+            //textlog.WrapText = true;
+            window.ClipContents = true;
         }
         public void Dispose()
         {

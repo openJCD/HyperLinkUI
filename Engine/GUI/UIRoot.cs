@@ -8,7 +8,6 @@ using System.Linq;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Content;
 using NLua;
-using System.Reflection.Metadata.Ecma335;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -72,8 +71,10 @@ namespace HyperLinkUI.Engine.GUI
         [XmlIgnore]
         public Container draggedWindow { get; set; }
 
-        
-        public UIRoot(string settingsPath, string settingsFile, ContentManager manager)
+        public UIRoot() 
+        {
+        }
+        public UIRoot(string settingsPath, string settingsFile, ContentManager manager) : this()
         {
             ChildContainers = new List<Container>();
             ContainersUnderMouseHover = new List<Container>();
@@ -85,7 +86,7 @@ namespace HyperLinkUI.Engine.GUI
             ApplyNewSettings(Settings);
             ContainersUnderMouseHover = new List<Container>();
         }
-        public UIRoot(GameSettings settings)
+        public UIRoot(GameSettings settings) : this()
         {
             ChildContainers = new List<Container>();
             Settings = settings;
@@ -128,6 +129,14 @@ namespace HyperLinkUI.Engine.GUI
                 PrintUITree();
                 Debug.WriteLine(ContainersUnderMouseHover.ToString());
             }
+            if (newmousestate.LeftButton == ButtonState.Pressed && oldmousestate.LeftButton == ButtonState.Released)
+            {
+                UIEventHandler.onMouseClick(this, new MouseClickArgs { mouse_data = newmousestate });
+            }
+            if (newmousestate.LeftButton == ButtonState.Released && oldmousestate.LeftButton == ButtonState.Pressed)
+            {
+                UIEventHandler.onMouseUp(this, new MouseClickArgs { mouse_data = newmousestate });
+            }
             if (newkstate.GetPressedKeyCount() == 0 && oldkstate.GetPressedKeyCount() > 0)
             {
                 UIEventHandler.onKeyReleased(this, new KeyReleasedEventArgs() { released_keys = oldkstate.GetPressedKeys() });
@@ -138,6 +147,7 @@ namespace HyperLinkUI.Engine.GUI
             }
             oldkstate = newkstate;
             oldmousestate = newmousestate;
+            ResetClickList();
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
@@ -178,6 +188,7 @@ namespace HyperLinkUI.Engine.GUI
             ChildContainers.Remove(window);
             ChildContainers.Insert(0, window);
         }
+
         public List<Container> GetContainersAbove(Container window)
         {
             int index = ChildContainers.IndexOf(window);
@@ -234,6 +245,51 @@ namespace HyperLinkUI.Engine.GUI
             Width = 640; Height = 480;//reset to default values
             //Settings.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
             // ALSO remember to unsubscribe from events if applicable in future!
+        }
+
+        public List<WindowContainer> GetIntersectingWindows(Rectangle rect)
+        {
+            List<WindowContainer> rl = new List<WindowContainer>();
+            Predicate<Container> windows = x => x.GetType() == typeof(WindowContainer);
+            foreach (WindowContainer c in ChildContainers.FindAll(windows))
+            {
+                rl.Add(c);
+            }
+            return rl;
+        }
+        public UIRoot FindRoot() { return this; }
+
+        List<Container> clickTargets = new List<Container>();
+        int propagateCount = 0;
+        public void PropagateClickUp(Container c)
+        {
+
+            if (!clickTargets.Contains(c))
+                clickTargets.Add(c);
+            if (clickTargets.Count > 1)
+            {
+                if (c == clickTargets.Last() && propagateCount == 0)
+                {
+                    c.PropagateClickDown(c);
+                    propagateCount += 1;
+                    return;
+                }
+            } 
+            if (ContainersUnderMouseHover.Count == 1)
+            {
+                c.PropagateClickDown(c);
+                return;
+            }
+        }
+        
+        private void ResetClickList()
+        {
+            if (propagateCount == 0 && clickTargets.Count >0)
+            {
+                clickTargets.Last().PropagateClickDown(clickTargets.Last());
+            }
+            propagateCount = 0;
+            clickTargets.Clear();
         }
     }
 }
