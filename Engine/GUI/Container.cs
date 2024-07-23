@@ -149,12 +149,12 @@ namespace HyperLinkUI.Engine.GUI
             if (!IsOpen)
                 return;
 
-            if (IsSticky)
-                Anchor = new AnchorCoord(LocalX, LocalY, Anchor.Type, Parent, Width, Height);
-
             if (BoundingRectangle.Contains(newState.Position))
                 isUnderMouseFocus = true;
             else isUnderMouseFocus = false;
+
+            if (IsSticky)
+                Anchor = new AnchorCoord(LocalX, LocalY, Anchor.Type, Parent, Width, Height);
 
             if (FillParentWidth)
                 Width = parent.Width;
@@ -333,6 +333,7 @@ namespace HyperLinkUI.Engine.GUI
             {
                 ChildWidgets.ForEach(x => x.ReceivePropagatedClick(c));
                 UIEventHandler.mousePropagationReceived(this, new MouseClickArgs { mouse_data = UIRoot.MouseState });
+                return;
             }
             ChildContainers.ForEach(x => x.PropagateClickDown(c));
         }

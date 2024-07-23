@@ -127,7 +127,7 @@ namespace HyperLinkUI.Engine.GUI
             if (newmousestate.RightButton == ButtonState.Pressed && oldmousestate.RightButton == ButtonState.Released)
             {
                 PrintUITree();
-                Debug.WriteLine(ContainersUnderMouseHover.ToString());
+                Debug.WriteLine("Hovered containers:" + ContainersUnderMouseHover.Count);
             }
             if (newmousestate.LeftButton == ButtonState.Pressed && oldmousestate.LeftButton == ButtonState.Released)
             {
@@ -264,11 +264,11 @@ namespace HyperLinkUI.Engine.GUI
         public void PropagateClickUp(Container c)
         {
 
-            if (!clickTargets.Contains(c))
-                clickTargets.Add(c);
+            //if (!clickTargets.Contains(c))
+            clickTargets.Add(c);
             if (clickTargets.Count > 1)
             {
-                if (c == clickTargets.Last() && propagateCount == 0)
+                if (c == clickTargets.First() && propagateCount == 0)
                 {
                     c.PropagateClickDown(c);
                     propagateCount += 1;
@@ -277,16 +277,16 @@ namespace HyperLinkUI.Engine.GUI
             } 
             if (ContainersUnderMouseHover.Count == 1)
             {
-                c.PropagateClickDown(c);
+                //c.PropagateClickDown(c);
                 return;
             }
         }
         
         private void ResetClickList()
         {
-            if (propagateCount == 0 && clickTargets.Count >0)
+            if (clickTargets.Count == 1)
             {
-                clickTargets.Last().PropagateClickDown(clickTargets.Last());
+                clickTargets.First().PropagateClickDown(clickTargets.First());
             }
             propagateCount = 0;
             clickTargets.Clear();

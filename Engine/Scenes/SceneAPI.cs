@@ -83,7 +83,7 @@ namespace HyperLinkUI.Scenes
             a.EnableAnimate = true;
         }
         public static void play_anim_oneshot(string animationKey, IAnimateable a)
-        {
+        {   
             AnimationManager.Instance.RunAnimation(animationKey, a);
         }
         #endregion

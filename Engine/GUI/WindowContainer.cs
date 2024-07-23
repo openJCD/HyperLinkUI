@@ -72,8 +72,7 @@ namespace HyperLinkUI.Engine.GUI
         }
         public override void Update(MouseState oldState, MouseState newState)
         {
-            if (!IsOpen)
-                return;
+           
             Vector2 mouseDelta = newState.Position.ToVector2() - oldState.Position.ToVector2();
             dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size - new Point(close_button.Width, 0));
             List<Container> containers_above_me = parent.GetContainersAbove(this);
@@ -102,7 +101,9 @@ namespace HyperLinkUI.Engine.GUI
             {
                 headerbar.Height = NineSlice.BaseTexture.Height / 3;
                 headerbar.DrawBorder = false;
-            }
+            }            
+            
+
             if (!IsActive)
                 return;
             if (Resizeable)
