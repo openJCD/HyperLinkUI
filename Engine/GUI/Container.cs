@@ -329,10 +329,9 @@ namespace HyperLinkUI.Engine.GUI
 
         public void PropagateClickDown(Container c)
         {
+            ChildWidgets.ForEach(x => x.ReceivePropagatedClick(c));
             if (this == c)
             {
-                ChildWidgets.ForEach(x => x.ReceivePropagatedClick(c));
-                UIEventHandler.mousePropagationReceived(this, new MouseClickArgs { mouse_data = UIRoot.MouseState });
                 return;
             }
             ChildContainers.ForEach(x => x.PropagateClickDown(c));

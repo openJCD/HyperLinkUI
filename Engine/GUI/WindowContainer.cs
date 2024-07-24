@@ -118,6 +118,7 @@ namespace HyperLinkUI.Engine.GUI
                 }
                 else Mouse.SetCursor(MouseCursor.Arrow);
             }
+
             base.Update(oldState, newState);
         }
 

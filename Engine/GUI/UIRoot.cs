@@ -274,17 +274,13 @@ namespace HyperLinkUI.Engine.GUI
                     propagateCount += 1;
                     return;
                 }
-            } 
-            if (ContainersUnderMouseHover.Count == 1)
-            {
-                //c.PropagateClickDown(c);
-                return;
             }
         }
         
         private void ResetClickList()
         {
-            if (clickTargets.Count == 1)
+
+            if (clickTargets.Count  >= 1)
             {
                 clickTargets.First().PropagateClickDown(clickTargets.First());
             }
