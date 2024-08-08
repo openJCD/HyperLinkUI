@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using HyperLinkUI.Engine.Animations;
+using Microsoft.Xna.Framework;      
 
 namespace HyperLinkUI.Engine.GUI
 {
-    public class SpriteSheet : AnimationComponent
+    public class SpriteSheet 
     {
         //go visit rbwhitaker.wikidot.com/texture-atlases for this cuz most of it isn't my code
         public Texture2D Texture { get; set; }

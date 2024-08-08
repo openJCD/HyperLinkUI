@@ -29,39 +29,40 @@ namespace HyperLinkUI.Engine.GUI
             State = false;
             this.btnwidth = btnwidth;
             this.btnheight = btnheight;
-            this.anchorType = anchorType;
             LocalX = relativex;
             LocalY = relativey;
             container = new Container(parent, relativex, relativey, 10, 10, anchorType, "Checkbox");
             label = new TextLabel(container, text, 0, 0, AnchorType.CENTRE);
+            label.Font = Theme.MediumUIFont;
             container.Width = label.Width + btnwidth;
             container.Height = btnheight;
-            container.DrawBorder = false;
+            container.DrawBorder = true;
             Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, Width, Height);
             BoundingRectangle = container.BoundingRectangle;
+            container.TransferWidget(this);
         }
 
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
-            container.Draw(guiSpriteBatch);
+            if (!Enabled)
+                return;
+
             if (IsUnderMouseFocus)
-                guiSpriteBatch.DrawRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(4)), Settings.WidgetBorderColor);
+                guiSpriteBatch.DrawRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(4)), Theme.PrimaryColor);
             if (State)
             {
-                guiSpriteBatch.FillRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(3)), Settings.WidgetFillColor);
+                guiSpriteBatch.FillRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(3)), Theme.PrimaryColor);
             }
-            guiSpriteBatch.DrawRectangle(btnrect, Settings.WidgetBorderColor);
+            guiSpriteBatch.DrawRectangle(btnrect, Theme.PrimaryColor);
         }
 
         public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);
             BoundingRectangle = container.BoundingRectangle;
-            // label.Text = "Pos:" + container.Anchor.AbsolutePosition;
 
-            btnrect = new Rectangle((int)(AbsolutePosition.X + Width), (int)AbsolutePosition.Y, btnwidth, btnheight);
+            btnrect = new Rectangle((int)(AbsolutePosition.X + container.Width), (int)container.YPos, btnwidth, btnheight);
 
-            container.Update(oldState, newState);
             if (btnrect.Contains(oldState.Position))
             {
                 isUnderMouseFocus = true;
@@ -75,12 +76,9 @@ namespace HyperLinkUI.Engine.GUI
                 isUnderMouseFocus = false;
             }
         }
-        public void ToggleState()
+        private void ToggleState()
         {
-            if (State)
-                State = false;
-            else if (!State)
-                State = true;
+            State = !State;
         }
 
         public string ReadValueAsString()

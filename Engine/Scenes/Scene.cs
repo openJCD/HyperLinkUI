@@ -1,15 +1,7 @@
 ﻿using NLua;
-using Microsoft.Xna.Framework.Content;
 using System.IO;
-using Microsoft.Xna.Framework.Graphics;
-using SharpDX.XAudio2;
-using System;
-using NLua.Exceptions;
-using System.Diagnostics;
-using NLua.Exceptions;
 using System;
 using HyperLinkUI.Engine.GUI;
-using HyperLinkUI.Scenes;
 using HyperLinkUI.Engine;
 
 namespace HyperLinkUI.Scenes
@@ -35,10 +27,10 @@ namespace HyperLinkUI.Scenes
         /// <summary>Script
         /// Instantiate a new UIRoot with a GameSettings xml file using a Content Manager
         /// </summary>
-        public UIRoot Load(GameSettings settings, SceneManager sceneManager)
+        public UIRoot Load(SceneManager sceneManager)
         {
             // init and re-init instances 
-            SceneRoot = new UIRoot(settings);
+            SceneRoot = new UIRoot();
             ScriptHandler = new Lua();
             ScriptCaller = ScriptHandler.LoadFile(scenefilepath);
 
@@ -46,7 +38,7 @@ namespace HyperLinkUI.Scenes
             ScriptHandler["scene_manager"] = sceneManager;
             ScriptHandler["scene_root"] = SceneRoot;
             ScriptHandler["game_graphics"] = Core.GraphicsManager;
-            ScriptHandler["global_settings"] = Core.Settings;
+            LuaHelper.ImportStaticType(typeof(Theme), ScriptHandler, "theme");
 
             // expose API to lua instance
             new SceneAPI().ExposeTo(ScriptHandler);
@@ -54,17 +46,17 @@ namespace HyperLinkUI.Scenes
             // actually call the script itself
             ScriptCaller.Call();
             // call required "Init()" function
-            //try
-            //{
+            try
+            {
                 ScriptHandler.GetFunction("Init").Call();
-            //}
-            //catch (Exception ex)
-            //{
-            //    UIEventHandler.sendDebugMessage(this, new MiscTextEventArgs { txt="Error: " + ex.Message });
-            //    var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, "dialog_error", "There was an error...", AnchorType.CENTRE);
-            //    var dtl = new TextLabel(dc, ex.Message, 0, 0, AnchorType.CENTRE);
-            //    sceneManager.HaltLuaUpdate();
-            //}
+            }
+            catch (Exception ex)
+            {
+                UIEventHandler.sendDebugMessage(this, new MiscTextEventArgs { txt="Error: " + ex.Message });
+                var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, "dialog_error", "There was an error...", AnchorType.CENTRE);
+                var dtl = new TextLabel(dc, ex.Message, 0, 0, AnchorType.CENTRE);
+                sceneManager.HaltLuaUpdate();
+            }
             return SceneRoot;
         }
         public void Dispose()

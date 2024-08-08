@@ -14,8 +14,6 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (Enabled)
                 texturesheet.Draw(guiSpriteBatch, AbsolutePosition);
-
         }
-
     }
 }

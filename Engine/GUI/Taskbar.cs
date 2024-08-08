@@ -16,7 +16,6 @@ namespace HyperLinkUI.Engine.GUI
             ChildWidgets = new List<Widget>();
             Parent = parent;
             Parent.AddContainer(this);
-            Settings = parent.Settings;
             Height = height;
             Width = parent.Width;
             DebugLabel = "Taskbar";
@@ -26,7 +25,7 @@ namespace HyperLinkUI.Engine.GUI
 
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
-            guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.TaskbarColor);
+            guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.PrimaryColor);
             base.Draw(guiSpriteBatch);
         }
 

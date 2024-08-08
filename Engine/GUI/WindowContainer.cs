@@ -45,10 +45,11 @@ namespace HyperLinkUI.Engine.GUI
             BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, height);
 
             headerbar = new Container(this, 0, 0, width, 20, AnchorType.TOPLEFT);
-            close_button = new IconButton(headerbar, Settings.CloseButtonTexture, -2, 1, tag, EventType.CloseWindow, anchorType: AnchorType.TOPRIGHT);
-            label = new TextLabel(headerbar, DebugLabel, Settings.SecondarySpriteFont, 0, 0, AnchorType.CENTRE);
-            dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size - new Point(close_button.Width - 3, 0));
+            label = new TextLabel(headerbar, DebugLabel, Theme.SmallUIFont, 0, 0, AnchorType.CENTRE);
+            dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size);
+            parent.AddContainer(this);
             localOrigin = new Vector2(Width / 2, Height / 2);
+            RenderBackgroundColor = true;
         }
         public void WindowContainer_OnButtonClick(object sender, OnButtonClickEventArgs e)
         {
@@ -72,10 +73,19 @@ namespace HyperLinkUI.Engine.GUI
         }
         public override void Update(MouseState oldState, MouseState newState)
         {
-           
+            List<Container> containers_above_me = Parent.GetContainersAbove(this);
+            foreach (Container window in containers_above_me)
+            {
+                if (window.BoundingRectangle.Intersects(BoundingRectangle) && window != this && window.IsOpen && window.IsActive)
+                {
+                    IsActive = false; return;
+                }
+                else IsActive = true;
+            }
+            if (!IsActive || !IsOpen)
+                return;
             Vector2 mouseDelta = newState.Position.ToVector2() - oldState.Position.ToVector2();
-            dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size - new Point(close_button.Width, 0));
-            List<Container> containers_above_me = parent.GetContainersAbove(this);
+            dragZone = headerbar.BoundingRectangle;
             if (dragZone.Contains(oldState.Position))
             {
                 if (oldState.LeftButton == ButtonState.Pressed)
@@ -88,24 +98,12 @@ namespace HyperLinkUI.Engine.GUI
                     }
                 }
             }
-
-            foreach (Container window in containers_above_me)
-            {
-                if (window.BoundingRectangle.Intersects(BoundingRectangle) && window != this)
-                {
-                    IsActive = false; return;
-                }
-                else IsActive = true;
-            }
             if (NineSliceEnabled)
             {
                 headerbar.Height = NineSlice.BaseTexture.Height / 3;
                 headerbar.DrawBorder = false;
-            }            
-            
+            }
 
-            if (!IsActive)
-                return;
             if (Resizeable)
             {
                 headerbar.Width = Width;
@@ -118,16 +116,17 @@ namespace HyperLinkUI.Engine.GUI
                 }
                 else Mouse.SetCursor(MouseCursor.Arrow);
             }
-
             base.Update(oldState, newState);
         }
 
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
-            if (!IsOpen)
-                return;
-            guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Black);
+            if (!IsOpen) return;
             base.Draw(guiSpriteBatch);
+            if (DrawBorder)
+            {
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
+            }
         }
         public void SetTitle(string t)
         {

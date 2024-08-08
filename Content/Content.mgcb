@@ -85,51 +85,11 @@
 /processorParam:TextureFormat=Color
 /build:Game/WORLDMAP.png
 
-#begin GUI/Fonts/CPMono_v07_Light.otf
-/copy:GUI/Fonts/CPMono_v07_Light.otf
+#begin GUI/Fonts/ArchivoBlack-Regular.ttf
+/copy:GUI/Fonts/ArchivoBlack-Regular.ttf
 
-#begin GUI/Fonts/CPMono_v07_Light.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:GUI/Fonts/CPMono_v07_Light.spritefont;GUI/Fonts/secondary.spritefont
-
-#begin GUI/Fonts/CPMono_v07_Plain.otf
-/copy:GUI/Fonts/CPMono_v07_Plain.otf
-
-#begin GUI/Fonts/CPMono_v07_Plain.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:GUI/Fonts/CPMono_v07_Plain.spritefont
-
-#begin GUI/Fonts/RobotoMono-Italic-VariableFont_wght.ttf
-/copy:GUI/Fonts/RobotoMono-Italic-VariableFont_wght.ttf
-
-#begin GUI/Fonts/RobotoMono-Light.ttf
-/copy:GUI/Fonts/RobotoMono-Light.ttf
-
-#begin GUI/Fonts/RobotoMono-VariableFont_wght.ttf
-/copy:GUI/Fonts/RobotoMono-VariableFont_wght.ttf
-
-#begin GUI/Fonts/RobotoMono.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:GUI/Fonts/RobotoMono.spritefont;GUI/Fonts/primary.spritefont
-
-#begin GUI/Fonts/SometypeMono-Medium.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:GUI/Fonts/SometypeMono-Medium.spritefont
-
-#begin GUI/Fonts/SometypeMono-Medium.ttf
-/copy:GUI/Fonts/SometypeMono-Medium.ttf
+#begin GUI/Fonts/OpenSans-Regular.ttf
+/copy:GUI/Fonts/OpenSans-Regular.ttf
 
 #begin GUI/Saves/readme.txt
 /copy:GUI/Saves/readme.txt

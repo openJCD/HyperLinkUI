@@ -1,11 +1,7 @@
-﻿using HyperLinkUI.Scenes;
-using NLua;
+﻿using NLua;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace HyperLinkUI.Scenes
 {
@@ -73,5 +69,20 @@ namespace HyperLinkUI.Scenes
             return false;
         }
         #endregion
+
+        /// <summary>
+        /// Gets a static type and creates a table object with its values. Downside is that it's read-only.
+        /// </summary>
+        /// <param name="T"></param>
+        /// <param name="state"></param>
+        /// <param name="luaName"></param>
+        public static void ImportStaticType(Type T, Lua state, string luaName)
+        {
+            state.DoString($"{luaName} = {{}}");
+            foreach(FieldInfo f in T.GetFields())
+            {
+                state[$"{luaName}.{f.Name}"] = f.GetValue(f);
+            }
+        }
     }
 }

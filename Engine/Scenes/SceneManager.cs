@@ -23,29 +23,17 @@ namespace HyperLinkUI.Scenes
 
         Dictionary<string, Scene> SceneDictionary;
 
-        ContentManager SceneContentManager;
         [LuaHide]
         public static Scene ActiveScene { get; private set; }
         [LuaHide]
         public UIRoot activeSceneUIRoot;
-
-        [LuaHide]
-        private string[] ScriptPaths;
         public string SceneFolderPath { get; set; }
-
-        public string GlobalSettingsPath { get; set; }
-
-        [LuaHide]
-        public static GameSettings GlobalSettings { get; private set; }
 
         [LuaHide]
         public static GraphicsDeviceManager GlobalGraphicsDeviceManager { get; private set; }
 
-        public SceneManager(GameSettings settings, string pathToSettings, ContentManager content, GraphicsDeviceManager globalGraphicsReference)
+        public SceneManager(ContentManager content, GraphicsDeviceManager globalGraphicsReference)
         {
-            GlobalSettingsPath = pathToSettings;
-            SceneContentManager = content;
-            GlobalSettings = settings;
             UIEventHandler.OnHotReload += UISceneManager_OnHotReload;
             UIEventHandler.OnKeyReleased += UISceneManager_OnKeyReleased;
             UIEventHandler.OnButtonClick += UISceneManager_OnButtonClick;
@@ -53,8 +41,8 @@ namespace HyperLinkUI.Scenes
             Core.Window.ClientSizeChanged += UISceneManager_OnResize;
             SceneDictionary = new Dictionary<string, Scene>();
             GlobalGraphicsDeviceManager = globalGraphicsReference;
-            GlobalGraphicsDeviceManager.PreferredBackBufferWidth = settings.WindowWidth;
-            GlobalGraphicsDeviceManager.PreferredBackBufferHeight = settings.WindowHeight;
+            GlobalGraphicsDeviceManager.PreferredBackBufferWidth = Theme.DisplayWidth;
+            GlobalGraphicsDeviceManager.PreferredBackBufferHeight = Theme.DisplayHeight;
             GlobalGraphicsDeviceManager.ApplyChanges();
         }
 
@@ -86,7 +74,7 @@ namespace HyperLinkUI.Scenes
             ActiveScene?.Dispose();
             dbc?.Dispose();
             ActiveScene = SceneDictionary[name];
-            activeSceneUIRoot = ActiveScene.Load(Core.Settings, this);
+            activeSceneUIRoot = ActiveScene.Load(this);
             activeSceneUIRoot.OnWindowResize(Core.Window);
             dbc = new DebugConsole(activeSceneUIRoot);
         }
@@ -100,7 +88,7 @@ namespace HyperLinkUI.Scenes
             if (ActiveScene != null)
                 ActiveScene.Dispose();
             ActiveScene = SceneDictionary[scene.Name];
-            activeSceneUIRoot = ActiveScene.Load(Core.Settings, this);
+            activeSceneUIRoot = ActiveScene.Load(this);
             activeSceneUIRoot.OnWindowResize(Core.Window);
         }
         public void AddSceneToList(Scene scene)
@@ -112,7 +100,7 @@ namespace HyperLinkUI.Scenes
             // very messy function that returns true to signal a pause if a function causes an exception to be thrown.
             if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnUIUpdate", out _haltedErrorMsg, null);
             activeSceneUIRoot.Update();
-            if (!_haltLuaVMUpdate)  _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameUpdate", out _haltedErrorMsg, null);
+            if (!_haltLuaVMUpdate)  _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameUpdate", out _haltedErrorMsg, gt);
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
@@ -129,9 +117,7 @@ namespace HyperLinkUI.Scenes
         }
         public void UISceneManager_OnHotReload(object sender, HotReloadEventArgs e)
         {
-            activeSceneUIRoot.ApplyNewSettings(Core.Settings);
-            activeSceneUIRoot.Width = Core.Settings.WindowWidth;
-            activeSceneUIRoot.Height = Core.Settings.WindowHeight;
+            activeSceneUIRoot.ApplyNewSettings();
             _haltLuaVMUpdate = false;
         }
         public void UISceneManager_OnKeyReleased(object sender, KeyReleasedEventArgs e)

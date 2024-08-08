@@ -12,8 +12,6 @@ using System.Runtime.CompilerServices;
 using System.Reflection;
 using HyperLinkUI.Engine.GameSystems;
 using Microsoft.Xna.Framework.Content;
-using HyperLinkUI.Scenes;
-using HyperLinkUI.Engine.Animations;
 #nullable enable
 namespace HyperLinkUI.Scenes
 {
@@ -76,15 +74,6 @@ namespace HyperLinkUI.Scenes
         public static DrawLayer new_draw_layer(GraphicsDevice g, Camera c)
         {
             return new DrawLayer(g, c);
-        }
-        public static void enable_animation(IAnimateable a)
-        {
-            a.AnimationTarget = new AnimationTarget(a);
-            a.EnableAnimate = true;
-        }
-        public static void play_anim_oneshot(string animationKey, IAnimateable a)
-        {   
-            AnimationManager.Instance.RunAnimation(animationKey, a);
         }
         #endregion
 
@@ -164,9 +153,19 @@ namespace HyperLinkUI.Scenes
         public static void send_debug_message(string msg)
         {
             Debug.WriteLine(msg);
-            UIEventHandler.sendDebugMessage(null, new MiscTextEventArgs() { txt = msg });
+            UIEventHandler.sendDebugMessage(new object(), new MiscTextEventArgs() { txt = msg });
+        }
+        public static void send_debug_command(string cmd)
+        {
+            UIEventHandler.sendDebugCommand(new object(), new MiscTextEventArgs { txt = cmd });
+        }
+        public static int randint(int min, int max)
+        {
+            return new Random().Next(min, max);
         }
 
         #endregion 
+
+
     }
 }

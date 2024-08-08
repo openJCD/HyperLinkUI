@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Xml.Serialization;
+using FontStashSharp;
 using SharpDX.XAudio2;
 using System.IO;
 
@@ -33,7 +34,7 @@ namespace HyperLinkUI.Engine.GUI
             Parent = parent;
             parent.TransferWidget(this);
             DebugLabel = text;
-            labelfont = Settings.SecondarySpriteFont;
+            labelfont = Theme.MediumUIFont;
             Tag = tag;
             event_type = eventType;
             LocalX = relativex;
@@ -53,7 +54,7 @@ namespace HyperLinkUI.Engine.GUI
             parent.TransferWidget(this);
             Parent = parent;
             DebugLabel = "btn_icon";
-            labelfont = Settings.PrimarySpriteFont;
+            labelfont = Theme.MediumUIFont;
             Tag = tag;
             event_type = eventType;
             LocalX = relativex;
@@ -66,8 +67,6 @@ namespace HyperLinkUI.Engine.GUI
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
-
-        public ImageButton(Container parent, int relativex, int relativey, string tag, EventType eventType, AnchorType anchorType) : this(parent, parent.Settings.LargeButtonTexture, relativex, relativey, tag, eventType, anchorType) { }
         public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);
@@ -90,9 +89,9 @@ namespace HyperLinkUI.Engine.GUI
 
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
-            // guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
+            // guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.WidgetBorderColor);
             //draw text with relative position set to the width and height of the texture / 2
-            guiSpriteBatch.DrawString(labelfont, DebugLabel, AbsolutePosition + texturesheet.InGameBounds.Size.ToVector2() / 2 - labelfont.MeasureString(DebugLabel) / 2, Settings.TextColor);
+            guiSpriteBatch.DrawString(labelfont, DebugLabel, AbsolutePosition + texturesheet.InGameBounds.Size.ToVector2() / 2 - labelfont.MeasureString(DebugLabel) / 2, Theme.PrimaryColor);
             texturesheet.Draw(guiSpriteBatch, AbsolutePosition);
         }
         public void SetTexture(Texture2D texture)

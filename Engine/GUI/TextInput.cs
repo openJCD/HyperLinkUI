@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SharpDX.DirectWrite;
+using FontStashSharp;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -13,7 +14,7 @@ namespace HyperLinkUI.Engine.GUI
         TextLabel _txt_widget;
         List<char> _input_chars = new List<char>();
         public string Hint;
-        SpriteFont fnt;
+        SpriteFontBase fnt;
         public bool FillParent { get => container.FillParentWidth; set => container.FillParentWidth = value; }
         Vector2 cursor_pos { get => new Vector2(cursor_pos_x, 0) + _txt_widget.Anchor.AbsolutePosition; }
         int cursor_pos_x;
@@ -46,7 +47,7 @@ namespace HyperLinkUI.Engine.GUI
 
         public TextInput(Container parent, int relx, int rely, int width, AnchorType anchorType = AnchorType.BOTTOMLEFT, string hint = "type here", int padding=2) : base(parent)
         {
-            fnt = parent.Settings.PrimarySpriteFont;
+            fnt = Theme.MediumUIFont;
             Padding = padding;
             Height = (int)(fnt.MeasureString("|").Y + padding*2);
             Anchor = new AnchorCoord(relx, rely, anchorType, parent, width, Height);
@@ -65,14 +66,14 @@ namespace HyperLinkUI.Engine.GUI
             paddedRect = create_padded_rect(BoundingRectangle, padding);
             container.BoundingRectangle = paddedRect;
             SetNewParent(container);
+            container.TransferWidget(this);
         }
         public TextInput (Container parent):base(parent)
         {
-            fnt = parent.Settings.PrimarySpriteFont;
-            anchorType = AnchorType.TOPLEFT;
+            fnt = Theme.MediumUIFont;
             Padding = 2;
             Height = (int)(fnt.MeasureString("|").Y + 4);
-            Anchor = new AnchorCoord(0, 0, anchorType, parent, 300, Height);
+            Anchor = new AnchorCoord(0, 0, AnchorType.TOPLEFT, parent, 300, Height);
             BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, 300, Height);
             container = new Container(parent, 0, 0, 300, Height, anchorType, "Text input container");
             _txt_widget = new TextLabel(container, "Text here...", fnt, 2, 2, AnchorType.TOPLEFT);
@@ -94,7 +95,7 @@ namespace HyperLinkUI.Engine.GUI
                 //guiSpriteBatch.FillRectangle(new Rectangle(XPos, YPos, 300, 300), Color.BlueViolet);
                 _txt_widget.Text = InputText;
             }
-            //guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
+            //guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.WidgetBorderColor);
         }
 
         public override void Update(MouseState oldState, MouseState newState)
@@ -133,16 +134,16 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (Active)
             {
-                if (fnt.Characters.Contains(e.Character))
-                    AddChar(e.Character);
+                
                 if (e.Key == Keys.Back)
                 {
                     Backspace();
                 }
-                if (e.Key == Keys.Enter)
+                else if (e.Key == Keys.Enter)
                 {
                     UIEventHandler.submitTextField(this, InputText);
-                }
+                } else
+                AddChar(e.Character.ToString()[0]);
             }
         }
         private Rectangle create_padded_rect (Rectangle rectangle, int padding)
@@ -168,16 +169,18 @@ namespace HyperLinkUI.Engine.GUI
             }
         }
 
-        public void SetFont(SpriteFont font)
+        public TextInput SetFont(SpriteFontBase font)
         {
             fnt = font;
             Height = (int)fnt.MeasureString("|").Y + Padding * 2;
+            return this;
         }
 
-        public void EnableNineSlice(Texture2D t)
+        public TextInput EnableNineSlice(Texture2D t)
         {
             container.EnableNineSlice(t);
             //container.NineSlice.DrawMode = NSDrawMode.Padded;
+            return this;
         }
     }
 }

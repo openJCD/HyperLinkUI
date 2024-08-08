@@ -6,17 +6,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
-using NLua;
-using Newtonsoft.Json;
-using HyperLinkUI.Scenes;
-using System.Diagnostics.Eventing.Reader;
-using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI.Engine.GUI
 {
     [XmlInclude(typeof(WindowContainer))]
     [XmlInclude(typeof(Taskbar))]
-    public class Container : IContainer, Anchorable, IAnimateable, IDisposable
+    public class Container : IContainer, Anchorable, IDisposable, Control
     {
         private List<Container> child_containers;
         private List<Widget> child_widgets;
@@ -25,7 +20,6 @@ namespace HyperLinkUI.Engine.GUI
         protected Rectangle bounding_rectangle;
         protected AnchorCoord anchor;
         private bool isUnderMouseFocus;
-        private GameSettings settings;
         RasterizerState rstate;
 
         #region Properties/Members
@@ -59,7 +53,6 @@ namespace HyperLinkUI.Engine.GUI
 
         public Vector2 localOrigin { get; set; }
 
-        public virtual GameSettings Settings { get => Parent.Settings; protected set => settings = value; }
 
         public bool IsOpen { get; set; } = true;
         public bool DrawBorder { get; set; } = true;
@@ -85,10 +78,6 @@ namespace HyperLinkUI.Engine.GUI
         public bool NineSliceEnabled { get; private set; } = false;
 
         public NineSlice NineSlice { get; private set; }
-        public bool EnableAnimate { get; set; }
-
-        public AnimationTarget AnimationTarget { get; set; } 
-
         public void EnableNineSlice(Texture2D ns_tx)
         {
             NineSliceEnabled = true;
@@ -103,7 +92,6 @@ namespace HyperLinkUI.Engine.GUI
         {
             ChildContainers = new List<Container>();
             ChildWidgets = new List<Widget>();
-            AnimationTarget = new AnimationTarget(this);
             DebugLabel = "container";
             UIEventHandler.OnMouseUp += OnMouseClick;
         }
@@ -130,7 +118,6 @@ namespace HyperLinkUI.Engine.GUI
         protected Container(IContainer parent) : this()
         {
             Parent = parent;
-            parent.AddContainer(this);
         }
         public Container(IContainer parent, int paddingx, int paddingy, int width, int height, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "container"): this(parent)
         {
@@ -138,31 +125,31 @@ namespace HyperLinkUI.Engine.GUI
             LocalX = paddingx;
             LocalY = paddingy;
             Anchor = new AnchorCoord(paddingx, paddingy, anchorType, parent, width, height);
-            parent.AddContainer(this);
-
             localOrigin = new Vector2(Width / 2, Height / 2);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
+            parent.AddContainer(this);
         }
         #endregion
         public virtual void Update(MouseState oldState, MouseState newState)
         {
-            if (!IsOpen)
+            if (!IsOpen || !IsActive)
                 return;
+
+            if (IsSticky)
+                Anchor.RecalculateAnchor(LocalX, LocalY, Parent, Width, Height);
+
+            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
 
             if (BoundingRectangle.Contains(newState.Position))
                 isUnderMouseFocus = true;
             else isUnderMouseFocus = false;
-
-            if (IsSticky)
-                Anchor = new AnchorCoord(LocalX, LocalY, Anchor.Type, Parent, Width, Height);
 
             if (FillParentWidth)
                 Width = parent.Width;
             if (FillParentHeight)
                 Height = parent.Height;
 
-            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
-
+            
             foreach (var container in child_containers.ToList())
                 container.Update(oldState, newState);
             foreach (var child in child_widgets.ToList())
@@ -173,7 +160,9 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!IsOpen)
                 return;
-            
+
+
+
             Rectangle scissor_reset = guiSpriteBatch.GraphicsDevice.ScissorRectangle ;
             if (ClipContents)
             {
@@ -182,29 +171,33 @@ namespace HyperLinkUI.Engine.GUI
                 srect.Location += new Point(ClipPadding);
                 guiSpriteBatch.GraphicsDevice.ScissorRectangle = srect;
             }
-            if (RenderBackgroundColor)
-                guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.ContainerFillColor);
 
             if (NineSliceEnabled)
             {
                 NineSlice.BindRect = BoundingRectangle;
                 NineSlice.Draw(guiSpriteBatch);
             }
+            
+            if (RenderBackgroundColor)
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor);
+
+            if (DrawBorder)
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
 
             foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
             foreach (var child in ChildWidgets)
                 child.Draw(guiSpriteBatch);
 
+            
             if (!IsActive)
-                guiSpriteBatch.Draw(Settings.InactiveWindowTexture, BoundingRectangle, Settings.InactiveWindowTexture.Bounds, Color.White);
-
+            {
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor * 0.5f);
+            }
 
             guiSpriteBatch.End();
             guiSpriteBatch.GraphicsDevice.ScissorRectangle = scissor_reset;
-            guiSpriteBatch.Begin(rasterizerState:new RasterizerState { ScissorTestEnable = true});
-            if (DrawBorder)
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.ContainerBorderColor);
+            guiSpriteBatch.Begin(rasterizerState:new RasterizerState { ScissorTestEnable = true});            
         }
 
         public void TransferWidget(Widget widget)
@@ -214,7 +207,7 @@ namespace HyperLinkUI.Engine.GUI
             child_widgets.Add(widget);
         }
 
-        private void RemoveChildWidget(Widget w) { ChildWidgets.Remove(w); }
+        public void RemoveChildWidget(Widget w) { ChildWidgets.Remove(w); }
 
         /// <summary>
         /// Transfer ownershiip of the Container from wherever it was previously to this particular Container.
@@ -301,6 +294,25 @@ namespace HyperLinkUI.Engine.GUI
                 return abovecontainers;
             }
         }
+        public Container AutoSize(int paddingx, int paddingy) 
+        {
+            List<Control> children = new List<Control>();
+            children.AddRange(ChildContainers);
+            children.AddRange(ChildWidgets);
+            Vector2 footprint_current = Vector2.Zero;
+            Vector2 footprint_prev = Vector2.Zero;
+            Vector2 footprint_max = Vector2.Zero;
+            foreach (Control c in children)
+            {
+                footprint_current = c.Anchor.DistanceFromOrigin + new Vector2(c.Width, c.Height);
+                footprint_max = Vector2.Max(footprint_prev, footprint_current);
+                
+                footprint_prev = footprint_current;
+            }
+            Width = (int)footprint_max.X + paddingx;
+            Height = (int)footprint_max.Y + paddingy;
+            return this;
+        }
         public void SetPosition(int x, int y)
         {
             AnchorCoord newAnchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height) { AbsolutePosition = new Vector2(x, y) };
@@ -322,25 +334,8 @@ namespace HyperLinkUI.Engine.GUI
             return Parent.FindRoot();
         }
 
-        public void PropagateClickUp(Container c)
-        {
-            Parent.PropagateClickUp(c);
-        }
-
-        public void PropagateClickDown(Container c)
-        {
-            ChildWidgets.ForEach(x => x.ReceivePropagatedClick(c));
-            if (this == c)
-            {
-                return;
-            }
-            ChildContainers.ForEach(x => x.PropagateClickDown(c));
-        }
-
         private void OnMouseClick(object sender, MouseClickArgs e)
         {
-            if (BoundingRectangle.Contains(e.mouse_data.Position))
-                PropagateClickUp(this);
         }
     }
 }

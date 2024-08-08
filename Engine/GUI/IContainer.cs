@@ -8,6 +8,8 @@ namespace HyperLinkUI.Engine.GUI
 {
     public interface IContainer
     {
+
+        bool IsUnderMouseFocus { get; }
         string DebugLabel { get; }
         int Width { get; set; }
         int Height { get; set; }
@@ -15,15 +17,15 @@ namespace HyperLinkUI.Engine.GUI
         int XPos { get; set; }
         int YPos { get; set; }
         public List<Container> ChildContainers { get; set; }
-
-        GameSettings Settings { get; }
-
+        public List<Widget> ChildWidgets { get; set; }
         public void AddContainer(Container container) { }
 
         public List<Container> GetContainersAbove(Container window);
 
         public UIRoot FindRoot();
 
-        public void PropagateClickUp(Container c);
+        public void TransferWidget(Widget w);
+
+        public void RemoveChildWidget(Widget w);
     }
 }

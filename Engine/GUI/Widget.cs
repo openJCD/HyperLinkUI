@@ -1,36 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Serialization;
-using HyperLinkUI.Engine.Animations;
+﻿using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace HyperLinkUI.Engine.GUI
 {
 
-    public class Widget : Anchorable, IAnimateable
+    public class Widget : Anchorable, Control
     {
         protected string debug_label;
         protected AnchorCoord anchor;
         protected Rectangle bounding_rectangle;
         protected bool isUnderMouseFocus;
+        protected IContainer _parent;
         public bool DrawDebugRect { get; set; } = false;
 
         public bool Enabled { get; set; } = true;
-      
+
+        public IContainer Parent { get => _parent; protected set => _parent = value; }
+
         public Vector2 AbsolutePosition { get => anchor.AbsolutePosition; }
+
         public string DebugLabel { get => debug_label; set => debug_label = value; }
-      
-        public Container Parent { get; protected set; }
-      
+            
         public AnchorCoord Anchor { get => anchor; protected set => anchor = value; }
       
         public Rectangle BoundingRectangle { get => bounding_rectangle; protected set => bounding_rectangle = value; }
@@ -53,18 +45,11 @@ namespace HyperLinkUI.Engine.GUI
 
         public AnchorType anchorType { get => anchor.Type; set => anchor.Type = value; }
 
-        public GameSettings Settings { get => Parent.Settings; }
-
-        #region animation properties
-        public Color BlendColor { get; set; } = Color.White;
-        public AnimationTarget AnimationTarget { get; set; }
-        public bool EnableAnimate { get; set; }
-        #endregion
+        public LocalThemeProperties LocalTheme = new LocalThemeProperties();
 
         protected Widget(Container parent)
         {
             Parent = parent;
-            parent.TransferWidget(this);
         }
         public Widget() { }
 
@@ -73,13 +58,12 @@ namespace HyperLinkUI.Engine.GUI
             Parent.ChildWidgets.Remove(this);
             Parent.ChildWidgets = Parent.ChildWidgets.ToList();
         }
-        public Widget(Container parent, int width, int height, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
+        public Widget(IContainer parent, int width, int height, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
         {
             LocalX = relativex;
             LocalY = relativey;
             DebugLabel = debugLabel;
             Parent = parent;
-            this.anchorType = anchorType;
 
             localOrigin = new Vector2(width / 2, height / 2);
             Anchor = new AnchorCoord(LocalX, LocalY, anchorType, parent, width, height);
@@ -94,8 +78,8 @@ namespace HyperLinkUI.Engine.GUI
                 return;
             if (DrawDebugRect)
             {
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
-                guiSpriteBatch.FillRectangle(BoundingRectangle, Settings.WidgetFillColor);
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, LocalTheme.PrimaryColor);
+                guiSpriteBatch.FillRectangle(BoundingRectangle, LocalTheme.PrimaryColor * 0.5f);
             }
         }
 
@@ -117,14 +101,18 @@ namespace HyperLinkUI.Engine.GUI
 
         public virtual void UpdatePos()
         {
-            Anchor = new AnchorCoord(LocalX, LocalY, anchorType, Parent, Width, Height);
+            Anchor.RecalculateAnchor(LocalX, LocalY, Parent, Width, Height);
             bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
-            // DebugLabel = "Positions: " + Anchor.AbsolutePosition + ", " + BoundingRectangle.Location;
         }
 
         public virtual void ReceivePropagatedClick(Container c)
         {
             if (c != Parent) return;
+        }
+
+        public void SetParent (IContainer parent)
+        {
+            _parent = parent;
         }
     }
 }

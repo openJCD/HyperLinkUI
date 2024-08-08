@@ -21,7 +21,7 @@ namespace HyperLinkUI.Engine.GameSystems
             position = new Vector2();
             UIEventHandler.OnButtonClick += Camera_OnButtonClick;
             Targets = new Dictionary<string, CameraTarget>();
-            speed = 5.0f;
+            _move_mod = 5.0f;
             SetZoomClamp(1f, 10f);
         }
 
@@ -30,9 +30,10 @@ namespace HyperLinkUI.Engine.GameSystems
         Vector2 mov_position;
         Rectangle clamp_rect;
         float zoom_to;
-        float speed;
+        float _move_mod;
         float zoom_min;
         float zoom_max;
+        float _speed;   
 
         public float Zoom { get => zoom; private set => zoom = value; }
 
@@ -73,9 +74,9 @@ namespace HyperLinkUI.Engine.GameSystems
             ZoomTo = val;
         }
 
-        private void AdjustZoom()
+        private void AdjustZoom(GameTime gameTime)
         {
-            Zoom += (ZoomTo - Zoom) / speed;
+            Zoom += (ZoomTo - Zoom) / _move_mod * (float)gameTime.ElapsedGameTime.TotalSeconds * _speed;
             if (ZoomTo < 0.25f)
                 ZoomTo = 0.25f;
         }
@@ -89,17 +90,19 @@ namespace HyperLinkUI.Engine.GameSystems
             mov_position = movePos;
         }
         /// <summary>
-        /// Set the move and zoom speed. Lower is faster.
+        /// Set the move and zoom _move_mod. Lower is faster.
         /// </summary>
         /// <param name="v"></param>
-        public void SetMoveSpeed(float v) { speed = v; }
+        public Camera SetMoveModifier(float v) { _move_mod = v; return this; }
+
+        public Camera SetMoveSpeed(float s) { _speed = s; return this; }
         /// <summary>
         /// Private method that is performed every update. Adds lerp'd positions for smooth cam movement.
         /// </summary>
-        private void Move(bool clamp)
+        private void Move(bool clamp, GameTime gt)
         {
-            position.X += (MovePosition.X - position.X) / speed;
-            position.Y += (MovePosition.Y - position.Y) / speed;
+            position.X += (MovePosition.X - position.X) / _move_mod * (float)gt.ElapsedGameTime.TotalSeconds * _speed;
+            position.Y += (MovePosition.Y - position.Y) /  _move_mod * (float)gt.ElapsedGameTime.TotalSeconds * _speed;
             if (clamp)
                 position = GetClampedPos(position);
         }
@@ -151,7 +154,7 @@ namespace HyperLinkUI.Engine.GameSystems
             ActiveTarget.SetActive(true);
         }
 
-        public void Update()
+        public void Update(GameTime gt)
         {
             if (ActiveTarget != null)
             {
@@ -159,8 +162,8 @@ namespace HyperLinkUI.Engine.GameSystems
                 MovePosition = ActiveTarget.CurrentPosition;
                 ZoomTo = MathHelper.Clamp(ActiveTarget.LocalZoom, zoom_min, zoom_max);
             }
-            AdjustZoom();
-            Move(IsClamped);
+            AdjustZoom(gt);
+            Move(IsClamped, gt);
         }
 
         public void Camera_OnButtonClick(object sender, OnButtonClickEventArgs e)
@@ -189,27 +192,25 @@ namespace HyperLinkUI.Engine.GameSystems
         public void IncrementExponentialZoom(float value){ ActiveTarget.LocalZoom *= 1.0f + value; }
         public void IncrementZoom(float value) { ActiveTarget.LocalZoom += value; }
         
-        public void SetZoomClamp(float min, float max) { zoom_min = min; zoom_max = max; }
+        public Camera SetZoomClamp(float min, float max) { zoom_min = min; zoom_max = max; return this; }
 
         public void GoToNextTarget()
         {
             List<CameraTarget> trgts = Targets.Values.ToList<CameraTarget>();
-            try {
-                ActiveTarget = trgts[trgts.IndexOf(ActiveTarget) + 1];
-            } catch
-            {
-                ActiveTarget = trgts[0];
-            }
+            int i = trgts.IndexOf(ActiveTarget) + 1;
+            if (i < trgts.Count)
+                ActiveTarget = trgts[i];
+            else
+                ActiveTarget = trgts.First();
         }
         public void GoToPrevTarget()
         { 
             List<CameraTarget> trgts = Targets.Values.ToList<CameraTarget>();
-            try {
-                ActiveTarget = trgts[trgts.IndexOf(ActiveTarget) -1];
-            } catch
-            {
+            int i = trgts.IndexOf(ActiveTarget) - 1;
+            if (i >=0 )
+                ActiveTarget = trgts[i];
+            else
                 ActiveTarget = trgts.Last();
-            }
         }
     }
    

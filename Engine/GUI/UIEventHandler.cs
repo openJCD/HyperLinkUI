@@ -49,9 +49,11 @@ namespace HyperLinkUI.Engine.GUI
         public static event EventHandler<KeyPressedEventArgs> OnKeyPressed;
         public static event EventHandler<MiscTextEventArgs> DebugMessage;
         public static event EventHandler<MiscTextEventArgs> OnTextFieldSubmit;
-
         public static event EventHandler<MouseClickArgs> MousePropagationReceived;
 
+        public static event EventHandler<MiscTextEventArgs> SendDebugCommand;
+
+        public static event EventHandler OnUIUpdate;
         public static void onKeyReleased(object sender, KeyReleasedEventArgs e)
         {
             OnKeyReleased?.Invoke(sender, e);
@@ -97,6 +99,16 @@ namespace HyperLinkUI.Engine.GUI
         public static void mousePropagationReceived(object sender, MouseClickArgs e)
         {
             MousePropagationReceived?.Invoke(sender, e);
+        }
+
+        public static void onUIUpdate (object sender, EventArgs e)
+        {
+            OnUIUpdate?.Invoke(sender, e);
+        }
+
+        public static void sendDebugCommand(object sender, MiscTextEventArgs e)
+        {
+            SendDebugCommand?.Invoke(sender, e);
         }
     }
 }

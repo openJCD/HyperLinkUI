@@ -2,38 +2,36 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 using System.Diagnostics;
 using HyperLinkUI.Engine.GameSystems;
 using HyperLinkUI.Scenes;
 using HyperLinkUI.Engine.GUI;
 using HyperLinkUI.Engine;
-using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI
 {
     internal class Game1 : Game
     {
-        //CONSTANTS
-        public const string UI_SAVES_DIRECTORY = "Content/GUI/Saves/";
         //PRIVATE MEMBERS
         private GraphicsDeviceManager graphicsManager;
 
         private SpriteBatch UISpriteBatch;
         private SpriteBatch SpriteBatch;
-
+        private double _framerate;
         Texture2D txNode;
         NineSlice ns_test;
         GlobalMap Map;
         Background BG;
 
+        int sw;
+        int sh;
+
+        RenderTarget2D _guiRenderTarget;
+
         private KeyboardState oldKeyboardState;
         private TextLabel debug;
         public static ContentManager UIContentManager; //manager for fonts and shit
-        public static SceneManager SceneManager { get; private set; }
-
-        GameSettings Settings { get => Core.Settings; set => Core.Settings = value; }
-        
+        SceneManager SceneManager;        
         public static UIRoot screenRoot;
 
         public Game1()
@@ -42,7 +40,9 @@ namespace HyperLinkUI
             graphicsManager = new GraphicsDeviceManager(this);
             UIContentManager = new ContentManager(Content.ServiceProvider);
             UIContentManager.RootDirectory = "Content/GUI/";
-            IsMouseVisible = true;
+            base.IsFixedTimeStep = false;
+            //graphicsManager.SynchronizeWithVerticalRetrace = false;
+            IsMouseVisible = true;    
         }
 
         protected override void Initialize()
@@ -67,27 +67,29 @@ namespace HyperLinkUI
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Core.LoadAll(SceneManager, "Content/GUI/Scenes/", "default.scene", "Content/GUI/Scripts/Animations");
+            Core.LoadAll(SceneManager, "Content/GUI/Scenes/", "default.scene", "Content/GUI/Saves/settings.ini");
 
             Background.Import("Content/backgrounds/crosses.json", Content, out BG);
+            sw = GraphicsDevice.PresentationParameters.BackBufferWidth;
+            sh = GraphicsDevice.PresentationParameters.BackBufferHeight;
         }
         protected override void Update(GameTime gameTime)
         {
-            //WorldViewCam.Update(gameTime);
-
             if (!IsActive)
                 return;
+            
             KeyboardState newKeyboardState = Keyboard.GetState();
             SceneManager.Update(gameTime);
             oldKeyboardState = newKeyboardState;
             BG.Animate(gameTime);
-            //AnimationManager.Instance.Update();
+            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-
+            
+            Core.UpdateFPS(gameTime);
             SpriteBatch.Begin();
             BG.Draw(SpriteBatch, new Rectangle(new Point(), new Point(graphicsManager.PreferredBackBufferWidth, graphicsManager.PreferredBackBufferHeight)));
             SpriteBatch.End();
@@ -97,6 +99,7 @@ namespace HyperLinkUI
             //ns_test.Draw(UISpriteBatch);
             UISpriteBatch.End();
             base.Draw(gameTime);
+            
         }
     }
 }

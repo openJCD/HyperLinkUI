@@ -17,7 +17,7 @@ namespace HyperLinkUI.Engine.GUI
     {
         private MouseState oldmousestate;
         private static MouseState newmousestate;
-        
+        public bool IsUnderMouseFocus => true;
         public static MouseState MouseState { get => newmousestate; }
 
         private KeyboardState oldkstate;
@@ -31,6 +31,8 @@ namespace HyperLinkUI.Engine.GUI
 
         [XmlElement("Container")]
         public List<Container> ChildContainers { get => base_containers; set => base_containers = value; }
+        
+        public List<Widget> ChildWidgets { get; set; }       
         [XmlIgnore]
         public string DebugLabel { get { return "UI Root"; } }
         [XmlIgnore]
@@ -62,46 +64,24 @@ namespace HyperLinkUI.Engine.GUI
             }
         }
 
-        [XmlIgnore]
         [LuaHide]
         public List<Container> ContainersUnderMouseHover { get; set; }
-        [XmlIgnore]
-        public GameSettings Settings { get; private set; }
 
-        [XmlIgnore]
         public Container draggedWindow { get; set; }
 
-        public UIRoot() 
+        public UIRoot()
         {
-        }
-        public UIRoot(string settingsPath, string settingsFile, ContentManager manager) : this()
-        {
+            ContainersUnderMouseHover = new List<Container>();
             ChildContainers = new List<Container>();
-            ContainersUnderMouseHover = new List<Container>();
-            Settings = new GameSettings();
-            try
-            { Settings = Settings.Load(settingsPath, settingsFile); }
-            catch { Settings = new GameSettings(); Settings.Save(settingsPath, settingsFile); Settings.Load(settingsPath, settingsFile); }
-            Settings.LoadAllContent(manager);
-            ApplyNewSettings(Settings);
-            ContainersUnderMouseHover = new List<Container>();
+            ChildWidgets = new List<Widget>();
+            windowwidth = Width = Theme.DisplayWidth;
+            windowheight = Height = Theme.DisplayHeight;
         }
-        public UIRoot(GameSettings settings) : this()
-        {
-            ChildContainers = new List<Container>();
-            Settings = settings;
-
-            ContainersUnderMouseHover = new List<Container>();
-            windowwidth = Width = Settings.WindowWidth;
-            windowheight = Height = Settings.WindowHeight;
-        }
-
-        public UIRoot(GraphicsDeviceManager graphicsInfo, GameSettings settings)
+        public UIRoot(GraphicsDeviceManager graphicsInfo)
         {
             Initialise(graphicsInfo);
-            Settings = settings;
-            windowwidth = Width = Settings.WindowWidth;
-            windowheight = Height = Settings.WindowHeight;
+            windowwidth = Width = Theme.DisplayWidth;
+            windowheight = Height = Theme.DisplayHeight;
             ContainersUnderMouseHover = new List<Container>();
             ChildContainers = new List<Container>();
         }
@@ -120,7 +100,7 @@ namespace HyperLinkUI.Engine.GUI
 
             foreach (Container container in base_containers.ToList())
             {
-                // ContainersUnderMouseHover.ForEach(c=>c.Settings.BorderColor = Color.DarkBlue);
+                // ContainersUnderMouseHover.ForEach(c=>c.Theme.BorderColor = Color.DarkBlue);
                 container.Update(oldmousestate, newmousestate);
             }
             ContainersUnderMouseHover = GetHoveredContainers();
@@ -145,9 +125,10 @@ namespace HyperLinkUI.Engine.GUI
             {
                 UIEventHandler.onKeyPressed(this, new KeyPressedEventArgs() { pressed_keys = newkstate.GetPressedKeys() });
             }
+
+            UIEventHandler.onUIUpdate(this, EventArgs.Empty);
             oldkstate = newkstate;
             oldmousestate = newmousestate;
-            ResetClickList();
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
@@ -169,11 +150,10 @@ namespace HyperLinkUI.Engine.GUI
                 container.PrintChildren(0);
             }
         }
-        public void ApplyNewSettings(GameSettings settings)
+        public void ApplyNewSettings()
         {
-            Settings = settings;
-            Width = settings.WindowWidth;
-            Height = settings.WindowHeight;
+            Width = Theme.DisplayWidth;
+            Height = Theme.DisplayHeight;
         }
 
         public void BringWindowToTop(Container window)
@@ -243,7 +223,7 @@ namespace HyperLinkUI.Engine.GUI
             base_containers.ToList().ForEach(c => c.Dispose());
             base_containers.Clear();
             Width = 640; Height = 480;//reset to default values
-            //Settings.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
+            //Theme.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
             // ALSO remember to unsubscribe from events if applicable in future!
         }
 
@@ -259,33 +239,16 @@ namespace HyperLinkUI.Engine.GUI
         }
         public UIRoot FindRoot() { return this; }
 
-        List<Container> clickTargets = new List<Container>();
-        int propagateCount = 0;
-        public void PropagateClickUp(Container c)
+        public void TransferWidget(Widget w)
         {
-
-            //if (!clickTargets.Contains(c))
-            clickTargets.Add(c);
-            if (clickTargets.Count > 1)
-            {
-                if (c == clickTargets.First() && propagateCount == 0)
-                {
-                    c.PropagateClickDown(c);
-                    propagateCount += 1;
-                    return;
-                }
-            }
+            ChildWidgets.Add(w);
+            w.Parent.RemoveChildWidget(w);
+            w.SetParent(this);
         }
-        
-        private void ResetClickList()
-        {
 
-            if (clickTargets.Count  >= 1)
-            {
-                clickTargets.First().PropagateClickDown(clickTargets.First());
-            }
-            propagateCount = 0;
-            clickTargets.Clear();
+        public void RemoveChildWidget(Widget w)
+        {
+            ChildWidgets.Remove(w);
         }
     }
 }

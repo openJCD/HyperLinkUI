@@ -37,7 +37,10 @@
     <PackageReference Include="NLua" Version="1.7.2" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Content\backgrounds\crosses.json">
+    <None Update="Content\Backgrounds\crosses.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\GUI\Saves\settings.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\GUI\Scripts\Animations\readme.txt">
@@ -45,9 +48,6 @@
     </None>
     <None Update="Content\GUI\Textures\NS_TEXTINPUT.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Saves\settings.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="fmod.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -61,6 +61,10 @@
     <None Update="fmodstudioL.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\GUI\Scenes\" />
+    <Folder Include="Engine\Animations\" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />

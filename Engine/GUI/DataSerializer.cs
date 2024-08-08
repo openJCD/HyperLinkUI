@@ -9,54 +9,7 @@ using System.Xml.Serialization;
 namespace HyperLinkUI.Engine.GUI
 {
     public static class DataSerializer
-    {
-        public static void Save(this GameSettings myself, string savePath, string saveName)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(GameSettings));
-            if (Directory.Exists(savePath))
-            {
-                FileStream streamWriter = new FileStream(savePath + "/" + saveName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-                serializer.Serialize(streamWriter, myself);
-                streamWriter.Close();
-            }
-            else
-            {
-                Directory.CreateDirectory(savePath);
-                myself.Save(savePath, saveName);
-            }
-        }
-        public static GameSettings Load(this GameSettings myself, string savePath, string saveName)
-        {
-
-            XmlSerializer serializer = new XmlSerializer(typeof(GameSettings));
-            if (Directory.Exists(savePath))
-            {
-                if (File.Exists(savePath + "/" + saveName))
-                {
-                    FileStream streamReader = new FileStream(savePath + "/" + saveName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    myself = (GameSettings)serializer.Deserialize(streamReader);
-
-                    streamReader.Close();
-                    return myself;
-                }
-                else
-                {
-                    File.Create(savePath + "/" + saveName);
-                    // Try saving/loading again if now the file exists.
-                    myself.Save(savePath, saveName);
-                    myself = myself.Load(savePath, saveName);
-                    return myself;
-                }
-            }
-            else
-            {
-                Directory.CreateDirectory(savePath);
-                myself.Save(savePath, saveName);
-                myself = myself.Load(savePath, saveName);
-                return myself;
-            }
-        }
-
+    { 
         public static void Save(this UIRoot myself, string savePath, string saveName)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(UIRoot));

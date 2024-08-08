@@ -1,14 +1,13 @@
-﻿using HyperLinkUI.Engine.Animations;
+﻿using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Diagnostics.Eventing.Reader;
 
 namespace HyperLinkUI.Engine.GUI
 {
     public class Button : Widget
     {
-        protected SpriteFont labelfont;
+        protected SpriteFontBase labelfont;
         protected EventType event_type;
         protected bool clicked;
         protected float fillMultiplier;
@@ -24,21 +23,22 @@ namespace HyperLinkUI.Engine.GUI
         {
             LocalX = x; LocalY = y;
             Width = width; Height = height;
-            labelfont = Settings.PrimarySpriteFont; // defaults
+            labelfont = Theme.MediumUIFont; // defaults
             Text = text;
             Tag = tag;
             event_type = etype;
             anchor = new AnchorCoord(x, y, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
+            Parent.TransferWidget(this);
         }
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
             if (!Enabled)
                 return;
-            guiSpriteBatch.DrawRectangle(BoundingRectangle, Settings.WidgetBorderColor);
+            guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.PrimaryColor);
 
-            guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Multiply(Settings.WidgetFillColor, fillMultiplier));
-            guiSpriteBatch.DrawString(labelfont, Text, AbsolutePosition + BoundingRectangle.Size.ToVector2() / 2 - labelfont.MeasureString(Text) / 2, Settings.TextColor);
+            guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Multiply(Theme.PrimaryColor, fillMultiplier));
+            guiSpriteBatch.DrawString(labelfont, Text, AbsolutePosition + BoundingRectangle.Size.ToVector2() / 2 - labelfont.MeasureString(Text) / 2, Theme.PrimaryColor);
             //base.Draw(guiSpriteBatch);
         }
         public override void Update(MouseState oldState, MouseState newState)
@@ -54,6 +54,8 @@ namespace HyperLinkUI.Engine.GUI
                 {
                     clicked = true;
                     fillMultiplier = 0f;
+                    if (newState.LeftButton == ButtonState.Released)
+                        UIEventHandler.onButtonClick(this, new OnButtonClickEventArgs { event_type = event_type, tag = Tag });
                 }
             }
             else

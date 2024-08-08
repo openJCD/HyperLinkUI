@@ -20,7 +20,7 @@ namespace HyperLinkUI.Engine.GUI
         CENTRE
      }
 
-    public struct AnchorCoord
+    public class AnchorCoord
     {
         public AnchorCoord(int XOffset, int YOffset, AnchorType anchorType, IContainer parent, int width, int height)
         {
@@ -34,32 +34,35 @@ namespace HyperLinkUI.Engine.GUI
                     AnchorLocation = new Vector2(parent.XPos, parent.YPos);
                     OffsetFromAnchor = new Vector2(XOffset, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break;
                 case AnchorType.TOPRIGHT:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos);
                     OffsetFromAnchor = new Vector2(XOffset - width, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break   ;
                 case AnchorType.BOTTOMLEFT:
                     AnchorLocation = new Vector2(parent.XPos, parent.YPos + parent.Height);
                     OffsetFromAnchor = new Vector2(XOffset, YOffset - height);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break;
                 case AnchorType.BOTTOMRIGHT:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos + parent.Height);
                     OffsetFromAnchor = new Vector2(XOffset - width, YOffset - height);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break;
                 case AnchorType.CENTRE:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width / 2, parent.YPos + parent.Height / 2);
                     OffsetFromAnchor = new Vector2(XOffset - width / 2, YOffset - height / 2);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break;
             }
+            DistanceFromOrigin = new Vector2(AbsolutePosition.X - parent.XPos, AbsolutePosition.Y - parent.YPos);
         }
 
         public Vector2 AnchorLocation { get; private set; }
         public Vector2 OffsetFromAnchor { get; set; }
+
+        public Vector2 DistanceFromOrigin { get; private set; }
 
         public Vector2 AbsolutePosition { get; set; }
         public AnchorType Type { get; set; }
@@ -75,29 +78,30 @@ namespace HyperLinkUI.Engine.GUI
                     AnchorLocation = new Vector2(parent.XPos, parent.YPos);
                     OffsetFromAnchor = new Vector2(XOffset, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break;
                 case AnchorType.TOPRIGHT:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos);
-                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
+                    OffsetFromAnchor = new Vector2(XOffset - width, YOffset);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break;
                 case AnchorType.BOTTOMLEFT:
                     AnchorLocation = new Vector2(parent.XPos, parent.YPos + parent.Height);
-                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
+                    OffsetFromAnchor = new Vector2(XOffset, YOffset - height);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break;
                 case AnchorType.BOTTOMRIGHT:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width, parent.YPos + parent.Height);
-                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
+                    OffsetFromAnchor = new Vector2(XOffset - width, YOffset - height);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
+                    break;
                 case AnchorType.CENTRE:
                     AnchorLocation = new Vector2(parent.XPos + parent.Width / 2, parent.YPos + parent.Height / 2);
-                    OffsetFromAnchor = new Vector2(XOffset, YOffset);
+                    OffsetFromAnchor = new Vector2(XOffset - width / 2, YOffset - height / 2);
                     AbsolutePosition = AnchorLocation + OffsetFromAnchor;
-                    return;
-
+                    break;
+                    
             }
+            DistanceFromOrigin = new Vector2(AbsolutePosition.X - parent.XPos, AbsolutePosition.Y - parent.YPos);
         }
     }
 }
