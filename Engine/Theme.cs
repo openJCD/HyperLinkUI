@@ -13,6 +13,8 @@ namespace HyperLinkUI.Engine
 {
     public static class Theme
     {
+        static List<LocalThemeProperties> LocalThemes = new List<LocalThemeProperties>();
+        
         static string _iniFileData;
 
         static bool _loaded = false;
@@ -52,7 +54,7 @@ namespace HyperLinkUI.Engine
 
         public static void LoadIniFile(string path, ContentManager content)
         {
-            Stream fs = File.Open(path, FileMode.Open);
+            Stream fs = File.Open(path, FileMode.OpenOrCreate);
             StreamReader stream = new StreamReader(fs);
             _iniFileData = stream.ReadToEnd();
             ParseIniFile(_iniFileData);
@@ -68,11 +70,12 @@ namespace HyperLinkUI.Engine
             string[] lines = d.Split("\r\n");
             Type t = typeof(Theme);
             List<FieldInfo> _fields = t.GetFields(BindingFlags.NonPublic | BindingFlags.Static).ToList();
+            List<PropertyInfo> _properties = t.GetProperties().ToList();
             Dictionary<string, string> settings = new Dictionary<string, string>();
             foreach (string line in lines)
             {
                 List<string> parts = line.Split("=").ToList();
-                if (parts.Count > 0) 
+                if (parts.Count > 1) 
                 {
                     parts.ForEach(p => p.Trim());
                     string key = parts[0];
@@ -88,11 +91,20 @@ namespace HyperLinkUI.Engine
                     SetValue(f, settings[_fieldName]);
                 }
             }
+            foreach (PropertyInfo f in _properties)
+            {
+                string _fieldName = f.Name;
+                if (settings.Keys.Contains(_fieldName))
+                {
+                    SetValue(f, settings[_fieldName]);
+                }
+            }
             ParseValues();
         }
         public static void Unload()
         {
             _fontSystem.Dispose();
+            LocalThemes.Clear();
             _loaded = false;
         }
         public static FontSystem GetFontSystem()
@@ -129,10 +141,28 @@ namespace HyperLinkUI.Engine
         }
         static void SetValue(FieldInfo f, string value)
         {
-            if (f.GetType() == typeof(Single))
-                f.SetValue(f, float.Parse(value));
-            else if (f.GetType() == typeof(double))
-                f.SetValue(f, double.Parse(value));
+            Type ftype = f.GetValue(typeof(Theme)).GetType();
+            if (ftype == typeof(Single))
+                f.SetValue(typeof(Theme), float.Parse(value));
+            else if (ftype == typeof(double))
+                f.SetValue(typeof(Theme), double.Parse(value));
+            else if (ftype == typeof(int))
+                f.SetValue(typeof(Theme), int.Parse(value));
+        }
+        static void SetValue(PropertyInfo f, string value)
+        {
+            Type ftype = f.GetValue(typeof(Theme)).GetType();
+
+            if (ftype == typeof(Single))
+                f.SetValue(typeof(Theme), float.Parse(value));
+            else if (ftype == typeof(double))
+                f.SetValue(typeof(Theme), double.Parse(value));
+            else if (ftype == typeof(int))
+                f.SetValue(typeof(Theme), int.Parse(value));
+        }
+        public static void RegisterLocal(LocalThemeProperties p)
+        {
+            LocalThemes.Add(p);
         }
     }
 
@@ -146,6 +176,8 @@ namespace HyperLinkUI.Engine
         public Color TertiaryColor { get; set; } = Theme.TertiaryColor;
 
         public float FontSize { get; set; } = Theme.MediumUIFont.FontSize;
-        public LocalThemeProperties() { }
+        public SpriteFontBase Font { get; set; } = Theme.GetFontSystem().GetFont(Theme.MediumUIFont.FontSize);
+
+        public LocalThemeProperties() { Theme.RegisterLocal(this); }
     }
 }

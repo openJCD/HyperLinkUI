@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace HyperLinkUI.Engine.GUI
 {
-    public class Button : Widget
+    public class Button : Widget, Control
     {
         protected SpriteFontBase labelfont;
         protected EventType event_type;
@@ -23,7 +23,7 @@ namespace HyperLinkUI.Engine.GUI
         {
             LocalX = x; LocalY = y;
             Width = width; Height = height;
-            labelfont = Theme.MediumUIFont; // defaults
+            labelfont = Theme.Font; // defaults
             Text = text;
             Tag = tag;
             event_type = etype;

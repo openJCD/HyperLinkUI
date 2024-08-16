@@ -54,7 +54,7 @@ namespace HyperLinkUI.Scenes
             {
                 UIEventHandler.sendDebugMessage(this, new MiscTextEventArgs { txt="Error: " + ex.Message });
                 var dc = new WindowContainer(SceneRoot, 0, 0, 200, 200, "dialog_error", "There was an error...", AnchorType.CENTRE);
-                var dtl = new TextLabel(dc, ex.Message, 0, 0, AnchorType.CENTRE);
+                var dtl = new TextLabel(dc, ex.Message + "\r\n" + ex.GetBaseException().Message, 0, 0, AnchorType.CENTRE);
                 sceneManager.HaltLuaUpdate();
             }
             return SceneRoot;

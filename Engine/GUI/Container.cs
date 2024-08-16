@@ -23,6 +23,7 @@ namespace HyperLinkUI.Engine.GUI
         RasterizerState rstate;
 
         #region Properties/Members
+        public LocalThemeProperties Theme = new LocalThemeProperties();
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
 
         public virtual IContainer Parent { get => parent; protected set => parent = value; }
@@ -47,9 +48,9 @@ namespace HyperLinkUI.Engine.GUI
         
         public AnchorType AnchorType { get => anchor.Type; set => anchor.Type = value; }
         
-        public int LocalX { get; set; }
+        public float LocalX { get; set; }
 
-        public int LocalY { get; set; }
+        public float LocalY { get; set; }
 
         public Vector2 localOrigin { get; set; }
 
@@ -167,15 +168,9 @@ namespace HyperLinkUI.Engine.GUI
             if (ClipContents)
             {
                 Rectangle srect = BoundingRectangle;
-                srect.Size -= new Point(ClipPadding*2);
-                srect.Location += new Point(ClipPadding);
+                srect.Size += new Point(ClipPadding*2);
+                srect.Location -= new Point(ClipPadding);
                 guiSpriteBatch.GraphicsDevice.ScissorRectangle = srect;
-            }
-
-            if (NineSliceEnabled)
-            {
-                NineSlice.BindRect = BoundingRectangle;
-                NineSlice.Draw(guiSpriteBatch);
             }
             
             if (RenderBackgroundColor)
@@ -189,6 +184,11 @@ namespace HyperLinkUI.Engine.GUI
             foreach (var child in ChildWidgets)
                 child.Draw(guiSpriteBatch);
 
+            if (NineSliceEnabled)
+            {
+                NineSlice.BindRect = BoundingRectangle;
+                NineSlice.Draw(guiSpriteBatch);
+            }
             
             if (!IsActive)
             {
@@ -198,6 +198,7 @@ namespace HyperLinkUI.Engine.GUI
             guiSpriteBatch.End();
             guiSpriteBatch.GraphicsDevice.ScissorRectangle = scissor_reset;
             guiSpriteBatch.Begin(rasterizerState:new RasterizerState { ScissorTestEnable = true});            
+            
         }
 
         public void TransferWidget(Widget widget)

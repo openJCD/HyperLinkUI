@@ -2,29 +2,35 @@
 using System.Diagnostics;
 using HyperLinkUI.Engine.GUI;
 using NLua;
-using HyperLinkUI.Scenes;
 using HyperLinkUI.Engine.GameSystems;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System.Runtime.CompilerServices;
 using System.Reflection;
-using HyperLinkUI.Engine.GameSystems;
 using Microsoft.Xna.Framework.Content;
+using MonoTween;
+using System.Runtime.CompilerServices;
+using HyperLinkUI.Engine.Animations;
+using System.Collections;
+using System.Collections.Generic;
+using SharpDX.WIC;
+
 #nullable enable
+
 namespace HyperLinkUI.Scenes
 {
     public class SceneAPI
     {
         #region EXPOSURE FUNCTION
+        [LuaHide]
         public void ExposeTo(Lua lua)
         {
-            foreach (MethodInfo m in GetType().GetMethods())
+            foreach (MethodInfo m in GetType().GetMethods(BindingFlags.Public | BindingFlags.Static))
             {
                 lua.RegisterFunction(m.Name, this, m);
             }
-            
+            LuaHelper.ImportStaticType(typeof(LuaHelper), lua, "_lua_helper", true);
         }
         #endregion 
 
@@ -100,7 +106,7 @@ namespace HyperLinkUI.Scenes
             var func = man.GetScene(scene_name).ScriptHandler.GetFunction(function);
             func.Call(args);
         }
-            
+
         public static SpriteFont load_spritefont(ContentManager c, string path)
         {
             return c.Load<SpriteFont>(path);
@@ -163,9 +169,82 @@ namespace HyperLinkUI.Scenes
         {
             return new Random().Next(min, max);
         }
+        public static Func<float, float> get_ease_func(string f)
+        {
+            return LuaHelper.GetEaseFromString(f);
+        }
+        #endregion
 
-        #endregion 
+        #region animation
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="duration"></param>
+        /// <returns>Tween to chain methods with</returns>
+        public static Tween tween_pos(Control target, int x, int y, float duration)
+        {
+            Tween tw = TweenManager.Tween(target, new { LocalX = x, LocalY = y }, duration).Once().SetEase(Ease.OutCubic);
+            return tw;
+        }
 
+        public static Tween tween_size(Control target, int w, int h, float duration)
+        {
+            Tween tw = TweenManager.Tween(target, new { Width = w, Height = h }, duration).Once();
+            return tw;
+        }
+
+        public static Keyframes animation()
+        {
+            return new Keyframes();
+        }
+
+        public static Keyframes sequenced_cube_in_all(Container c, int xo, int yo, float duration)
+        {
+            return Keyframes.SequencedCubeIn(c, xo, yo, duration);
+        }
+        public static Keyframes sequenced_cube_in_custom(LuaTable controls, int xo, int yo, float duration)
+        {
+            var targets = GetControlsFromLuaTable(controls);
+
+            return Keyframes.SequencedCubeIn(targets.ToArray(), xo, yo, duration);
+        }
+        public static Keyframes sequenced_custom(LuaTable controls, int xo, int yo, float duration, Func<float, float> ease)
+        {
+            var targets = GetControlsFromLuaTable(controls);
+            return Keyframes.SequencedCustom(targets.ToArray(), xo, yo, duration, ease);
+        } 
+        public static Keyframes staggered_custom(LuaTable controls, int xo, int yo, float duration, float delay, Func<float, float> ease)
+        {
+            var targets = GetControlsFromLuaTable(controls);
+            return Keyframes.StaggeredCustom(targets.ToArray(), xo, yo, duration, ease, delay);
+        }
+        static bool IsCollectionAllOfInterface<T>(ICollection c)
+        {
+            foreach (object o in c)
+            {
+                if (o.GetType().GetInterface(typeof(T).Name) == null)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        static List<Control> GetControlsFromLuaTable ( LuaTable t ) 
+        {
+            List<Control> l = new List<Control>();
+            foreach (object item in t.Values)
+            {
+                if ((Control)item != null)
+                {
+                    l.Add((Control)item);
+                }
+            }
+            return l;
+        }
+        #endregion
     }
 }

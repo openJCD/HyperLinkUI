@@ -1,6 +1,9 @@
-﻿using NLua;
+﻿using MonoTween;
+using NLua;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace HyperLinkUI.Scenes
@@ -17,6 +20,12 @@ namespace HyperLinkUI.Scenes
         {
             string rstring = Enum.GetName(typeof(T), en);
             return rstring;
+        }
+
+        public static Func<float, float> GetEaseFromString(string str)
+        {
+            MethodInfo meth = typeof(Ease).GetTypeInfo().GetDeclaredMethod(str);
+            return meth.CreateDelegate<Func<float, float>>();
         }
 
         /// <summary>
@@ -76,12 +85,17 @@ namespace HyperLinkUI.Scenes
         /// <param name="T"></param>
         /// <param name="state"></param>
         /// <param name="luaName"></param>
-        public static void ImportStaticType(Type T, Lua state, string luaName)
+        public static void ImportStaticType(Type T, Lua state, string luaName, bool doMethods = false, bool doMethodsCSharp = false)
         {
             state.DoString($"{luaName} = {{}}");
             foreach(FieldInfo f in T.GetFields())
             {
                 state[$"{luaName}.{f.Name}"] = f.GetValue(f);
+            }
+            if (!doMethods) return;
+            foreach (MethodInfo f in T.GetMethods())
+            {
+                state.RegisterFunction(luaName + '_' + f.Name, f);
             }
         }
     }

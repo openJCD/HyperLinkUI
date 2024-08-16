@@ -47,7 +47,7 @@ namespace HyperLinkUI.Engine.GUI
 
         public TextInput(Container parent, int relx, int rely, int width, AnchorType anchorType = AnchorType.BOTTOMLEFT, string hint = "type here", int padding=2) : base(parent)
         {
-            fnt = Theme.MediumUIFont;
+            fnt = Theme.Font;
             Padding = padding;
             Height = (int)(fnt.MeasureString("|").Y + padding*2);
             Anchor = new AnchorCoord(relx, rely, anchorType, parent, width, Height);
@@ -70,7 +70,7 @@ namespace HyperLinkUI.Engine.GUI
         }
         public TextInput (Container parent):base(parent)
         {
-            fnt = Theme.MediumUIFont;
+            fnt = Theme.Font;
             Padding = 2;
             Height = (int)(fnt.MeasureString("|").Y + 4);
             Anchor = new AnchorCoord(0, 0, AnchorType.TOPLEFT, parent, 300, Height);
@@ -183,4 +183,4 @@ namespace HyperLinkUI.Engine.GUI
             return this;
         }
     }
-}
+}s

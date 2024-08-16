@@ -22,7 +22,7 @@ namespace HyperLinkUI.Engine.GUI
 
     public class AnchorCoord
     {
-        public AnchorCoord(int XOffset, int YOffset, AnchorType anchorType, IContainer parent, int width, int height)
+        public AnchorCoord(float XOffset, float YOffset, AnchorType anchorType, IContainer parent, int width, int height)
         {
             Type = anchorType;
             OffsetFromAnchor = new Vector2();
@@ -67,7 +67,7 @@ namespace HyperLinkUI.Engine.GUI
         public Vector2 AbsolutePosition { get; set; }
         public AnchorType Type { get; set; }
 
-        public void RecalculateAnchor(int XOffset, int YOffset, IContainer parent, int width, int height)
+        public void RecalculateAnchor(float XOffset, float YOffset, IContainer parent, int width, int height)
         {
             OffsetFromAnchor = new Vector2();
             AbsolutePosition = new Vector2();

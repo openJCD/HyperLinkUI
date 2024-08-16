@@ -7,6 +7,8 @@ using HyperLinkUI.Engine.GameSystems;
 using HyperLinkUI.Scenes;
 using HyperLinkUI.Engine.GUI;
 using HyperLinkUI.Engine;
+using MonoTween;
+using HyperLinkUI.Engine.Audio;
 
 namespace HyperLinkUI
 {
@@ -52,6 +54,7 @@ namespace HyperLinkUI
             
             SceneManager = Core.Init(UIContentManager, graphicsManager, Window);
             // check if the Loader throws an exception
+            AudioManager.Init();
             base.Initialize();
         }
         private void Game1_HandleOnButtonClick(object sender, OnButtonClickEventArgs e)
@@ -67,11 +70,9 @@ namespace HyperLinkUI
             UISpriteBatch = new SpriteBatch(GraphicsDevice);
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Core.LoadAll(SceneManager, "Content/GUI/Scenes/", "default.scene", "Content/GUI/Saves/settings.ini");
+            Core.LoadAll(SceneManager, "Content/GUI/Scenes/", "default.scene");
 
             Background.Import("Content/backgrounds/crosses.json", Content, out BG);
-            sw = GraphicsDevice.PresentationParameters.BackBufferWidth;
-            sh = GraphicsDevice.PresentationParameters.BackBufferHeight;
         }
         protected override void Update(GameTime gameTime)
         {
@@ -82,6 +83,8 @@ namespace HyperLinkUI
             SceneManager.Update(gameTime);
             oldKeyboardState = newKeyboardState;
             BG.Animate(gameTime);
+            TweenManager.TickAllTweens((float)gameTime.ElapsedGameTime.TotalSeconds);
+            AudioManager.Update();
             base.Update(gameTime);
         }
 

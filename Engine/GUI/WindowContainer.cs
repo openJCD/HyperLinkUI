@@ -45,7 +45,7 @@ namespace HyperLinkUI.Engine.GUI
             BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, height);
 
             headerbar = new Container(this, 0, 0, width, 20, AnchorType.TOPLEFT);
-            label = new TextLabel(headerbar, DebugLabel, Theme.SmallUIFont, 0, 0, AnchorType.CENTRE);
+            label = new TextLabel(headerbar, DebugLabel, Engine.Theme.SmallUIFont, 0, 0, AnchorType.CENTRE);
             dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size);
             parent.AddContainer(this);
             localOrigin = new Vector2(Width / 2, Height / 2);
@@ -107,7 +107,7 @@ namespace HyperLinkUI.Engine.GUI
             if (Resizeable)
             {
                 headerbar.Width = Width;
-                Rectangle resizeArea = new Rectangle(new Point(BoundingRectangle.Right - 10, BoundingRectangle.Bottom - 10), new Point(10, 10));
+                Rectangle resizeArea = new Rectangle(new Point(BoundingRectangle.Right - 1, BoundingRectangle.Bottom - 1), new Point(10, 10));
                 if (resizeArea.Contains(oldState.Position) )
                 {
                     Mouse.SetCursor(MouseCursor.SizeNWSE);
@@ -131,14 +131,7 @@ namespace HyperLinkUI.Engine.GUI
         public void SetTitle(string t)
         {
             Title = t;
-
         }
-
-        public void ToggleCloseButtonEnabled()
-        {
-            close_button.Enabled = !close_button.Enabled;
-        }
-
         public override void Open()
         {
             parent.BringWindowToTop(this);
@@ -148,6 +141,21 @@ namespace HyperLinkUI.Engine.GUI
         {
             parent.PushWindowToBottom(this);
             base.Close();
+        }
+        public void EnableCloseButton(int pad = 5)
+        {
+            var c = new Container(headerbar, 0, 0, headerbar.Height, headerbar.Height, AnchorType.TOPRIGHT, "close button aligner") { DrawBorder = false, RenderBackgroundColor = false };
+            CustomDrawButton btn_close = new CustomDrawButton(c, "", 0, 0, headerbar.Height-pad, headerbar.Height-pad, AnchorType.CENTRE, EventType.CloseWindow, Tag);
+            btn_close.SetDrawCalback(DrawCloseButton);
+            void DrawCloseButton(SpriteBatch sb)
+            {
+                var tl = new Vector2(btn_close.XPos, btn_close.YPos);
+                var tr = new Vector2(btn_close.BoundingRectangle.Right, btn_close.YPos);
+                var bl = new Vector2(btn_close.XPos, btn_close.BoundingRectangle.Bottom);
+                var br = new Vector2(btn_close.BoundingRectangle.Right, btn_close.BoundingRectangle.Bottom);
+                sb.DrawLine(tl, br, btn_close.IsUnderMouseFocus ? Color.Red : Color.DarkRed , 1.5f);
+                sb.DrawLine(bl, tr, btn_close.IsUnderMouseFocus ? Color.Red : Color.DarkRed);
+            };
         }
     }
 }

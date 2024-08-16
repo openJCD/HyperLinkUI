@@ -34,7 +34,7 @@ namespace HyperLinkUI.Engine.GUI
             Parent = parent;
             parent.TransferWidget(this);
             DebugLabel = text;
-            labelfont = Theme.MediumUIFont;
+            labelfont = Theme.Font;
             Tag = tag;
             event_type = eventType;
             LocalX = relativex;
@@ -54,7 +54,7 @@ namespace HyperLinkUI.Engine.GUI
             parent.TransferWidget(this);
             Parent = parent;
             DebugLabel = "btn_icon";
-            labelfont = Theme.MediumUIFont;
+            labelfont = Theme.Font;
             Tag = tag;
             event_type = eventType;
             LocalX = relativex;

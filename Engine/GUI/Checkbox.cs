@@ -33,7 +33,7 @@ namespace HyperLinkUI.Engine.GUI
             LocalY = relativey;
             container = new Container(parent, relativex, relativey, 10, 10, anchorType, "Checkbox");
             label = new TextLabel(container, text, 0, 0, AnchorType.CENTRE);
-            label.Font = Theme.MediumUIFont;
+            label.Font = Theme.Font;
             container.Width = label.Width + btnwidth;
             container.Height = btnheight;
             container.DrawBorder = true;

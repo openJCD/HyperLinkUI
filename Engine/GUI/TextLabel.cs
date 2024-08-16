@@ -41,7 +41,7 @@ namespace HyperLinkUI.Engine.GUI
 
         public TextLabel(Container parent, string text, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT) : base(parent)
         {
-            Font = Theme.MediumUIFont;
+            Font = Theme.Font;
             int fontwidth = (int)Font.MeasureString(text).X;
             int fontheight = (int)Font.MeasureString(text).Y;
             LocalX = relativex;
@@ -94,7 +94,8 @@ namespace HyperLinkUI.Engine.GUI
         }
         public TextLabel SetCustomFontSize(float size)
         {
-            font = Theme.GetFontSystem().GetFont(size);
+            Theme.FontSize = size;
+            font = Theme.Font;
             return this;
         }
     }

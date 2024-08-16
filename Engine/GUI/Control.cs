@@ -8,11 +8,11 @@ namespace HyperLinkUI.Engine.GUI
 {
     public interface Control
     {
-        int LocalX { get; }
-        int LocalY { get; }
+        float LocalX { get; set; }
+        float LocalY { get; set; }
 
-        int Width { get; }
-        int Height { get; }
+        int Width { get; set; }
+        int Height { get; set; }
 
         AnchorCoord Anchor { get; }
     }

@@ -31,9 +31,9 @@ namespace HyperLinkUI.Engine.GUI
       
         public int YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = value; }
 
-        public int LocalX { get; set; }
+        public float LocalX { get; set; }
 
-        public int LocalY { get; set; }
+        public float LocalY { get; set; }
 
         public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Height = value; }
         
@@ -45,7 +45,7 @@ namespace HyperLinkUI.Engine.GUI
 
         public AnchorType anchorType { get => anchor.Type; set => anchor.Type = value; }
 
-        public LocalThemeProperties LocalTheme = new LocalThemeProperties();
+        public LocalThemeProperties Theme = new LocalThemeProperties();
 
         protected Widget(Container parent)
         {
@@ -78,8 +78,8 @@ namespace HyperLinkUI.Engine.GUI
                 return;
             if (DrawDebugRect)
             {
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, LocalTheme.PrimaryColor);
-                guiSpriteBatch.FillRectangle(BoundingRectangle, LocalTheme.PrimaryColor * 0.5f);
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.PrimaryColor);
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.PrimaryColor * 0.5f);
             }
         }
 
