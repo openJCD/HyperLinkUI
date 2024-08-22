@@ -11,14 +11,12 @@ using NLua;
 
 namespace HyperLinkUI.Engine.GUI
 {
-    [Serializable()]
-    [XmlRoot("Root")]
     public class UIRoot : IContainer
     {
-        private MouseState oldmousestate;
+        private static MouseState oldmousestate;
         private static MouseState newmousestate;
         public bool IsUnderMouseFocus => true;
-        public static MouseState MouseState { get => newmousestate; }
+        public static MouseState MouseState { get => oldmousestate; }
 
         private KeyboardState oldkstate;
         private KeyboardState newkstate;
@@ -29,20 +27,25 @@ namespace HyperLinkUI.Engine.GUI
         private List<Container> base_containers;
         private GraphicsDeviceManager graphicsInfo;
 
-        [XmlElement("Container")]
         public List<Container> ChildContainers { get => base_containers; set => base_containers = value; }
-        
+
+        List<Container> orderedContainers
+        {
+            get
+            {
+                List<Container> _oc = new List<Container>();
+                _oc.AddRange(base_containers);
+                _oc.Reverse();
+                return _oc;
+            }
+        }
+
         public List<Widget> ChildWidgets { get; set; }       
-        [XmlIgnore]
         public string DebugLabel { get { return "UI Root"; } }
-        [XmlIgnore]
         public int Width { get { return width; } set => width = value; }
-        [XmlIgnore]
         public int Height { get { return height; } set => height = value; }
-        [XmlIgnore]
-        public int XPos { get; set; }
-        [XmlIgnore]
-        public int YPos { get; set; }
+        public float XPos { get; set; }
+        public float YPos { get; set; }
         public int PaddingX
         {
             get { return paddingx; }
@@ -67,7 +70,10 @@ namespace HyperLinkUI.Engine.GUI
         [LuaHide]
         public List<Container> ContainersUnderMouseHover { get; set; }
 
+        [LuaHide]
         public Container draggedWindow { get; set; }
+
+        public Vector2 MouseDelta;
 
         public UIRoot()
         {
@@ -97,7 +103,7 @@ namespace HyperLinkUI.Engine.GUI
             draggedWindow = null;
             newkstate = Keyboard.GetState();
             newmousestate = Mouse.GetState();
-
+            MouseDelta = newmousestate.Position.ToVector2() - oldmousestate.Position.ToVector2();
             foreach (Container container in base_containers.ToList())
             {
                 // ContainersUnderMouseHover.ForEach(c=>c.Theme.BorderColor = Color.DarkBlue);
@@ -112,10 +118,12 @@ namespace HyperLinkUI.Engine.GUI
             if (newmousestate.LeftButton == ButtonState.Pressed && oldmousestate.LeftButton == ButtonState.Released)
             {
                 UIEventHandler.onMouseClick(this, new MouseClickArgs { mouse_data = newmousestate });
+                SendClick(newmousestate.Position.ToVector2(), ClickMode.Down, false);
             }
             if (newmousestate.LeftButton == ButtonState.Released && oldmousestate.LeftButton == ButtonState.Pressed)
             {
                 UIEventHandler.onMouseUp(this, new MouseClickArgs { mouse_data = newmousestate });
+                SendClick(newmousestate.Position.ToVector2(), ClickMode.Up, false);
             }
             if (newkstate.GetPressedKeyCount() == 0 && oldkstate.GetPressedKeyCount() > 0)
             {
@@ -226,7 +234,18 @@ namespace HyperLinkUI.Engine.GUI
             //Theme.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
             // ALSO remember to unsubscribe from events if applicable in future!
         }
-
+        internal void SendClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner)
+        {
+            // should fetch the topmost contained clicked and skip the other ones
+            foreach (Container c in orderedContainers)
+            {
+                if (c.IsUnderMouseFocus && c.BlockMouseClick)
+                {
+                    c.SendClick(mousePos, cmode, isContextDesigner);
+                    return;
+                }
+            }
+        }
         public List<WindowContainer> GetIntersectingWindows(Rectangle rect)
         {
             List<WindowContainer> rl = new List<WindowContainer>();
@@ -250,5 +269,10 @@ namespace HyperLinkUI.Engine.GUI
         {
             ChildWidgets.Remove(w);
         }
+    }
+    public enum ClickMode
+    {
+        Down,
+        Up
     }
 }

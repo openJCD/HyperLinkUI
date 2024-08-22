@@ -9,7 +9,7 @@ using HyperLinkUI.Engine.GUI;
 using HyperLinkUI.Engine;
 using MonoTween;
 using HyperLinkUI.Engine.Audio;
-
+using HyperLinkUI.Designer;
 namespace HyperLinkUI
 {
     internal class Game1 : Game
@@ -35,7 +35,6 @@ namespace HyperLinkUI
         public static ContentManager UIContentManager; //manager for fonts and shit
         SceneManager SceneManager;        
         public static UIRoot screenRoot;
-
         public Game1()
         {
             Content.RootDirectory = "Content";
@@ -44,7 +43,8 @@ namespace HyperLinkUI
             UIContentManager.RootDirectory = "Content/GUI/";
             base.IsFixedTimeStep = false;
             //graphicsManager.SynchronizeWithVerticalRetrace = false;
-            IsMouseVisible = true;    
+            IsMouseVisible = true;
+            UIEventHandler.OnKeyPressed += OnKeyPressed;
         }
 
         protected override void Initialize()
@@ -55,6 +55,7 @@ namespace HyperLinkUI
             SceneManager = Core.Init(UIContentManager, graphicsManager, Window);
             // check if the Loader throws an exception
             AudioManager.Init();
+            DesignerContext.Init(SceneManager);
             base.Initialize();
         }
         private void Game1_HandleOnButtonClick(object sender, OnButtonClickEventArgs e)
@@ -80,11 +81,16 @@ namespace HyperLinkUI
                 return;
             
             KeyboardState newKeyboardState = Keyboard.GetState();
+
+            //testing designer
+
             SceneManager.Update(gameTime);
+            DesignerContext.Update();
             oldKeyboardState = newKeyboardState;
             BG.Animate(gameTime);
             TweenManager.TickAllTweens((float)gameTime.ElapsedGameTime.TotalSeconds);
             AudioManager.Update();
+
             base.Update(gameTime);
         }
 
@@ -96,13 +102,29 @@ namespace HyperLinkUI
             SpriteBatch.Begin();
             BG.Draw(SpriteBatch, new Rectangle(new Point(), new Point(graphicsManager.PreferredBackBufferWidth, graphicsManager.PreferredBackBufferHeight)));
             SpriteBatch.End();
-
             UISpriteBatch.Begin(rasterizerState:new RasterizerState() { ScissorTestEnable = true });
             SceneManager.Draw(UISpriteBatch);
             //ns_test.Draw(UISpriteBatch);
+            DesignerContext.Draw(UISpriteBatch);
             UISpriteBatch.End();
-            base.Draw(gameTime);
             
+            base.Draw(gameTime);
+        }
+        bool _designerEnabled = false;
+        public void OnKeyPressed(object sender, KeyPressedEventArgs e)
+        {
+            if (e.first_key_as_string == "F1")
+            {
+                if (!_designerEnabled)
+                {
+                    _designerEnabled = true;
+                    DesignerContext.Enable();
+                } else if (_designerEnabled)
+                {
+                    _designerEnabled = false;
+                    DesignerContext.Disable();
+                }
+            } 
         }
     }
 }

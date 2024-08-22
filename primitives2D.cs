@@ -531,6 +531,15 @@ namespace HyperLinkUI
 
         #endregion
 
+        #region RoundedRect 
+        
+        public static void RoundedRect(this SpriteBatch _sb, Rectangle rect, int radius, Color color)
+        {
+            Rectangle inner = new Rectangle(rect.X + radius, rect.Y + radius, rect.Width - radius*2, rect.Height - radius*2);
+            DrawRectangle(_sb, inner, color);
+            DrawCircle()
+        }
 
+        #endregion
     }
 }

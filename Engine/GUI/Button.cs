@@ -31,6 +31,20 @@ namespace HyperLinkUI.Engine.GUI
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
             Parent.TransferWidget(this);
         }
+        public Button(Container parent, string text, int x, int y, AnchorType anchorType, EventType etype, string tag) : base(parent)
+        {
+            LocalX = x; LocalY = y;
+            labelfont = Theme.Font; // defaults
+            Width = (int)labelfont.MeasureString(text).X + 20;
+            Height = (int)labelfont.MeasureString(text).Y + 20;
+
+            Text = text;
+            Tag = tag;
+            event_type = etype;
+            anchor = new AnchorCoord(x, y, anchorType, parent, Width, Height);
+            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
+            Parent.TransferWidget(this);
+        }
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
             if (!Enabled)
@@ -39,7 +53,6 @@ namespace HyperLinkUI.Engine.GUI
 
             guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Multiply(Theme.PrimaryColor, fillMultiplier));
             guiSpriteBatch.DrawString(labelfont, Text, AbsolutePosition + BoundingRectangle.Size.ToVector2() / 2 - labelfont.MeasureString(Text) / 2, Theme.PrimaryColor);
-            //base.Draw(guiSpriteBatch);
         }
         public override void Update(MouseState oldState, MouseState newState)
         {
@@ -54,8 +67,6 @@ namespace HyperLinkUI.Engine.GUI
                 {
                     clicked = true;
                     fillMultiplier = 0f;
-                    if (newState.LeftButton == ButtonState.Released)
-                        UIEventHandler.onButtonClick(this, new OnButtonClickEventArgs { event_type = event_type, tag = Tag });
                 }
             }
             else
@@ -65,12 +76,12 @@ namespace HyperLinkUI.Engine.GUI
                 fillMultiplier = 0.15f;
             }
         }
-        public override void ReceivePropagatedClick(Container c)
+        public override void ReceiveClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner)
         {
-            // base runs the check to see if the parent was the recipient;
-            base.ReceivePropagatedClick(c);
-
-            if (BoundingRectangle.Contains(Mouse.GetState().Position))
+            if (!Enabled) return;
+            base.ReceiveClick(mousePos, cmode, isContextDesigner);
+            if (isContextDesigner) return;
+            if (cmode == ClickMode.Up)
             {
                 UIEventHandler.onButtonClick(this, new OnButtonClickEventArgs { event_type = event_type, tag = Tag });
             }

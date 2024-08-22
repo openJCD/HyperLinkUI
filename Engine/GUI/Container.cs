@@ -11,7 +11,7 @@ namespace HyperLinkUI.Engine.GUI
 {
     [XmlInclude(typeof(WindowContainer))]
     [XmlInclude(typeof(Taskbar))]
-    public class Container : IContainer, Anchorable, IDisposable, Control
+    public class Container : IContainer, IDisposable, Control
     {
         private List<Container> child_containers;
         private List<Widget> child_widgets;
@@ -23,6 +23,8 @@ namespace HyperLinkUI.Engine.GUI
         RasterizerState rstate;
 
         #region Properties/Members
+        public bool BlockMouseClick = true;
+
         public LocalThemeProperties Theme = new LocalThemeProperties();
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
 
@@ -34,13 +36,13 @@ namespace HyperLinkUI.Engine.GUI
        
         public string DebugLabel { get => debug_label; set => debug_label = value; }
        
-        public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Width = value; }
+        public float Width { get => (float)bounding_rectangle.Width; set => bounding_rectangle.Width = (int)value; }
        
-        public int Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height = value; }
+        public float Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height = (int)value; }
 
-        public int XPos { get => bounding_rectangle.X; set => bounding_rectangle.X = value; }
+        public float XPos { get => bounding_rectangle.X; set => bounding_rectangle.X = (int)value; }
 
-        public int YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = value; }
+        public float YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = (int)value; }
 
         public Rectangle BoundingRectangle { get => bounding_rectangle; set => bounding_rectangle = value; }
 
@@ -73,6 +75,7 @@ namespace HyperLinkUI.Engine.GUI
         public bool FillParentHeight = false;
 
         #endregion
+        
         public Color BlendColor { get; set; } = Color.White;
 
         #region NineSlice
@@ -94,7 +97,6 @@ namespace HyperLinkUI.Engine.GUI
             ChildContainers = new List<Container>();
             ChildWidgets = new List<Widget>();
             DebugLabel = "container";
-            UIEventHandler.OnMouseUp += OnMouseClick;
         }
 
         ~Container()
@@ -108,7 +110,6 @@ namespace HyperLinkUI.Engine.GUI
                 Debug.WriteLine("Decoupling Container from parent...");
                 Parent.ChildContainers.Remove(this);
                 Parent.ChildContainers = Parent.ChildContainers.ToList();
-                UIEventHandler.OnMouseUp -= OnMouseClick;
                 Debug.Write(" Done. Out of scope? \n");
             }
             catch
@@ -131,6 +132,7 @@ namespace HyperLinkUI.Engine.GUI
             parent.AddContainer(this);
         }
         #endregion
+
         public virtual void Update(MouseState oldState, MouseState newState)
         {
             if (!IsOpen || !IsActive)
@@ -139,7 +141,7 @@ namespace HyperLinkUI.Engine.GUI
             if (IsSticky)
                 Anchor.RecalculateAnchor(LocalX, LocalY, Parent, Width, Height);
 
-            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
+            BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point((int)Width, (int)Height));
 
             if (BoundingRectangle.Contains(newState.Position))
                 isUnderMouseFocus = true;
@@ -161,8 +163,6 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!IsOpen)
                 return;
-
-
 
             Rectangle scissor_reset = guiSpriteBatch.GraphicsDevice.ScissorRectangle ;
             if (ClipContents)
@@ -210,17 +210,12 @@ namespace HyperLinkUI.Engine.GUI
 
         public void RemoveChildWidget(Widget w) { ChildWidgets.Remove(w); }
 
-        /// <summary>
-        /// Transfer ownershiip of the Container from wherever it was previously to this particular Container.
-        /// </summary>
-        /// <param name="containerToAdd">Container to transfer</param>
         public void AddContainer(Container containerToAdd)
         {
             ChildContainers.Add(containerToAdd);
             containerToAdd.SetNewContainerParent(this);
         }
 
-        
         public void PrintChildren(int layer)
         {
             string indent1 = "----";
@@ -260,20 +255,11 @@ namespace HyperLinkUI.Engine.GUI
         #endregion
 
         #region setnewcontainerparent
-                public void SetNewContainerParent(Container container)
-                {
-                    parent = container;
-                    Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, parent, Width, Height);
-                    BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
-                }
-
-                public void SetNewContainerParent(UIRoot container)
-                {
-                    parent = container;
-                    Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, parent, Width, Height);
-                    BoundingRectangle = new Rectangle(Anchor.AbsolutePosition.ToPoint(), new Point(Width, Height));
-                }
-                #endregion
+        public void SetNewContainerParent(IContainer container)
+        {
+            parent = container;
+        }
+        #endregion
 
         public List<Container> GetContainersAbove(Container window)
         {
@@ -314,16 +300,19 @@ namespace HyperLinkUI.Engine.GUI
             Height = (int)footprint_max.Y + paddingy;
             return this;
         }
+
         public void SetPosition(int x, int y)
         {
             AnchorCoord newAnchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height) { AbsolutePosition = new Vector2(x, y) };
 
             Anchor = newAnchor;
         }
+        
         public void ResetPosition()
         {
             Anchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height);
         }
+        
         public void PushToTop(Container c)
         {
             ChildContainers.Remove(c);
@@ -335,8 +324,28 @@ namespace HyperLinkUI.Engine.GUI
             return Parent.FindRoot();
         }
 
-        private void OnMouseClick(object sender, MouseClickArgs e)
+        public void SendClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner)
         {
+            foreach(Container c in ChildContainers)
+            {
+                if (c.IsUnderMouseFocus)
+                {
+                    c.SendClick(mousePos, cmode, isContextDesigner);
+                    break;
+                }
+            } 
+            foreach (Widget w in ChildWidgets)
+            {
+                if (w.IsUnderMouseFocus)
+                {
+                    w.ReceiveClick(mousePos, cmode, isContextDesigner);
+                }
+            }
+        }
+
+        public void SetBorderColor(Color C)
+        {
+            Theme.SecondaryColor = C;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using HyperLinkUI.Designer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -27,15 +28,15 @@ namespace HyperLinkUI.Engine.GUI
       
         public Rectangle BoundingRectangle { get => bounding_rectangle; protected set => bounding_rectangle = value; }
       
-        public int XPos { get => bounding_rectangle.X; set => bounding_rectangle.X = value; }
+        public float XPos { get => bounding_rectangle.X; set => bounding_rectangle.X = (int)value; }
       
-        public int YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = value; }
+        public float YPos { get => bounding_rectangle.Y; set => bounding_rectangle.Y = (int)value; }
 
         public float LocalX { get; set; }
 
         public float LocalY { get; set; }
 
-        public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Height = value; }
+        public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Width = value; }
         
         public int Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height = value; }
         
@@ -105,14 +106,17 @@ namespace HyperLinkUI.Engine.GUI
             bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
         }
 
-        public virtual void ReceivePropagatedClick(Container c)
-        {
-            if (c != Parent) return;
-        }
-
         public void SetParent (IContainer parent)
         {
             _parent = parent;
+        }
+
+        public virtual void ReceiveClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner) 
+        {
+            if (isContextDesigner)
+            {
+                DesignerContext.Select(this);
+            }
         }
     }
 }

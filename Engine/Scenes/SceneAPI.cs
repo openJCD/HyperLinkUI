@@ -154,27 +154,6 @@ namespace HyperLinkUI.Scenes
         }
         #endregion
 
-        #region misc
-
-        public static void send_debug_message(string msg)
-        {
-            Debug.WriteLine(msg);
-            UIEventHandler.sendDebugMessage(new object(), new MiscTextEventArgs() { txt = msg });
-        }
-        public static void send_debug_command(string cmd)
-        {
-            UIEventHandler.sendDebugCommand(new object(), new MiscTextEventArgs { txt = cmd });
-        }
-        public static int randint(int min, int max)
-        {
-            return new Random().Next(min, max);
-        }
-        public static Func<float, float> get_ease_func(string f)
-        {
-            return LuaHelper.GetEaseFromString(f);
-        }
-        #endregion
-
         #region animation
 
         /// <summary>
@@ -244,6 +223,27 @@ namespace HyperLinkUI.Scenes
                 }
             }
             return l;
+        }
+        #endregion
+
+        #region misc
+
+        public static void send_debug_message(string msg)
+        {
+            Debug.WriteLine(msg);
+            UIEventHandler.sendDebugMessage(new object(), new MiscTextEventArgs() { txt = msg });
+        }
+        public static void send_debug_command(string cmd)
+        {
+            UIEventHandler.sendDebugCommand(new object(), new MiscTextEventArgs { txt = cmd });
+        }
+        public static int randint(int min, int max)
+        {
+            return new Random().Next(min, max);
+        }
+        public static Func<float, float> get_ease_func(string f)
+        {
+            return LuaHelper.GetEaseFromString(f);
         }
         #endregion
     }

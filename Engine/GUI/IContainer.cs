@@ -11,11 +11,11 @@ namespace HyperLinkUI.Engine.GUI
 
         bool IsUnderMouseFocus { get; }
         string DebugLabel { get; }
-        int Width { get; set; }
-        int Height { get; set; }
+        float Width { get; set; }
+        float Height { get; set; }
 
-        int XPos { get; set; }
-        int YPos { get; set; }
+        float XPos { get; set; }
+        float YPos { get; set; }
         public List<Container> ChildContainers { get; set; }
         public List<Widget> ChildWidgets { get; set; }
         public void AddContainer(Container container) { }

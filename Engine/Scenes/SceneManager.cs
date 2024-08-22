@@ -29,9 +29,6 @@ namespace HyperLinkUI.Scenes
         public UIRoot activeSceneUIRoot;
         public string SceneFolderPath { get; set; }
 
-        [LuaHide]
-        public static GraphicsDeviceManager GlobalGraphicsDeviceManager { get; private set; }
-
         public SceneManager(ContentManager content, GraphicsDeviceManager globalGraphicsReference)
         {
             UIEventHandler.OnHotReload += UISceneManager_OnHotReload;
@@ -40,10 +37,6 @@ namespace HyperLinkUI.Scenes
             UIEventHandler.OnKeyPressed += UISceneManager_OnKeyPressed;
             Core.Window.ClientSizeChanged += UISceneManager_OnResize;
             SceneDictionary = new Dictionary<string, Scene>();
-            GlobalGraphicsDeviceManager = globalGraphicsReference;
-            GlobalGraphicsDeviceManager.PreferredBackBufferWidth = Theme.DisplayWidth;
-            GlobalGraphicsDeviceManager.PreferredBackBufferHeight = Theme.DisplayHeight;
-            GlobalGraphicsDeviceManager.ApplyChanges();
         }
 
         public void CreateScenesFromFolder(string path)
@@ -106,7 +99,6 @@ namespace HyperLinkUI.Scenes
         {
             //run the lua draw thing if possible
              if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
-            
             //guiSpriteBatch.Begin(SpriteSortMode.Deferred);
             activeSceneUIRoot.Draw(guiSpriteBatch);
             //guiSpriteBatch.End();
