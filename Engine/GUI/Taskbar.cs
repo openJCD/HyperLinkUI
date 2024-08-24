@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MgWheels;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace HyperLinkUI.Engine.GUI
             Width = parent.Width;
             DebugLabel = "Taskbar";
             Anchor = new AnchorCoord(0, 0, AnchorType.TOPLEFT, parent, parent.Width, height);
-            BoundingRectangle = new Rectangle(0, 0, Width, Height);
+            BoundingRectangle = new Rectangle(0, 0, (int)Width, (int)Height);
         }
 
         public override void Draw(SpriteBatch guiSpriteBatch)

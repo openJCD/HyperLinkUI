@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace HyperLinkUI.Engine.GUI
 {
-    public class Button : Widget, Control
+    public class Button : Widget
     {
         protected SpriteFontBase labelfont;
         protected EventType event_type;
@@ -15,10 +15,7 @@ namespace HyperLinkUI.Engine.GUI
         public string Text { get; set; }
 
         public string Tag { get; set; }
-
-        public Button()
-        {
-        }
+        public Button() { }
         public Button(Container parent, string text, int x, int y, int width, int height, AnchorType anchorType, EventType etype, string tag) : base(parent)
         {
             LocalX = x; LocalY = y;
@@ -42,7 +39,7 @@ namespace HyperLinkUI.Engine.GUI
             Tag = tag;
             event_type = etype;
             anchor = new AnchorCoord(x, y, anchorType, parent, Width, Height);
-            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
+            BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, (int)Width, (int)Height);
             Parent.TransferWidget(this);
         }
         public override void Draw(SpriteBatch guiSpriteBatch)

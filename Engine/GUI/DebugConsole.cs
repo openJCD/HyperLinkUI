@@ -24,7 +24,7 @@ namespace HyperLinkUI.Engine.GUI
         public DebugConsole(UIRoot parent)
         {
             window = new WindowContainer(parent, 0, 0, 300, 450, "dialog_debug_console", "Debug Console", AnchorType.BOTTOMRIGHT);
-            textbox = new TextInput(window, 0, 0, window.Width, hint:"...", padding:2);
+            textbox = new TextInput(window, 0, 0, (int)window.Width, hint:"...", padding:2);
             textlog = new TextLabel(window, "Debug mode is enabled. \nPress F11 to disable again.", 0, 20);
             window.Close();
             _parent = parent;

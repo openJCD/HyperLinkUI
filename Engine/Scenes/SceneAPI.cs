@@ -228,6 +228,10 @@ namespace HyperLinkUI.Scenes
 
         #region misc
 
+        public static int string_to_int(string s)
+        {
+            return int.Parse(s);
+        }
         public static void send_debug_message(string msg)
         {
             Debug.WriteLine(msg);

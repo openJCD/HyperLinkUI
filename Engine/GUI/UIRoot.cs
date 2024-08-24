@@ -8,6 +8,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Content;
 using NLua;
+using MgWheels;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -29,6 +30,8 @@ namespace HyperLinkUI.Engine.GUI
 
         public List<Container> ChildContainers { get => base_containers; set => base_containers = value; }
 
+
+        // list of containers to use for click propagation / blocking (topmost panel is index 0)
         List<Container> orderedContainers
         {
             get
@@ -42,8 +45,8 @@ namespace HyperLinkUI.Engine.GUI
 
         public List<Widget> ChildWidgets { get; set; }       
         public string DebugLabel { get { return "UI Root"; } }
-        public int Width { get { return width; } set => width = value; }
-        public int Height { get { return height; } set => height = value; }
+        public float Width { get { return width; } set => width = (int)value; }
+        public float Height { get { return height; } set => height = (int)value; }
         public float XPos { get; set; }
         public float YPos { get; set; }
         public int PaddingX
@@ -80,14 +83,14 @@ namespace HyperLinkUI.Engine.GUI
             ContainersUnderMouseHover = new List<Container>();
             ChildContainers = new List<Container>();
             ChildWidgets = new List<Widget>();
-            windowwidth = Width = Theme.DisplayWidth;
-            windowheight = Height = Theme.DisplayHeight;
+            windowwidth = (int)(Width = Theme.DisplayWidth);
+            windowheight = (int)(Height = Theme.DisplayHeight);
         }
         public UIRoot(GraphicsDeviceManager graphicsInfo)
         {
             Initialise(graphicsInfo);
-            windowwidth = Width = Theme.DisplayWidth;
-            windowheight = Height = Theme.DisplayHeight;
+            windowwidth = (int)(Width = Theme.DisplayWidth);
+            windowheight = (int)(Height = Theme.DisplayHeight);
             ContainersUnderMouseHover = new List<Container>();
             ChildContainers = new List<Container>();
         }
@@ -176,26 +179,6 @@ namespace HyperLinkUI.Engine.GUI
             ChildContainers.Remove(window);
             ChildContainers.Insert(0, window);
         }
-
-        public List<Container> GetContainersAbove(Container window)
-        {
-            int index = ChildContainers.IndexOf(window);
-            List<Container> abovecontainers = new List<Container>();
-            if (index == ChildContainers.Count - 1)
-            {
-                abovecontainers.Add(window);
-                return abovecontainers;
-            }
-            else
-            {
-                foreach (Container container in ChildContainers)
-                {
-                    if (ChildContainers.IndexOf(container) > index)
-                        abovecontainers.Add(container);
-                }
-                return abovecontainers;
-            }
-        }
         
         public List<Keys> GetPressedKeys()
         {
@@ -226,14 +209,6 @@ namespace HyperLinkUI.Engine.GUI
             ChildContainers.ForEach(cont => cont.ResetPosition());
         }
 
-        public void Dispose()
-        {
-            base_containers.ToList().ForEach(c => c.Dispose());
-            base_containers.Clear();
-            Width = 640; Height = 480;//reset to default values
-            //Theme.Dispose(); // may cause problems when loading the next Scene, but that usually involves reinstantiating everything
-            // ALSO remember to unsubscribe from events if applicable in future!
-        }
         internal void SendClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner)
         {
             // should fetch the topmost contained clicked and skip the other ones
@@ -246,16 +221,7 @@ namespace HyperLinkUI.Engine.GUI
                 }
             }
         }
-        public List<WindowContainer> GetIntersectingWindows(Rectangle rect)
-        {
-            List<WindowContainer> rl = new List<WindowContainer>();
-            Predicate<Container> windows = x => x.GetType() == typeof(WindowContainer);
-            foreach (WindowContainer c in ChildContainers.FindAll(windows))
-            {
-                rl.Add(c);
-            }
-            return rl;
-        }
+
         public UIRoot FindRoot() { return this; }
 
         public void TransferWidget(Widget w)

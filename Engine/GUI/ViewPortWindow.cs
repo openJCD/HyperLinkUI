@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using MgWheels;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -34,12 +35,12 @@ namespace HyperLinkUI.Engine.GUI
              new Vector3(0f, 1f, 0f));
             worldMatrix = Matrix.CreateWorld(camTarget, Vector3.
                           Forward, Vector3.Up);
-            RenderTarget = new RenderTarget2D(graphics, Width, Height);
+            RenderTarget = new RenderTarget2D(graphics, (int)Width, (int)Height);
         }
 
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
-            WindowPort = new Viewport((int)AbsolutePosition.X, (int)AbsolutePosition.Y, Width, Height);
+            WindowPort = new Viewport((int)AbsolutePosition.X, (int)AbsolutePosition.Y, (int)Width, (int)Height);
             Viewport oldViewPort = graphics.Viewport;
             Viewport newViewport = WindowPort;
             if (!IsOpen)
@@ -81,7 +82,6 @@ namespace HyperLinkUI.Engine.GUI
                 camPosition = Vector3.Transform(camPosition,
                               rotationMatrix);
                 camPosition = Vector3.Transform(camPosition, rotationMatrix2);
-
             }
             DebugLabel = "CamPos: " + camPosition.ToString();
             viewMatrix = Matrix.CreateLookAt(camPosition, camTarget,

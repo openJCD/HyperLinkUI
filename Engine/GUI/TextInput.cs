@@ -10,16 +10,19 @@ namespace HyperLinkUI.Engine.GUI
 {
     public class TextInput : Widget
     {
+        int _charLimit;
+
+        bool _enableCharLimit;
+
         Container container;
         TextLabel _txt_widget;
         List<char> _input_chars = new List<char>();
         public string Hint;
         SpriteFontBase fnt;
         public bool FillParent { get => container.FillParentWidth; set => container.FillParentWidth = value; }
-        Vector2 cursor_pos { get => new Vector2(cursor_pos_x, 0) + _txt_widget.Anchor.AbsolutePosition; }
+        Vector2 cursor_pos { get => new Vector2(cursor_pos_x, 0) + new Vector2(_txt_widget.XPos, _txt_widget.YPos); }
         int cursor_pos_x;
         int cursor_pos_index;
-        bool caps;
         public int Padding;
         Rectangle paddedRect;
         bool NineSliceEnabled { get => container.NineSliceEnabled; }
@@ -51,21 +54,22 @@ namespace HyperLinkUI.Engine.GUI
             Padding = padding;
             Height = (int)(fnt.MeasureString("|").Y + padding*2);
             Anchor = new AnchorCoord(relx, rely, anchorType, parent, width, Height);
-            BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, Height);
-            container = new Container(parent, relx, rely, width, Height, anchorType, hint);
+            BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, (int)Height);
+            container = new Container(parent, relx, rely, width, (int)Height, anchorType, hint);
             _txt_widget = new TextLabel(container, hint, fnt, padding, padding, AnchorType.TOPLEFT);
             Hint = hint;
 
-            UIEventHandler.OnKeyPressed += TextInput_RegisterKeyPress;
+            UIEventHandler.OnMouseClick += UIEventHandler_OnMouseClick;
+            Core.Window.KeyDown += TextInput_RegisterKeyPress;
             Core.Window.TextInput += TextInput_RegsiterTextInput;
+            
             _txt_widget.UpdatePos();
             cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
-            cursor_pos_index = 0;
             container.ClipContents = true;
             container.ClipPadding = padding / 2;
             paddedRect = create_padded_rect(BoundingRectangle, padding);
             container.BoundingRectangle = paddedRect;
-            SetNewParent(container);
+            SetParent(container);
             container.TransferWidget(this);
         }
         public TextInput (Container parent):base(parent)
@@ -74,38 +78,56 @@ namespace HyperLinkUI.Engine.GUI
             Padding = 2;
             Height = (int)(fnt.MeasureString("|").Y + 4);
             Anchor = new AnchorCoord(0, 0, AnchorType.TOPLEFT, parent, 300, Height);
-            BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, 300, Height);
-            container = new Container(parent, 0, 0, 300, Height, anchorType, "Text input container");
+            BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, 300, (int)Height);
+            container = new Container(parent, 0, 0, 300, (int)Height, anchorType, "Text input container");
             _txt_widget = new TextLabel(container, "Text here...", fnt, 2, 2, AnchorType.TOPLEFT);
             Hint = "Text here...";
 
-            UIEventHandler.OnKeyPressed += TextInput_RegisterKeyPress;
+            UIEventHandler.OnMouseClick += UIEventHandler_OnMouseClick;
+            Core.Window.KeyDown += TextInput_RegisterKeyPress;
             Core.Window.TextInput += TextInput_RegsiterTextInput;
             _txt_widget.UpdatePos();
             cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
-            cursor_pos_index = 0;
             container.ClipContents = true;
-            container.ClipPadding = 2;
-            SetNewParent(container);
+            container.TransferWidget(this);
+            SetParent(container);
+        }
+
+        private void UIEventHandler_OnMouseClick(object sender, MouseClickArgs e)
+        {
+            if (!IsUnderMouseFocus)
+                Active = false;
+        }
+
+        public override void ReceiveClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner)
+        {
+            base.ReceiveClick(mousePos, cmode, isContextDesigner);
+            if (cmode == ClickMode.Down)
+            {
+                Active = true;
+            }
         }
         public override void Draw(SpriteBatch guiSpriteBatch) {
+            if (!Enabled) return;
             if (Active)
             {
-                guiSpriteBatch.DrawString(fnt, "|", cursor_pos, Color.White);
-                //guiSpriteBatch.FillRectangle(new Rectangle(XPos, YPos, 300, 300), Color.BlueViolet);
+                guiSpriteBatch.DrawLine(cursor_pos, cursor_pos + new Vector2(0, BoundingRectangle.Height - 4), Theme.PrimaryColor);
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.PrimaryColor * 0.5f);
                 _txt_widget.Text = InputText;
+            } else
+            {
+                if (InputText == "")
+                    _txt_widget.Text = Hint;
             }
-            //guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.WidgetBorderColor);
         }
 
         public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);
-            //paddedRect = create_padded_rect(container.BoundingRectangle, Padding);
-            //container.BoundingRectangle = paddedRect;
+
             BoundingRectangle = container.BoundingRectangle;
-            if (BoundingRectangle.Contains(newState.Position)) Active = true; else Active = false;
             cursor_pos_index = MathHelper.Clamp(cursor_pos_index, 0, _input_chars.Count);
+
             if (Active)
             {
                 if (!(cursor_pos_x >= container.BoundingRectangle.Right - 2))
@@ -113,21 +135,26 @@ namespace HyperLinkUI.Engine.GUI
             }
         }
 
-        public void TextInput_RegisterKeyPress(object sender, KeyPressedEventArgs e)
+        public void TextInput_RegisterKeyPress(object sender, InputKeyEventArgs e)
         {
             if (!Active)
                 return;
-            switch (e.first_key_as_string)
+            if (e.Key == Keys.Enter)
             {
-                case ("Left"):
-                    cursor_pos_index -= 1;
-                    return;
-                case ("Right"):
-                    cursor_pos_index += 1;
-                    return;
-                default:
-                    return;
+                UIEventHandler.submitTextField(this, InputText);
             }
+            else if (e.Key == Keys.Left)
+            {
+                cursor_pos_index--;
+            }
+            else if (e.Key == Keys.Right)
+            {
+                cursor_pos_index++;
+            }
+            else if (e.Key == Keys.Delete)
+            {
+                Delete();
+            } 
         }
 
         public void TextInput_RegsiterTextInput(object sender, TextInputEventArgs e)
@@ -139,11 +166,12 @@ namespace HyperLinkUI.Engine.GUI
                 {
                     Backspace();
                 }
-                else if (e.Key == Keys.Enter)
+                 else
                 {
-                    UIEventHandler.submitTextField(this, InputText);
-                } else
-                AddChar(e.Character.ToString()[0]);
+                    if (_enableCharLimit && _input_chars.Count + 1 > _charLimit)
+                        return;
+                    AddChar(e.Character.ToString()[0]);
+                }
             }
         }
         private Rectangle create_padded_rect (Rectangle rectangle, int padding)
@@ -168,7 +196,13 @@ namespace HyperLinkUI.Engine.GUI
                 _input_chars.RemoveAt(cursor_pos_index);
             }
         }
-
+        private void Delete()
+        {
+            if (cursor_pos_index <= _input_chars.Count - 1)
+            {
+                _input_chars.RemoveAt(cursor_pos_index);
+            }
+        }
         public TextInput SetFont(SpriteFontBase font)
         {
             fnt = font;
@@ -180,6 +214,12 @@ namespace HyperLinkUI.Engine.GUI
         {
             container.EnableNineSlice(t);
             //container.NineSlice.DrawMode = NSDrawMode.Padded;
+            return this;
+        }
+        public TextInput SetCharLimit(int limit)
+        {
+            _enableCharLimit = true;
+            _charLimit = limit;
             return this;
         }
     }

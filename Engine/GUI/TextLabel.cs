@@ -69,8 +69,8 @@ namespace HyperLinkUI.Engine.GUI
         }
         public override void UpdatePos()
         {
-            Width = (int)font.MeasureString(Text).X;
-            Height = (int)font.MeasureString(Text).Y;
+            Width = font.MeasureString(Text).X;
+            Height = font.MeasureString(Text).Y;
             base.UpdatePos();
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using HyperLinkUI.Designer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,13 +8,15 @@ using Microsoft.Xna.Framework.Input;
 namespace HyperLinkUI.Engine.GUI
 {
 
-    public class Widget : Anchorable, Control
+    public class Widget :  Control
     {
         protected string debug_label;
         protected AnchorCoord anchor;
         protected Rectangle bounding_rectangle;
         protected bool isUnderMouseFocus;
         protected IContainer _parent;
+        protected Action _clickCallback;
+
         public bool DrawDebugRect { get; set; } = false;
 
         public bool Enabled { get; set; } = true;
@@ -36,16 +39,15 @@ namespace HyperLinkUI.Engine.GUI
 
         public float LocalY { get; set; }
 
-        public int Width { get => bounding_rectangle.Width; set => bounding_rectangle.Width = value; }
+        public float Width { get => bounding_rectangle.Width; set => bounding_rectangle.Width = (int)value; }
         
-        public int Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height = value; }
+        public float Height { get => bounding_rectangle.Height; set => bounding_rectangle.Height = (int)value; }
         
         public Vector2 localOrigin { get; set; }
       
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
 
         public AnchorType anchorType { get => anchor.Type; set => anchor.Type = value; }
-
         public LocalThemeProperties Theme = new LocalThemeProperties();
 
         protected Widget(Container parent)
@@ -88,6 +90,9 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!Enabled)
                 return;
+            if (BoundingRectangle.Contains(newState.Position))
+                isUnderMouseFocus = true;
+            else isUnderMouseFocus = false;
             // change stuff here, position, etc. it will then be updated by the function below.            
             UpdatePos();
         }
@@ -95,7 +100,7 @@ namespace HyperLinkUI.Engine.GUI
         /// Transfer over to a new parent - best not to use on its own. Called whenever you want to "AddNewWidget" on a container.
         /// </summary>
         /// <param name="newParent"></param>
-        internal void SetNewParent(Container newParent)
+        internal void SetParent(IContainer newParent)
         {
             Parent = newParent;
         }
@@ -103,12 +108,7 @@ namespace HyperLinkUI.Engine.GUI
         public virtual void UpdatePos()
         {
             Anchor.RecalculateAnchor(LocalX, LocalY, Parent, Width, Height);
-            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, Width, Height);
-        }
-
-        public void SetParent (IContainer parent)
-        {
-            _parent = parent;
+            bounding_rectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, (int)Width, (int)Height);
         }
 
         public virtual void ReceiveClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner) 
@@ -116,6 +116,7 @@ namespace HyperLinkUI.Engine.GUI
             if (isContextDesigner)
             {
                 DesignerContext.Select(this);
+                return;
             }
         }
     }

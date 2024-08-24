@@ -1,5 +1,6 @@
 ﻿using HyperLinkUI.Engine;
 using HyperLinkUI.Engine.GUI;
+using MgWheels;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,9 +13,10 @@ using System.Linq;
 namespace HyperLinkUI.Scenes
 {
     public class SceneManager
-    {
+    {        
         [LuaHide]
         DebugConsole dbc;
+        
         [LuaHide]
         static bool _haltLuaVMUpdate;
 
@@ -101,6 +103,7 @@ namespace HyperLinkUI.Scenes
              if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
             //guiSpriteBatch.Begin(SpriteSortMode.Deferred);
             activeSceneUIRoot.Draw(guiSpriteBatch);
+
             //guiSpriteBatch.End();
         }
         public void UISceneManager_OnResize(object sender, EventArgs e)

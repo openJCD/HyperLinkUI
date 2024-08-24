@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
+using MgWheels;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -26,10 +27,6 @@ namespace HyperLinkUI.Engine.GUI
         private Rectangle dragZone;
         public bool Resizeable = false;
 
-        public WindowContainer()
-        {
-
-        }
         public WindowContainer(UIRoot parent, int relx, int rely, int width, int height, string tag, string title = "window", AnchorType anchorType = AnchorType.CENTRE) : base(parent)
         {
             this.parent = parent;
@@ -73,15 +70,6 @@ namespace HyperLinkUI.Engine.GUI
         }
         public override void Update(MouseState oldState, MouseState newState)
         {
-            List<Container> containers_above_me = Parent.GetContainersAbove(this);
-            foreach (Container window in containers_above_me)
-            {
-                if (window.BoundingRectangle.Intersects(BoundingRectangle) && window != this && window.IsOpen && window.IsActive)
-                {
-                    IsActive = false; return;
-                }
-                else IsActive = true;
-            }
             if (!IsActive || !IsOpen)
                 return;
             Vector2 mouseDelta = newState.Position.ToVector2() - oldState.Position.ToVector2();
@@ -123,10 +111,6 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!IsOpen) return;
             base.Draw(guiSpriteBatch);
-            if (DrawBorder)
-            {
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
-            }
         }
         public void SetTitle(string t)
         {
@@ -144,8 +128,8 @@ namespace HyperLinkUI.Engine.GUI
         }
         public void EnableCloseButton(int pad = 5)
         {
-            var c = new Container(headerbar, 0, 0, headerbar.Height, headerbar.Height, AnchorType.TOPRIGHT, "close button aligner") { DrawBorder = false, RenderBackgroundColor = false };
-            CustomDrawButton btn_close = new CustomDrawButton(c, "", 0, 0, headerbar.Height-pad, headerbar.Height-pad, AnchorType.CENTRE, EventType.CloseWindow, Tag);
+            var c = new Container(headerbar, 0, 0, (int)headerbar.Height, (int)headerbar.Height, AnchorType.TOPRIGHT, "close button aligner") { DrawBorder = false, RenderBackgroundColor = false };
+            CustomDrawButton btn_close = new CustomDrawButton(c, "", 0, 0, (int)headerbar.Height-pad, (int)headerbar.Height - pad, AnchorType.CENTRE, EventType.CloseWindow, Tag);
             btn_close.SetDrawCalback(DrawCloseButton);
             void DrawCloseButton(SpriteBatch sb)
             {

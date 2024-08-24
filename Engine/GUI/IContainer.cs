@@ -20,8 +20,6 @@ namespace HyperLinkUI.Engine.GUI
         public List<Widget> ChildWidgets { get; set; }
         public void AddContainer(Container container) { }
 
-        public List<Container> GetContainersAbove(Container window);
-
         public UIRoot FindRoot();
 
         public void TransferWidget(Widget w);

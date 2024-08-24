@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace HyperLinkUI.Engine.GUI
 {
+    /// <summary>
+    /// Handful of preset behaviours for shortcuts 
+    /// </summary>
     public enum EventType
     {
         None,
         QuitGame,
         OpenWindow,
-        CloseWindow,
-        LaunchApp,
-        KillApp
+        CloseWindow
     }
 }

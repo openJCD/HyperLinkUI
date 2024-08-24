@@ -14,7 +14,7 @@ namespace HyperLinkUI.Engine.GUI
         // List<Control> Children;
         // void Add(Control c);
         
-        void Draw(SpriteBatch sb);
+        //void Draw(SpriteBatch sb, MgPrimitiveBatcher batcher);
         void Update(MouseState oldState, MouseState newState);
         float LocalX { get; set; }
         float LocalY { get; set; }

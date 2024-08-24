@@ -22,9 +22,8 @@ namespace HyperLinkUI.Engine.GUI
         /// </summary>
         /// <param name="parent">Container to use as parent</param>
         /// <param name="texture">Texture2D to use as an atlas. Must be 3 even-width images stitched together into one image.</param>
-        /// <param name="relativex">X DefaultPosition in pixels relative to anchor</param>
-        /// <param name="relativey">Y DefaultPosition in pixels relative to anchor</param>
-        /// <param name="scalefactor">uhhh</param>
+        /// <param name="relativex">X Position in pixels relative to anchor</param>
+        /// <param name="relativey">Y Position in pixels relative to anchor</param>
         /// <param name="tag">Tag that links this button to other objects in the scene</param>
         /// <param name="text">Text to use for the button</param>
         /// <param name="anchorType">Type of anchor to use - relative positon based on TOPLEFT, TOPRIGHT, etc. of the object's parent</param>

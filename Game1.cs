@@ -10,6 +10,8 @@ using HyperLinkUI.Engine;
 using MonoTween;
 using HyperLinkUI.Engine.Audio;
 using HyperLinkUI.Designer;
+using MgWheels;
+
 namespace HyperLinkUI
 {
     internal class Game1 : Game
@@ -99,9 +101,11 @@ namespace HyperLinkUI
             GraphicsDevice.Clear(Color.Black);
             
             Core.UpdateFPS(gameTime);
+
             SpriteBatch.Begin();
             BG.Draw(SpriteBatch, new Rectangle(new Point(), new Point(graphicsManager.PreferredBackBufferWidth, graphicsManager.PreferredBackBufferHeight)));
             SpriteBatch.End();
+
             UISpriteBatch.Begin(rasterizerState:new RasterizerState() { ScissorTestEnable = true });
             SceneManager.Draw(UISpriteBatch);
             //ns_test.Draw(UISpriteBatch);

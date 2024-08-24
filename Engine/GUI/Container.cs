@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MgWheels;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -87,6 +88,7 @@ namespace HyperLinkUI.Engine.GUI
             NineSliceEnabled = true;
             DrawBorder = false;
             NineSlice = new NineSlice(ns_tx, BoundingRectangle);
+            //NineSlice.DrawMode = NSDrawMode.Padded;
         }
         #endregion
 
@@ -163,47 +165,45 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!IsOpen)
                 return;
-
-            Rectangle scissor_reset = guiSpriteBatch.GraphicsDevice.ScissorRectangle ;
+            Rectangle scissor_reset = guiSpriteBatch.GraphicsDevice.ScissorRectangle;
             if (ClipContents)
             {
                 Rectangle srect = BoundingRectangle;
-                srect.Size += new Point(ClipPadding*2);
+                srect.Size += new Point(ClipPadding * 2);
                 srect.Location -= new Point(ClipPadding);
                 guiSpriteBatch.GraphicsDevice.ScissorRectangle = srect;
             }
-            
+
+            //base.Draw(sb);
+
             if (RenderBackgroundColor)
                 guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor);
-
-            if (DrawBorder)
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
-
-            foreach (var container in ChildContainers)
-                container.Draw(guiSpriteBatch);
-            foreach (var child in ChildWidgets)
-                child.Draw(guiSpriteBatch);
-
+            
             if (NineSliceEnabled)
             {
                 NineSlice.BindRect = BoundingRectangle;
                 NineSlice.Draw(guiSpriteBatch);
             }
-            
-            if (!IsActive)
-            {
-                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor * 0.5f);
-            }
 
+            foreach (var container in ChildContainers)
+                container.Draw(guiSpriteBatch);
+            foreach (var child in ChildWidgets)
+                child.Draw(guiSpriteBatch);
+        
+            if (DrawBorder)
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
+
+            if (!IsActive)
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor * 0.5f);
+            
             guiSpriteBatch.End();
             guiSpriteBatch.GraphicsDevice.ScissorRectangle = scissor_reset;
-            guiSpriteBatch.Begin(rasterizerState:new RasterizerState { ScissorTestEnable = true});            
-            
+            guiSpriteBatch.Begin(rasterizerState: new RasterizerState() { ScissorTestEnable = true });
         }
 
         public void TransferWidget(Widget widget)
         {
-            widget.SetNewParent(this);
+            widget.SetParent(this);
             widget.Parent.RemoveChildWidget(widget);
             child_widgets.Add(widget);
         }
@@ -261,46 +261,6 @@ namespace HyperLinkUI.Engine.GUI
         }
         #endregion
 
-        public List<Container> GetContainersAbove(Container window)
-        {
-
-            int index = ChildContainers.IndexOf(window);
-            List<Container> abovecontainers = new List<Container>();
-            if (index == ChildContainers.Count - 1)
-            {
-                abovecontainers.Add(window);
-                return abovecontainers;
-            }
-            else
-            {
-                foreach (Container container in ChildContainers)
-                {
-                    if (ChildContainers.IndexOf(container) > index)
-                        abovecontainers.Add(container);
-                }
-                return abovecontainers;
-            }
-        }
-        public Container AutoSize(int paddingx, int paddingy) 
-        {
-            List<Control> children = new List<Control>();
-            children.AddRange(ChildContainers);
-            children.AddRange(ChildWidgets);
-            Vector2 footprint_current = Vector2.Zero;
-            Vector2 footprint_prev = Vector2.Zero;
-            Vector2 footprint_max = Vector2.Zero;
-            foreach (Control c in children)
-            {
-                footprint_current = c.Anchor.DistanceFromOrigin + new Vector2(c.Width, c.Height);
-                footprint_max = Vector2.Max(footprint_prev, footprint_current);
-                
-                footprint_prev = footprint_current;
-            }
-            Width = (int)footprint_max.X + paddingx;
-            Height = (int)footprint_max.Y + paddingy;
-            return this;
-        }
-
         public void SetPosition(int x, int y)
         {
             AnchorCoord newAnchor = new AnchorCoord(LocalX, LocalY, AnchorType, Parent, Width, Height) { AbsolutePosition = new Vector2(x, y) };
@@ -346,6 +306,11 @@ namespace HyperLinkUI.Engine.GUI
         public void SetBorderColor(Color C)
         {
             Theme.SecondaryColor = C;
+        }
+
+        public void SetBackgroundColor(Color c)
+        {
+            Theme.TertiaryColor = c;
         }
     }
 }
