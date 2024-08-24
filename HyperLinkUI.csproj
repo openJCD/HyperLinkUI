@@ -18,8 +18,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <Title>//HYPERLINK//</Title>
-    <Version>0.3.10</Version>
+    <Title>HyperLink UI Framework</Title>
+    <Version>0.5.13</Version>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

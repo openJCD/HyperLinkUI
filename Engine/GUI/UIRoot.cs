@@ -8,7 +8,6 @@ using System.Linq;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Content;
 using NLua;
-using MgWheels;
 
 namespace HyperLinkUI.Engine.GUI
 {
