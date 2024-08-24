@@ -54,9 +54,6 @@ namespace HyperLinkUI.Engine.GUI
 
         public float LocalY { get; set; }
 
-        public Vector2 localOrigin { get; set; }
-
-
         public bool IsOpen { get; set; } = true;
         public bool DrawBorder { get; set; } = true;
 
@@ -128,7 +125,6 @@ namespace HyperLinkUI.Engine.GUI
             LocalX = paddingx;
             LocalY = paddingy;
             Anchor = new AnchorCoord(paddingx, paddingy, anchorType, parent, width, height);
-            localOrigin = new Vector2(Width / 2, Height / 2);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
             parent.AddContainer(this);
         }

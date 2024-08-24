@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using HyperLinkUI.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SharpDX.DirectWrite;
 using FontStashSharp;
 
 namespace HyperLinkUI.Engine.GUI
@@ -71,28 +69,8 @@ namespace HyperLinkUI.Engine.GUI
             container.BoundingRectangle = paddedRect;
             SetParent(container);
             container.TransferWidget(this);
+            UIRoot.RegisterTextField(this);
         }
-        public TextInput (Container parent):base(parent)
-        {
-            fnt = Theme.Font;
-            Padding = 2;
-            Height = (int)(fnt.MeasureString("|").Y + 4);
-            Anchor = new AnchorCoord(0, 0, AnchorType.TOPLEFT, parent, 300, Height);
-            BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, 300, (int)Height);
-            container = new Container(parent, 0, 0, 300, (int)Height, anchorType, "Text input container");
-            _txt_widget = new TextLabel(container, "Text here...", fnt, 2, 2, AnchorType.TOPLEFT);
-            Hint = "Text here...";
-
-            UIEventHandler.OnMouseClick += UIEventHandler_OnMouseClick;
-            Core.Window.KeyDown += TextInput_RegisterKeyPress;
-            Core.Window.TextInput += TextInput_RegsiterTextInput;
-            _txt_widget.UpdatePos();
-            cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
-            container.ClipContents = true;
-            container.TransferWidget(this);
-            SetParent(container);
-        }
-
         private void UIEventHandler_OnMouseClick(object sender, MouseClickArgs e)
         {
             if (!IsUnderMouseFocus)
@@ -161,19 +139,25 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (Active)
             {
-                
                 if (e.Key == Keys.Back)
-                {
                     Backspace();
+                else if (e.Key == Keys.Enter)
+                    return;
+                else if (e.Key == Keys.Tab)
+                {
+
+                    UIRoot.MoveNextTextFieldFrom(this);
                 }
-                 else
+                else
                 {
                     if (_enableCharLimit && _input_chars.Count + 1 > _charLimit)
                         return;
+
                     AddChar(e.Character.ToString()[0]);
                 }
             }
         }
+
         private Rectangle create_padded_rect (Rectangle rectangle, int padding)
         {
             Rectangle p = rectangle;
@@ -196,6 +180,7 @@ namespace HyperLinkUI.Engine.GUI
                 _input_chars.RemoveAt(cursor_pos_index);
             }
         }
+
         private void Delete()
         {
             if (cursor_pos_index <= _input_chars.Count - 1)
@@ -203,6 +188,7 @@ namespace HyperLinkUI.Engine.GUI
                 _input_chars.RemoveAt(cursor_pos_index);
             }
         }
+
         public TextInput SetFont(SpriteFontBase font)
         {
             fnt = font;
@@ -216,11 +202,21 @@ namespace HyperLinkUI.Engine.GUI
             //container.NineSlice.DrawMode = NSDrawMode.Padded;
             return this;
         }
+
         public TextInput SetCharLimit(int limit)
         {
             _enableCharLimit = true;
             _charLimit = limit;
             return this;
+        }
+
+        internal void SetInactive()
+        {
+            Active = false;
+        }
+        internal void SetActive()
+        {
+            Active = true;
         }
     }
 }

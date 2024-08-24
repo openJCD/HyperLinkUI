@@ -8,6 +8,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Content;
 using NLua;
+using SharpDX.MediaFoundation;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -15,6 +16,9 @@ namespace HyperLinkUI.Engine.GUI
     {
         private static MouseState oldmousestate;
         private static MouseState newmousestate;
+
+        private static List<TextInput> _textInputSelectLookup = new List<TextInput>();
+
         public bool IsUnderMouseFocus => true;
         public static MouseState MouseState { get => oldmousestate; }
 
@@ -139,6 +143,7 @@ namespace HyperLinkUI.Engine.GUI
             UIEventHandler.onUIUpdate(this, EventArgs.Empty);
             oldkstate = newkstate;
             oldmousestate = newmousestate;
+            _movedToNext = false;
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
@@ -233,6 +238,28 @@ namespace HyperLinkUI.Engine.GUI
         public void RemoveChildWidget(Widget w)
         {
             ChildWidgets.Remove(w);
+        }
+
+        static bool _movedToNext = false;
+        internal static void MoveNextTextFieldFrom(TextInput txt)       
+        {
+            if (_movedToNext) return;
+            int index = _textInputSelectLookup.IndexOf(txt);
+            txt.SetInactive();
+            index++;
+            if (_textInputSelectLookup.Count - 1 >= index)
+            {
+                var tgt = _textInputSelectLookup[index];
+                if (tgt.Enabled && !tgt.Active)
+                {
+                    tgt.SetActive();
+                    _movedToNext = true;
+                }
+            }
+        }
+        internal static void RegisterTextField(TextInput txt)
+        {           
+            _textInputSelectLookup.Add(txt);
         }
     }
     public enum ClickMode

@@ -44,7 +44,6 @@ namespace HyperLinkUI.Engine.GUI
             label = new TextLabel(headerbar, DebugLabel, Engine.Theme.SmallUIFont, 0, 0, AnchorType.CENTRE);
             dragZone = new Rectangle(headerbar.BoundingRectangle.Location, headerbar.BoundingRectangle.Size);
             parent.AddContainer(this);
-            localOrigin = new Vector2(Width / 2, Height / 2);
             RenderBackgroundColor = true;
         }
         public void WindowContainer_OnButtonClick(object sender, OnButtonClickEventArgs e)

@@ -40,9 +40,6 @@
     <None Update="Content\Backgrounds\crosses.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\GUI\Saves\settings.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Content\GUI\Scripts\Animations\readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -72,6 +69,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Content\GUI\Saves\" />
     <Folder Include="Content\GUI\Scenes\" />
     <Folder Include="lua\" />
   </ItemGroup>

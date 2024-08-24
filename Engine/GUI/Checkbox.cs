@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace HyperLinkUI.Engine.GUI
 {
-    public class Checkbox : Widget, FormItem
+    public class Checkbox : Widget
     {
         TextLabel label;
         Rectangle btnrect;
