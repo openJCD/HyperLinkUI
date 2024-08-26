@@ -10,6 +10,7 @@ using HyperLinkUI.Engine;
 using MonoTween;
 using HyperLinkUI.Engine.Audio;
 using HyperLinkUI.Designer;
+using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI
 {
@@ -109,6 +110,7 @@ namespace HyperLinkUI
             SceneManager.Draw(UISpriteBatch);
             //ns_test.Draw(UISpriteBatch);
             DesignerContext.Draw(UISpriteBatch);
+
             UISpriteBatch.End();
             
             base.Draw(gameTime);

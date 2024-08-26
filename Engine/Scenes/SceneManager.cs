@@ -1,4 +1,5 @@
 ﻿using HyperLinkUI.Engine;
+using HyperLinkUI.Engine.Animations;
 using HyperLinkUI.Engine.GUI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -102,7 +103,7 @@ namespace HyperLinkUI.Scenes
              if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
             //guiSpriteBatch.Begin(SpriteSortMode.Deferred);
             activeSceneUIRoot.Draw(guiSpriteBatch);
-
+            FlairManager.Draw(guiSpriteBatch);
             //guiSpriteBatch.End();
         }
         public void UISceneManager_OnResize(object sender, EventArgs e)

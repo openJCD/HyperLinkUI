@@ -19,7 +19,7 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Title>HyperLink UI Framework</Title>
-    <Version>0.5.13</Version>
+    <Version>0.5.14</Version>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

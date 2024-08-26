@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Content;
 using NLua;
 using SharpDX.MediaFoundation;
+using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -124,6 +125,7 @@ namespace HyperLinkUI.Engine.GUI
             if (newmousestate.LeftButton == ButtonState.Pressed && oldmousestate.LeftButton == ButtonState.Released)
             {
                 UIEventHandler.onMouseClick(this, new MouseClickArgs { mouse_data = newmousestate });
+                Flair.ExpandCircle(newmousestate.Position.ToVector2(), new Vector2(5, 10), Color.White);
                 SendClick(newmousestate.Position.ToVector2(), ClickMode.Down, false);
             }
             if (newmousestate.LeftButton == ButtonState.Released && oldmousestate.LeftButton == ButtonState.Pressed)
