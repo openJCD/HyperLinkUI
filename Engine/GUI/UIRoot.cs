@@ -175,8 +175,8 @@ namespace HyperLinkUI.Engine.GUI
 
         public void BringWindowToTop(Container window)
         {
-            ChildContainers.Remove(window);
-            ChildContainers.Add(window);
+            if (ChildContainers.Remove(window))
+                ChildContainers.Add(window);
             draggedWindow = window;
         }
 

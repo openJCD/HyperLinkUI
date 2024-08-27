@@ -22,6 +22,7 @@ namespace HyperLinkUI.Scenes
 {
     public class SceneAPI
     {
+        static List<Texture2D> _unmanaged_tx = new List<Texture2D>();
         #region EXPOSURE FUNCTION
         [LuaHide]
         public void ExposeTo(Lua lua)
@@ -90,6 +91,7 @@ namespace HyperLinkUI.Scenes
         /// <param name="scenename">The name (+'.scene' tag) to load from the folder</param>
         public static void load_new_scene(SceneManager manager, string scenename)
         {
+            _unmanaged_tx.ForEach(t => t.Dispose());
             manager.LoadScene(scenename);
         }
 

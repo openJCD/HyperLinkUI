@@ -1,6 +1,7 @@
 ﻿using HyperLinkUI.Engine;
 using HyperLinkUI.Engine.Animations;
 using HyperLinkUI.Engine.GUI;
+using HyperLinkUI.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,7 +31,7 @@ namespace HyperLinkUI.Scenes
         [LuaHide]
         public UIRoot activeSceneUIRoot;
         public string SceneFolderPath { get; set; }
-
+        float gameTime = 0;
         public SceneManager(ContentManager content, GraphicsDeviceManager globalGraphicsReference)
         {
             UIEventHandler.OnHotReload += UISceneManager_OnHotReload;
@@ -92,18 +93,37 @@ namespace HyperLinkUI.Scenes
         }
         public void Update(GameTime gt)
         {
+            gameTime = (float)gt.ElapsedGameTime.TotalSeconds;
+            Profiler.Begin("lua gui update", gameTime);
             // very messy function that returns true to signal a pause if a function causes an exception to be thrown.
             if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnUIUpdate", out _haltedErrorMsg, null);
+            Profiler.End("lua gui update");
+                
+            Profiler.Begin("main gui update", gameTime);
             activeSceneUIRoot.Update();
+            Profiler.End("main gui update");
+
+            Profiler.Begin("lua game update", gameTime);
             if (!_haltLuaVMUpdate)  _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameUpdate", out _haltedErrorMsg, gt);
+            Profiler.End("lua game update");
         }
         public void Draw(SpriteBatch guiSpriteBatch)
         {
             //run the lua draw thing if possible
+            Profiler.Begin("lua game draw", gameTime);
              if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
+            Profiler.End("lua game draw");
+            
             //guiSpriteBatch.Begin(SpriteSortMode.Deferred);
+
+            Profiler.Begin("gui draw", gameTime);
             activeSceneUIRoot.Draw(guiSpriteBatch);
+            Profiler.End("gui draw");
+
+            Profiler.Begin("flair primitives", gameTime);
             FlairManager.Draw(guiSpriteBatch);
+            Profiler.End("flair primitives");
+
             //guiSpriteBatch.End();
         }
         public void UISceneManager_OnResize(object sender, EventArgs e)

@@ -11,6 +11,7 @@ using MonoTween;
 using HyperLinkUI.Engine.Audio;
 using HyperLinkUI.Designer;
 using HyperLinkUI.Engine.Animations;
+using HyperLinkUI.Utils;
 
 namespace HyperLinkUI
 {
@@ -85,7 +86,7 @@ namespace HyperLinkUI
             KeyboardState newKeyboardState = Keyboard.GetState();
 
             //testing designer
-
+            Profiler.Begin("update total", (float)gameTime.ElapsedGameTime.TotalSeconds);
             SceneManager.Update(gameTime);
             DesignerContext.Update();
             oldKeyboardState = newKeyboardState;
@@ -94,10 +95,13 @@ namespace HyperLinkUI
             AudioManager.Update();
 
             base.Update(gameTime);
+            Profiler.End("update total");
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            Profiler.Begin("game1 draw total", (float)gameTime.ElapsedGameTime.TotalSeconds);
+
             GraphicsDevice.Clear(Color.Black);
             
             Core.UpdateFPS(gameTime);
@@ -109,11 +113,10 @@ namespace HyperLinkUI
             UISpriteBatch.Begin(rasterizerState:new RasterizerState() { ScissorTestEnable = true });
             SceneManager.Draw(UISpriteBatch);
             //ns_test.Draw(UISpriteBatch);
-            DesignerContext.Draw(UISpriteBatch);
-
             UISpriteBatch.End();
             
             base.Draw(gameTime);
+            Profiler.End("game1 draw total");
         }
         bool _designerEnabled = false;
         public void OnKeyPressed(object sender, KeyPressedEventArgs e)

@@ -1,4 +1,5 @@
 ﻿using HyperLinkUI.Scenes;
+using HyperLinkUI.Utils;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Bson;
 using System;
@@ -14,9 +15,10 @@ namespace HyperLinkUI.Engine.GUI
         WindowContainer window;
         TextInput textbox;
         TextLabel  textlog;
+        Container _profilerGui;
         UIRoot _parent;
         bool _isFpsMeterOn = false;
-
+        bool _isProfiler = false;
         double _fps { get => Core.FPS; }
 
         Container _fpsMeterContainer;
@@ -57,6 +59,8 @@ namespace HyperLinkUI.Engine.GUI
         public void Dispose()
         {
             window.Dispose();
+            _profilerGui?.Dispose();
+            _fpsMeterContainer?.Dispose();
         }
         public void ReceiveMessage(object sender, MiscTextEventArgs e)
         {
@@ -68,9 +72,18 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (e.released_key_as_string == "F11")
             {
-                window.IsSticky = true;
-                if (window.IsOpen) window.Close(); else window.Open();
-                window.IsSticky = false;
+                if (window.IsOpen) 
+                { 
+                    window.Close(); 
+                    window.IsSticky = true;
+                    textbox.SetInactive();
+                }
+                else
+                { 
+                    window.Open();
+                    window.IsSticky = false;
+                    textbox.SetActive();
+                }
             }
         }
 
@@ -113,6 +126,17 @@ namespace HyperLinkUI.Engine.GUI
                         _fpsMeterContainer = new WindowContainer(_parent, 0, 0, 100, 90, "fps_meter", "FPS", AnchorType.CENTRE);
                         _fpsMeter = new TextLabel(_fpsMeterContainer, "0.000  qq", 0, 10, AnchorType.CENTRE);
                         _isFpsMeterOn = true;
+                    }
+                    return;
+                case ("profiler"):
+                    if (_isProfiler)
+                    {
+                        _profilerGui.Dispose();
+                        _isProfiler = false;
+                    } else
+                    {
+                        _profilerGui = Profiler.CreateUI(_parent, 0, 0, AnchorType.TOPRIGHT);
+                        _isProfiler = true;
                     }
                     return;
                 default:
