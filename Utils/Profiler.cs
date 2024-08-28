@@ -3,26 +3,39 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System;
 using Microsoft.Xna.Framework.Graphics;
+using System.Security.Permissions;
 
 namespace HyperLinkUI.Utils
 {
+    internal enum ProfilerFlag
+    {
+        None,
+        DrawTotal,
+        UpdateTotal
+    }
     internal static class Profiler
     {
         static float time = 0;
-        static Dictionary<string, Stopwatch> active_sw = new Dictionary<string, Stopwatch>();
-        static Dictionary<string, Stopwatch> delayed_sw = new Dictionary<string, Stopwatch>();
+        static Dictionary<string, ProfileStopwatch> active_sw = new Dictionary<string, ProfileStopwatch>();
         static List<TextLabel> output = new List<TextLabel>();
-        public static void Begin(string identifier, float elapsedTime)
+        static double max_frametime_draw;
+        static double max_frametime_update;
+        public static void Begin(string identifier, float elapsedTime, ProfilerFlag flag = ProfilerFlag.None)
         {
             time += elapsedTime;
             if (!active_sw.ContainsKey(identifier))
             {
-                Stopwatch current = new Stopwatch();
+                ProfileStopwatch current = new ProfileStopwatch();
                 current.Start();
                 active_sw.Add(identifier, current);
-                delayed_sw = active_sw;
             }
-
+            if (flag == ProfilerFlag.DrawTotal)
+            {
+                max_frametime_draw = active_sw[identifier].Elapsed.TotalMilliseconds;
+            } else if (flag == ProfilerFlag.UpdateTotal)
+            {
+                max_frametime_update = active_sw[identifier].Elapsed.TotalMilliseconds;
+            }
             active_sw[identifier].Restart();
         }
 
@@ -31,11 +44,10 @@ namespace HyperLinkUI.Utils
             if (active_sw[identifier].IsRunning)
                 active_sw[identifier].Stop();
 
-            if (time >= 3f)
+            if (time >= 5f)
             {
-                delayed_sw = active_sw;
+                output.ForEach(t => { t.ManualBindUpdate(); }) ;
                 time = 0;
-                output.ForEach(t => t.ManualBindUpdate());
             }
         }
 
@@ -47,10 +59,15 @@ namespace HyperLinkUI.Utils
             foreach (string s in active_sw.Keys)
             {
                 if (s != null)
-                    output.Add(new TextLabel(c, "", 0, 20 * i, AnchorType.TOPLEFT).BindData("Elapsed", active_sw[s], s+": ").EnableManualBindUpdate());
+                    output.Add(new TextLabel(c, "", -3, 20 * i, anchor).BindData("Elapsed", active_sw[s], s+": ").EnableManualBindUpdate());
                 i++;
             }
             return c;
         }
     }
+    internal class ProfileStopwatch : Stopwatch
+    {
+        internal new double ElapsedMilliseconds { get => (double)Elapsed.TotalMilliseconds; } 
+    }
 }
+

@@ -99,7 +99,7 @@ namespace HyperLinkUI.Scenes
         {
             var filestream = new FileStream(localpath, FileMode.Open);
             var tx = Texture2D.FromStream(g, filestream);
-
+            _unmanaged_tx.Add(tx);
             return tx;
         }
 

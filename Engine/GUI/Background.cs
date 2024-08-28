@@ -240,7 +240,7 @@ namespace HyperLinkUI.Engine.GUI
         {
             Offset = o;
         }
-        public void JSONOnly_LoadTexture(ContentManager c)
+        internal void JSONOnly_LoadTexture(ContentManager c)
         {
             Sprite = c.Load<Texture2D>(tx_path);
         }

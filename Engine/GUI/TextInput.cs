@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using FontStashSharp;
+using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -140,12 +141,14 @@ namespace HyperLinkUI.Engine.GUI
             if (Active)
             {
                 if (e.Key == Keys.Back)
+                {
                     Backspace();
+                    Flair.FlashRectangle(BoundingRectangle);
+                }
                 else if (e.Key == Keys.Enter)
                     return;
                 else if (e.Key == Keys.Tab)
                 {
-
                     UIRoot.MoveNextTextFieldFrom(this);
                 }
                 else
@@ -154,6 +157,7 @@ namespace HyperLinkUI.Engine.GUI
                         return;
 
                     AddChar(e.Character.ToString()[0]);
+                    Flair.PulseRectangle(BoundingRectangle);
                 }
             }
         }

@@ -119,13 +119,11 @@ namespace HyperLinkUI.Engine.GUI
             ContainersUnderMouseHover = GetHoveredContainers();
             if (newmousestate.RightButton == ButtonState.Pressed && oldmousestate.RightButton == ButtonState.Released)
             {
-                PrintUITree();
-                Debug.WriteLine("Hovered containers:" + ContainersUnderMouseHover.Count);
+
             }
             if (newmousestate.LeftButton == ButtonState.Pressed && oldmousestate.LeftButton == ButtonState.Released)
             {
                 UIEventHandler.onMouseClick(this, new MouseClickArgs { mouse_data = newmousestate });
-                Flair.ExpandCircle(newmousestate.Position.ToVector2(), new Vector2(5, 10), Color.White);
                 SendClick(newmousestate.Position.ToVector2(), ClickMode.Down, false);
             }
             if (newmousestate.LeftButton == ButtonState.Released && oldmousestate.LeftButton == ButtonState.Pressed)

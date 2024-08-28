@@ -4,6 +4,7 @@ using HyperLinkUI.Designer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using NLua;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -15,7 +16,7 @@ namespace HyperLinkUI.Engine.GUI
         protected Rectangle bounding_rectangle;
         protected bool isUnderMouseFocus;
         protected IContainer _parent;
-        protected Action _clickCallback;
+        protected Action<Rectangle> _clickCallback;
 
         public bool DrawDebugRect { get; set; } = false;
 
@@ -115,9 +116,16 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (isContextDesigner)
             {
-                DesignerContext.Select(this);
+                DesignerContext.Select( this );
+                _clickCallback?.Invoke( BoundingRectangle );
                 return;
             }
+        }
+        [LuaHide]
+        public Widget OnClick(Action<Rectangle> a)
+        {
+            _clickCallback = a;
+            return this;
         }
     }
 }
