@@ -101,18 +101,22 @@ namespace HyperLinkUI.Engine.GUI
         {
             Dispose();
         }
-        public void Dispose()
+        public virtual void Dispose()
         {
             try
             {
                 Debug.WriteLine("Decoupling Container from parent...");
                 Parent.ChildContainers.Remove(this);
-                Parent.ChildContainers = Parent.ChildContainers.ToList();
-                Debug.Write(" Done. Out of scope? \n");
+                ChildContainers.ToList().ForEach(c => c.Dispose());
+                ChildContainers = new List<Container>();
+                ChildWidgets.ToList().ForEach(c => c.Dispose());
+                ChildWidgets = new List<Widget>();
+                Debug.Write(" Done. \n");
             }
-            catch
+            catch (Exception e)
             {
                 Debug.WriteLine("Failed to decouple container. Parent was likely null");
+                UIEventHandler.sendDebugMessage(this, e.InnerException.Message);
             }
         }
         protected Container(IContainer parent) : this()

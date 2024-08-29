@@ -13,7 +13,8 @@ namespace HyperLinkUI.Engine.GUI
         private Container headerbar;
         private IconButton close_button;
         private TextLabel label;
-
+        private Point _sizeClampMin;
+        private Point _sizeClampMax;
         [XmlIgnore]
         new UIRoot parent;
 
@@ -110,9 +111,10 @@ namespace HyperLinkUI.Engine.GUI
             if (!IsOpen) return;
             base.Draw(guiSpriteBatch);
         }
-        public void SetTitle(string t)
+        public WindowContainer SetTitle(string t)
         {
             Title = t;
+            return this;
         }
         public override void Open()
         {
@@ -123,6 +125,16 @@ namespace HyperLinkUI.Engine.GUI
         {
             parent.PushWindowToBottom(this);
             base.Close();
+        }
+        public WindowContainer ClampSizeMin(int w, int h)
+        {
+            _sizeClampMin = new Point(w, h);
+            return this;
+        } 
+        public WindowContainer ClampSizeMax (int w, int h)
+        {
+            _sizeClampMax = new Point(w, h);
+            return this;
         }
         public void EnableCloseButton(int pad = 5)
         {

@@ -20,27 +20,32 @@ namespace HyperLinkUI.Engine.GUI
         bool _isFpsMeterOn = false;
         bool _isProfiler = false;
         double _fps { get => Core.FPS; }
-
+        public string Log { get; private set; } = "Debug mode is enabled. \nPress F11 to disable again.";
         Container _fpsMeterContainer;
         TextLabel _fpsMeter;
         public DebugConsole(UIRoot parent)
         {
-            window = new WindowContainer(parent, 0, 0, 300, 450, "dialog_debug_console", "Debug Console", AnchorType.BOTTOMRIGHT);
-            textbox = new TextInput(window, 0, 0, (int)window.Width, hint:"type command...", padding:2);
-            textlog = new TextLabel(window, "Debug mode is enabled. \nPress F11 to disable again.", 0, 20);
-            window.Close();
-            _parent = parent;
-            window.Resizeable = true;
+            CreateUI(parent);
             UIEventHandler.DebugMessage += ReceiveMessage;
             UIEventHandler.OnKeyReleased += CheckF11;
             UIEventHandler.OnTextFieldSubmit += CheckCommandGiven;
             UIEventHandler.OnUIUpdate += Console_OnUIUpdate;
             UIEventHandler.SendDebugCommand += GetDebugCommand;
+            Log = "Debug mode is enabled. \nPress F11 to disable again.";
+        }
+        internal void CreateUI (UIRoot parent)
+        {
+            window = new WindowContainer(parent, 0, 0, 300, 450, "dialog_debug_console", "Debug Console", AnchorType.BOTTOMRIGHT);
+            textbox = new TextInput(window, 0, 0, (int)window.Width, hint: "type command...", padding: 2);
+            textlog = new TextLabel(window, "", 0, 20).BindData("Log", this);
+            window.Close();
+            _parent = parent;
             textlog.DrawDebugRect = true;
             textbox.FillParent = true;
             window.ClipContents = true;
-        }
+            window.Resizeable = true;
 
+        }
         int _frames = 0;
         private void Console_OnUIUpdate(object sender, EventArgs e)
         {
@@ -61,12 +66,17 @@ namespace HyperLinkUI.Engine.GUI
             window.Dispose();
             _profilerGui?.Dispose();
             _fpsMeterContainer?.Dispose();
+            UIEventHandler.DebugMessage -= ReceiveMessage;
+            UIEventHandler.OnKeyReleased -= CheckF11;
+            UIEventHandler.OnTextFieldSubmit -= CheckCommandGiven;
+            UIEventHandler.OnUIUpdate -= Console_OnUIUpdate;
+            UIEventHandler.SendDebugCommand -= GetDebugCommand;
         }
         public void ReceiveMessage(object sender, MiscTextEventArgs e)
         {
             if (textlog.BoundingRectangle.Height > window.Height-55)
-                textlog.Text = "";
-            textlog.Text += ('\n'+e.txt);
+                Log = "";
+            Log += ('\n'+e.txt);
         }
         public void CheckF11(object sender, KeyReleasedEventArgs e)
         {
@@ -138,6 +148,9 @@ namespace HyperLinkUI.Engine.GUI
                         _profilerGui = Profiler.CreateUI(_parent, 0, 0, AnchorType.TOPRIGHT);
                         _isProfiler = true;
                     }
+                    return;
+                case "clear":
+                    Log = "";
                     return;
                 default:
                     try

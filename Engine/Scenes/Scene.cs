@@ -3,6 +3,7 @@ using System.IO;
 using System;
 using HyperLinkUI.Engine.GUI;
 using HyperLinkUI.Engine;
+using System.Drawing;
 
 namespace HyperLinkUI.Scenes
 {
@@ -61,7 +62,10 @@ namespace HyperLinkUI.Scenes
         }
         public void Dispose()
         {
+            //ScriptHandler.Close();
+            //ScriptHandler.Dispose();
             ScriptCaller.Dispose();
+            SceneRoot.Dispose();
         }
     }
 }

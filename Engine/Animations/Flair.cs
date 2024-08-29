@@ -11,20 +11,21 @@ namespace HyperLinkUI.Engine.Animations
             FlairCircle circ = new FlairCircle(pos.X, pos.Y, c, radius_thickness.X) { LineThickness = radius_thickness.Y };
             FlairManager.Add(circ);
             TweenManager.Tween(circ, new { Alpha = 0f }, 2f).Once().SetEase(Ease.OutCubic).OnComplete(circ.Destroy);
-            TweenManager.Tween(circ, new {Radius = radius_thickness.X * 10}, 2f).Once().SetEase(Ease.OutCubic);
+            TweenManager.Tween(circ, new { Radius = radius_thickness.X * 10}, 2f).Once().SetEase(Ease.OutCubic);
             TweenManager.Tween(circ, new { LineThickness = 1f }, 100f).Once().SetEase(Ease.OutCubic);
         }
         public static void PulseRectangle(Rectangle location)
         {
             FlairRectangle rect = new FlairRectangle(location.X, location.Y, location.Width, location.Height, Theme.PrimaryColor);
             FlairManager.Add(rect);
-            TweenManager.Tween(rect, new { Scale = 20f }, 1f).Once();
+            TweenManager.Tween(rect, new { Scale = 2f }, 1f).Once();
             TweenManager.Tween(rect, new { Alpha = 0f }, 1f).Once().OnComplete(rect.Destroy).SetEase(Ease.OutCubic);
         }
         public static void FlashRectangle(Rectangle location)
         {
             FlairRectangle rect = new FlairRectangle(location.X, location.Y, location.Width, location.Height, Theme.PrimaryColor);
             FlairManager.Add(rect);
+            TweenManager.Tween(rect, new { Scale = -3f }, 1f).Once();
             TweenManager.Tween(rect, new { Alpha = 0f }, 1f).Once().OnComplete(rect.Destroy).SetEase(Ease.OutCubic);
         }
     }

@@ -1,20 +1,23 @@
-﻿using System;
-using System.Diagnostics;
-using HyperLinkUI.Engine.GUI;
-using NLua;
-using HyperLinkUI.Engine.GameSystems;
-using Microsoft.Xna.Framework.Graphics;
+﻿using NLua;
+
+using System;
 using System.IO;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using System.Linq;
 using System.Reflection;
-using Microsoft.Xna.Framework.Content;
-using MonoTween;
-using System.Runtime.CompilerServices;
-using HyperLinkUI.Engine.Animations;
+using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
-using SharpDX.WIC;
+
+using HyperLinkUI.Engine.GUI;
+using HyperLinkUI.Engine.Animations;
+using HyperLinkUI.Engine.GameSystems;
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+
+using MonoTween;
 
 #nullable enable
 
@@ -31,7 +34,7 @@ namespace HyperLinkUI.Scenes
             {
                 lua.RegisterFunction(m.Name, this, m);
             }
-            LuaHelper.ImportStaticType(typeof(LuaHelper), lua, "_lua_helper", true);
+            LuaHelper.ImportStaticType(typeof(LuaHelper), lua, "_lua_helper", true);         
         }
         #endregion 
 
@@ -91,10 +94,16 @@ namespace HyperLinkUI.Scenes
         /// <param name="scenename">The name (+'.scene' tag) to load from the folder</param>
         public static void load_new_scene(SceneManager manager, string scenename)
         {
-            _unmanaged_tx.ForEach(t => t.Dispose());
+            ClearTextures();
             manager.LoadScene(scenename);
         }
-
+        [LuaHide]
+        internal static void ClearTextures()
+        {
+            _unmanaged_tx.ForEach(tx => tx.Dispose());
+            _unmanaged_tx.Clear();
+            _unmanaged_tx = _unmanaged_tx.ToList();
+        }
         public static Texture2D texture_from_file(GraphicsDevice g, string localpath)
         {
             var filestream = new FileStream(localpath, FileMode.Open);
@@ -116,16 +125,7 @@ namespace HyperLinkUI.Scenes
         #endregion
 
         #region map
-        public static GlobalMap create_world_map(Container parent)
-        {
-            return new GlobalMap(parent);
-        }
-
-        public static NetworkNode create_net_node(NetElement parent, string name, Texture2D tx, int mapx, int mapy)
-        {
-            return new NetworkNode(parent, tx, name, mapx, mapy);
-        }
-
+        // add map game systems
         #endregion
 
         #region input
@@ -250,6 +250,10 @@ namespace HyperLinkUI.Scenes
         public static Func<float, float> get_ease_func(string f)
         {
             return LuaHelper.GetEaseFromString(f);
+        }
+        public static Action<Rectangle> get_animation_preset(string ap)
+        {
+            return LuaHelper.GetAnimationPresetFromString(ap);
         }
         #endregion
     }

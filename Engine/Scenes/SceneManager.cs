@@ -16,7 +16,7 @@ namespace HyperLinkUI.Scenes
     public class SceneManager
     {        
         [LuaHide]
-        DebugConsole dbc;
+        static DebugConsole dbc;
         
         [LuaHide]
         static bool _haltLuaVMUpdate;
@@ -24,13 +24,14 @@ namespace HyperLinkUI.Scenes
         [LuaHide]
         string _haltedErrorMsg = "";
 
+        [LuaHide]
         Dictionary<string, Scene> SceneDictionary;
 
         [LuaHide]
         public static Scene ActiveScene { get; private set; }
         [LuaHide]
         public UIRoot activeSceneUIRoot;
-        public string SceneFolderPath { get; set; }
+        public string SceneFolderPath { get; private set; }
         float gameTime = 0;
         public SceneManager(ContentManager content, GraphicsDeviceManager globalGraphicsReference)
         {
@@ -66,26 +67,21 @@ namespace HyperLinkUI.Scenes
         }
         public void LoadScene(string name)
         {
-            _haltLuaVMUpdate = false;
             ActiveScene?.Dispose();
-            dbc?.Dispose();
+            //dbc?.Dispose();
+            SceneAPI.ClearTextures();
+            _haltLuaVMUpdate = false;
             ActiveScene = SceneDictionary[name];
             activeSceneUIRoot = ActiveScene.Load(this);
+            if (dbc == null)
+                dbc = new DebugConsole(activeSceneUIRoot);
+            else
+                dbc.CreateUI(activeSceneUIRoot);
             activeSceneUIRoot.OnWindowResize(Core.Window);
-            dbc = new DebugConsole(activeSceneUIRoot);
         }
         public Scene GetScene(string scene_name)
         {
             return SceneDictionary[scene_name];
-        }
-        public void LoadScene(Scene scene)
-        {
-            _haltLuaVMUpdate = false;
-            if (ActiveScene != null)
-                ActiveScene.Dispose();
-            ActiveScene = SceneDictionary[scene.Name];
-            activeSceneUIRoot = ActiveScene.Load(this);
-            activeSceneUIRoot.OnWindowResize(Core.Window);
         }
         public void AddSceneToList(Scene scene)
         {
@@ -126,24 +122,24 @@ namespace HyperLinkUI.Scenes
 
             //guiSpriteBatch.End();
         }
-        public void UISceneManager_OnResize(object sender, EventArgs e)
+        internal void UISceneManager_OnResize(object sender, EventArgs e)
         {
             activeSceneUIRoot?.OnWindowResize(Core.Window);
         }
-        public void UISceneManager_OnHotReload(object sender, HotReloadEventArgs e)
+        internal void UISceneManager_OnHotReload(object sender, HotReloadEventArgs e)
         {
             activeSceneUIRoot.ApplyNewSettings();
             _haltLuaVMUpdate = false;
         }
-        public void UISceneManager_OnKeyReleased(object sender, KeyReleasedEventArgs e)
+        internal void UISceneManager_OnKeyReleased(object sender, KeyReleasedEventArgs e)
         {
             LuaHelper.TryLuaFunction(ActiveScene.ScriptHandler, "OnKeyReleased", sender, e);
         }
-        public void UISceneManager_OnKeyPressed(object sender, KeyPressedEventArgs e)
+        internal void UISceneManager_OnKeyPressed(object sender, KeyPressedEventArgs e)
         {
             LuaHelper.TryLuaFunction(ActiveScene.ScriptHandler, "OnKeyPressed", sender, e);
         }
-        public void UISceneManager_OnButtonClick(object sender, OnButtonClickEventArgs e)
+        internal void UISceneManager_OnButtonClick(object sender, OnButtonClickEventArgs e)
         {
             LuaHelper.TryLuaFunction(ActiveScene.ScriptHandler, "OnButtonClick", sender, e); 
         }
@@ -153,11 +149,11 @@ namespace HyperLinkUI.Scenes
             return _haltLuaVMUpdate;
         }
 
-        public void HaltLuaUpdate()
+        internal void HaltLuaUpdate()
         {
             _haltLuaVMUpdate = true;
         }
-        public void ResumeLuaUpdate()
+        internal void ResumeLuaUpdate()
         {
             _haltLuaVMUpdate = false;
         }

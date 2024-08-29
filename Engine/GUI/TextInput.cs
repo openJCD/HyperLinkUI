@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using FontStashSharp;
 using HyperLinkUI.Engine.Animations;
+using System;
 
 namespace HyperLinkUI.Engine.GUI
 {
@@ -24,6 +25,9 @@ namespace HyperLinkUI.Engine.GUI
         int cursor_pos_index;
         public int Padding;
         Rectangle paddedRect;
+
+        Action<Rectangle> _onTypeCallback;
+        Action<Rectangle> _onBackspaceCallback;
         bool NineSliceEnabled { get => container.NineSliceEnabled; }
         string charsBeforeCursor { get
             {
@@ -66,6 +70,7 @@ namespace HyperLinkUI.Engine.GUI
             cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
             container.ClipContents = true;
             container.ClipPadding = padding / 2;
+            container.RenderBackgroundColor = true;
             paddedRect = create_padded_rect(BoundingRectangle, padding);
             container.BoundingRectangle = paddedRect;
             SetParent(container);
@@ -77,7 +82,13 @@ namespace HyperLinkUI.Engine.GUI
             if (!IsUnderMouseFocus)
                 Active = false;
         }
-
+        public override void Dispose()
+        {
+            base.Dispose();
+            UIEventHandler.OnMouseClick -= UIEventHandler_OnMouseClick;
+            Core.Window.KeyDown -= TextInput_RegisterKeyPress;
+            Core.Window.TextInput -= TextInput_RegsiterTextInput;
+        }
         public override void ReceiveClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner)
         {
             base.ReceiveClick(mousePos, cmode, isContextDesigner);
@@ -143,7 +154,7 @@ namespace HyperLinkUI.Engine.GUI
                 if (e.Key == Keys.Back)
                 {
                     Backspace();
-                    Flair.FlashRectangle(BoundingRectangle);
+                    _onBackspaceCallback?.Invoke(BoundingRectangle);
                 }
                 else if (e.Key == Keys.Enter)
                     return;
@@ -157,7 +168,7 @@ namespace HyperLinkUI.Engine.GUI
                         return;
 
                     AddChar(e.Character.ToString()[0]);
-                    Flair.PulseRectangle(BoundingRectangle);
+                    _onTypeCallback?.Invoke(BoundingRectangle);
                 }
             }
         }
@@ -213,7 +224,16 @@ namespace HyperLinkUI.Engine.GUI
             _charLimit = limit;
             return this;
         }
-
+        public TextInput OnType(Action<Rectangle> _animCallback)
+        {
+            _onTypeCallback = _animCallback;
+            return this;
+        }
+        public TextInput OnBackspace(Action<Rectangle> _animCallback)
+        {
+            _onBackspaceCallback = _animCallback;
+            return this;
+        }
         internal void SetInactive()
         {
             Active = false;

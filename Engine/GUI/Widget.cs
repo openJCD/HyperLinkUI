@@ -62,6 +62,8 @@ namespace HyperLinkUI.Engine.GUI
             Parent.ChildWidgets.Remove(this);
             Parent.ChildWidgets = Parent.ChildWidgets.ToList();
         }
+        public virtual void Dispose() { }
+
         public Widget(IContainer parent, int width, int height, int relativex = 10, int relativey = 10, AnchorType anchorType = AnchorType.TOPLEFT, string debugLabel = "widget")
         {
             LocalX = relativex;
@@ -117,14 +119,19 @@ namespace HyperLinkUI.Engine.GUI
             if (isContextDesigner)
             {
                 DesignerContext.Select( this );
-                _clickCallback?.Invoke( BoundingRectangle );
                 return;
             }
+            _clickCallback?.Invoke( BoundingRectangle );
         }
-        [LuaHide]
+
         public Widget OnClick(Action<Rectangle> a)
         {
             _clickCallback = a;
+            return this;
+        }
+        public Widget Tooltip(string content)
+        {
+            new Tooltip(Parent.FindRoot(), this, content);
             return this;
         }
     }

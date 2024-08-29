@@ -13,7 +13,7 @@ using HyperLinkUI.Engine.Animations;
 
 namespace HyperLinkUI.Engine.GUI
 {
-    public class UIRoot : IContainer
+    public class UIRoot : IContainer, IDisposable
     {
         private static MouseState oldmousestate;
         private static MouseState newmousestate;
@@ -32,10 +32,12 @@ namespace HyperLinkUI.Engine.GUI
         private List<Container> base_containers;
         private GraphicsDeviceManager graphicsInfo;
 
+        [LuaHide]
         public List<Container> ChildContainers { get => base_containers; set => base_containers = value; }
 
 
         // list of containers to use for click propagation / blocking (topmost panel is index 0)
+        [LuaHide]
         List<Container> orderedContainers
         {
             get
@@ -47,6 +49,7 @@ namespace HyperLinkUI.Engine.GUI
             }
         }
 
+        [LuaHide]
         public List<Widget> ChildWidgets { get; set; }       
         public string DebugLabel { get { return "UI Root"; } }
         public float Width { get { return width; } set => width = (int)value; }
@@ -105,6 +108,18 @@ namespace HyperLinkUI.Engine.GUI
             Height = graphicsInfo.PreferredBackBufferHeight;
         }
 
+        /// <summary>
+        /// Destroy and clear all children
+        /// </summary>
+        [LuaHide]
+        public void Dispose()
+        {
+            ChildContainers.ToList().ForEach(c => c.Dispose());
+            ChildContainers = new List<Container>();
+            ContainersUnderMouseHover = new List<Container>();
+            _textInputSelectLookup = new List<TextInput>();
+        }
+        [LuaHide]
         public void Update()
         {
             draggedWindow = null;
@@ -113,7 +128,6 @@ namespace HyperLinkUI.Engine.GUI
             MouseDelta = newmousestate.Position.ToVector2() - oldmousestate.Position.ToVector2();
             foreach (Container container in base_containers.ToList())
             {
-                // ContainersUnderMouseHover.ForEach(c=>c.Theme.BorderColor = Color.DarkBlue);
                 container.Update(oldmousestate, newmousestate);
             }
             ContainersUnderMouseHover = GetHoveredContainers();
@@ -156,7 +170,7 @@ namespace HyperLinkUI.Engine.GUI
             ChildContainers.Add(containerToAdd);
             containerToAdd.SetNewContainerParent(this);
         }
-
+        [LuaHide]
         public void PrintUITree()
         {
             Debug.WriteLine("Whole UI Tree is as follows:");
@@ -170,7 +184,7 @@ namespace HyperLinkUI.Engine.GUI
             Width = Theme.DisplayWidth;
             Height = Theme.DisplayHeight;
         }
-
+        [LuaHide]
         public void BringWindowToTop(Container window)
         {
             if (ChildContainers.Remove(window))
@@ -252,6 +266,7 @@ namespace HyperLinkUI.Engine.GUI
                 var tgt = _textInputSelectLookup[index];
                 if (tgt.Enabled && !tgt.Active)
                 {
+                    _textInputSelectLookup.ToList().ForEach(tx => tx.SetInactive());
                     tgt.SetActive();
                     _movedToNext = true;
                 }

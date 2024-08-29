@@ -25,7 +25,6 @@ namespace HyperLinkUI
         private double _framerate;
         Texture2D txNode;
         NineSlice ns_test;
-        GlobalMap Map;
         Background BG;
 
         int sw;

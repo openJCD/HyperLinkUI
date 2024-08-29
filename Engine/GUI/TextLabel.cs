@@ -110,7 +110,7 @@ namespace HyperLinkUI.Engine.GUI
             }
             return result;
         }
-        [LuaMember(Name ="font_size")]
+        //[LuaMember(Name ="font_size")]
         public TextLabel SetCustomFontSize(float size)
         {
             Theme.FontSize = size;
@@ -139,7 +139,7 @@ namespace HyperLinkUI.Engine.GUI
         /// <param name="prefix">String to decorate the beginning of displayed data</param>
         /// <param name="suffix">String to decorate the end of displayed data</param>
         /// <returns>TextLabel object for chaining</returns>
-        [LuaMember(Name = "bind_data")]
+        //[LuaMember(Name = "bind_data")]
         public TextLabel BindData(string memberName, object target, string prefix = "", string suffix = "")
         {
             BindData(target.GetType().GetMember(memberName).Last(), target);

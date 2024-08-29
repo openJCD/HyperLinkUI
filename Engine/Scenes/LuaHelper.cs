@@ -1,4 +1,6 @@
-﻿using MonoTween;
+﻿using HyperLinkUI.Engine.Animations;
+using Microsoft.Xna.Framework;
+using MonoTween;
 using NLua;
 using System;
 using System.Collections.Generic;
@@ -21,7 +23,11 @@ namespace HyperLinkUI.Scenes
             string rstring = Enum.GetName(typeof(T), en);
             return rstring;
         }
-
+        public static Action<Rectangle> GetAnimationPresetFromString(string str)
+        {
+            MethodInfo m = typeof(Flair).GetTypeInfo().GetDeclaredMethod(str);
+            return m.CreateDelegate<Action<Rectangle>>();
+        }
         public static Func<float, float> GetEaseFromString(string str)
         {
             MethodInfo meth = typeof(Ease).GetTypeInfo().GetDeclaredMethod(str);
