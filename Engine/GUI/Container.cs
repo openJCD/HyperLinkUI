@@ -184,11 +184,10 @@ namespace HyperLinkUI.Engine.GUI
                 NineSlice.Draw(guiSpriteBatch);
             }
 
+            foreach (var child in ChildWidgets)
+                child.Draw(guiSpriteBatch);        
             foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
-            foreach (var child in ChildWidgets)
-                child.Draw(guiSpriteBatch);
-        
             if (DrawBorder)
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
 

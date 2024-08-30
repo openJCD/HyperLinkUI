@@ -43,6 +43,12 @@
     <None Update="Content\GUI\Scripts\Animations\readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\GUI\Textures\Button\icon_benchmark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\GUI\Textures\Button\icon_terminal.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\GUI\Textures\NS_TEXTINPUT.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

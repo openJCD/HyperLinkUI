@@ -61,7 +61,10 @@ namespace HyperLinkUI.Scenes
         {
             return new Button(parent, text, x, y, width, height, LuaHelper.GetEnumFromString<AnchorType>(anchor), LuaHelper.GetEnumFromString<EventType>(etype), tag);
         }
-
+        public static IconButton new_icon_button(Container parent, Texture2D sprite, int x, int y, string anchor, string etype, string tag)
+        {
+            return new IconButton(parent, sprite, x, y, tag, LuaHelper.GetEnumFromString<EventType>(etype), LuaHelper.GetEnumFromString<AnchorType>(anchor));
+        }
         public static Checkbox new_checkbox(Container parent, string text, int x, int y, int btnsizex, int btnsizey, string anchor, string tag)
         {
             return new Checkbox(parent, text, x, y, tag, btnsizex, btnsizey, LuaHelper.GetEnumFromString<AnchorType>(anchor));

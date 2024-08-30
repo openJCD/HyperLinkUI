@@ -72,13 +72,13 @@ namespace HyperLinkUI.Engine.GUI
             UIEventHandler.OnUIUpdate -= Console_OnUIUpdate;
             UIEventHandler.SendDebugCommand -= GetDebugCommand;
         }
-        public void ReceiveMessage(object sender, MiscTextEventArgs e)
+        private void ReceiveMessage(object sender, MiscTextEventArgs e)
         {
             if (textlog.BoundingRectangle.Height > window.Height-55)
                 Log = "";
             Log += ('\n'+e.txt);
         }
-        public void CheckF11(object sender, KeyReleasedEventArgs e)
+        private void CheckF11(object sender, KeyReleasedEventArgs e)
         {
             if (e.released_key_as_string == "F11")
             {

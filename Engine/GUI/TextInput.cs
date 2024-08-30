@@ -59,6 +59,8 @@ namespace HyperLinkUI.Engine.GUI
             Anchor = new AnchorCoord(relx, rely, anchorType, parent, width, Height);
             BoundingRectangle = new Rectangle((int)Anchor.AbsolutePosition.X, (int)Anchor.AbsolutePosition.Y, width, (int)Height);
             container = new Container(parent, relx, rely, width, (int)Height, anchorType, hint);
+            SetParent(container);
+            container.TransferWidget(this);
             _txt_widget = new TextLabel(container, hint, fnt, padding, padding, AnchorType.TOPLEFT);
             Hint = hint;
 
@@ -73,8 +75,6 @@ namespace HyperLinkUI.Engine.GUI
             container.RenderBackgroundColor = true;
             paddedRect = create_padded_rect(BoundingRectangle, padding);
             container.BoundingRectangle = paddedRect;
-            SetParent(container);
-            container.TransferWidget(this);
             UIRoot.RegisterTextField(this);
         }
         private void UIEventHandler_OnMouseClick(object sender, MouseClickArgs e)
@@ -99,6 +99,7 @@ namespace HyperLinkUI.Engine.GUI
         }
         public override void Draw(SpriteBatch guiSpriteBatch) {
             if (!Enabled) return;
+            //guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor);
             if (Active)
             {
                 guiSpriteBatch.DrawLine(cursor_pos, cursor_pos + new Vector2(0, BoundingRectangle.Height - 4), Theme.PrimaryColor);
@@ -109,6 +110,7 @@ namespace HyperLinkUI.Engine.GUI
                 if (InputText == "")
                     _txt_widget.Text = Hint;
             }
+            guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
         }
 
         public override void Update(MouseState oldState, MouseState newState)
@@ -120,7 +122,7 @@ namespace HyperLinkUI.Engine.GUI
 
             if (Active)
             {
-                if (!(cursor_pos_x >= container.BoundingRectangle.Right - 2))
+                if (!(cursor_pos_x >= BoundingRectangle.Right - 2))
                     cursor_pos_x = (int)fnt.MeasureString(charsBeforeCursor).X; 
             }
         }
