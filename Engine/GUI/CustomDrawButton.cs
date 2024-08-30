@@ -18,7 +18,7 @@ namespace HyperLinkUI.Engine.GUI
             _drawCall?.Invoke(guiSpriteBatch);
         }
 
-        public void SetDrawCalback(Action<SpriteBatch> action)
+        public void SetDrawCallback(Action<SpriteBatch> action)
         {
             _drawCall = action;
         }

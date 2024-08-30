@@ -35,7 +35,8 @@ namespace HyperLinkUI.Engine.GUI
         }
         internal void CreateUI (UIRoot parent)
         {
-            window = new WindowContainer(parent, 0, 0, 300, 450, "dialog_debug_console", "Debug Console", AnchorType.BOTTOMRIGHT);
+            window = new WindowContainer(parent, 0, 0, 300, 450, "dialog_debug_console", "Debug Console", AnchorType.BOTTOMRIGHT)
+                .EnableResize(new Vector2(200, 300), new Vector2(700, 750));
             textbox = new TextInput(window, 0, 0, (int)window.Width, hint: "type command...", padding: 2);
             textlog = new TextLabel(window, "", 0, 20).BindData("Log", this);
             window.Close();
@@ -43,7 +44,6 @@ namespace HyperLinkUI.Engine.GUI
             textlog.DrawDebugRect = true;
             textbox.FillParent = true;
             window.ClipContents = true;
-            window.Resizeable = true;
 
         }
         int _frames = 0;

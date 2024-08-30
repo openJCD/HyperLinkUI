@@ -283,7 +283,7 @@ namespace HyperLinkUI.Engine.GUI
             return Parent.FindRoot();
         }
 
-        public void SendClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner)
+        internal virtual void SendClick(Vector2 mousePos, ClickMode cmode, bool isContextDesigner)
         {
             foreach(Container c in ChildContainers)
             {

@@ -122,6 +122,7 @@ namespace HyperLinkUI.Engine.GUI
         [LuaHide]
         public void Update()
         {
+            Mouse.SetCursor(MouseCursor.Arrow);
             draggedWindow = null;
             newkstate = Keyboard.GetState();
             newmousestate = Mouse.GetState();
