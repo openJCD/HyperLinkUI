@@ -3,9 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Linq;
 using FontStashSharp;
-using System.Xml.Serialization;
 using System.Reflection;
-using FMOD;
 using System;
 using NLua;
 

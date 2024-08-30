@@ -3,7 +3,7 @@ using System.IO;
 
 internal class Program  
 {
-    private static void Main(string[] args)
+    internal static void Main(string[] args)
     {
         //try
         //{

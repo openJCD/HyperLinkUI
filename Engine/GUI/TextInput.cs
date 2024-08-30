@@ -67,14 +67,10 @@ namespace HyperLinkUI.Engine.GUI
             UIEventHandler.OnMouseClick += UIEventHandler_OnMouseClick;
             Core.Window.KeyDown += TextInput_RegisterKeyPress;
             Core.Window.TextInput += TextInput_RegsiterTextInput;
-            
-            _txt_widget.UpdatePos();
             cursor_pos_x = (int)_txt_widget.AbsolutePosition.X;
             container.ClipContents = true;
-            container.ClipPadding = padding / 2;
             container.RenderBackgroundColor = true;
-            paddedRect = create_padded_rect(BoundingRectangle, padding);
-            container.BoundingRectangle = paddedRect;
+            container.Height += Padding;
             UIRoot.RegisterTextField(this);
         }
         private void UIEventHandler_OnMouseClick(object sender, MouseClickArgs e)
@@ -99,7 +95,6 @@ namespace HyperLinkUI.Engine.GUI
         }
         public override void Draw(SpriteBatch guiSpriteBatch) {
             if (!Enabled) return;
-            //guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor);
             if (Active)
             {
                 guiSpriteBatch.DrawLine(cursor_pos, cursor_pos + new Vector2(0, BoundingRectangle.Height - 4), Theme.PrimaryColor);
@@ -115,15 +110,19 @@ namespace HyperLinkUI.Engine.GUI
 
         public override void Update(MouseState oldState, MouseState newState)
         {
+            cursor_pos_index = MathHelper.Clamp(cursor_pos_index, 0, _input_chars.Count);
             base.Update(oldState, newState);
 
             BoundingRectangle = container.BoundingRectangle;
-            cursor_pos_index = MathHelper.Clamp(cursor_pos_index, 0, _input_chars.Count);
 
             if (Active)
             {
                 if (!(cursor_pos_x >= BoundingRectangle.Right - 2))
-                    cursor_pos_x = (int)fnt.MeasureString(charsBeforeCursor).X; 
+                    cursor_pos_x = (int)fnt.MeasureString(charsBeforeCursor).X;
+                if (_txt_widget.LocalX > Padding || _txt_widget.LocalX < Padding && _input_chars.Count < 1)
+                    _txt_widget.LocalX = Padding;
+                if (cursor_pos_x >= _txt_widget.Width)
+                    cursor_pos_x = (int)_txt_widget.Width;
             }
         }
 
@@ -137,10 +136,17 @@ namespace HyperLinkUI.Engine.GUI
             }
             else if (e.Key == Keys.Left)
             {
+                if ((fnt.MeasureString(InputText).X > Width || _txt_widget.LocalX < 0) && _txt_widget.LocalX < Padding) 
+                    _txt_widget.LocalX += (fnt.MeasureString(_input_chars[cursor_pos_index - 1] + "").X);
+               
                 cursor_pos_index--;
             }
             else if (e.Key == Keys.Right)
             {
+                if (fnt.MeasureString(InputText).X >= Width && _txt_widget.BoundingRectangle.Right >= BoundingRectangle.Right)
+                {
+                    _txt_widget.LocalX -= fnt.MeasureString(_input_chars[cursor_pos_index - 1] + "").X;
+                }
                 cursor_pos_index++;
             }
             else if (e.Key == Keys.Delete)
@@ -185,6 +191,10 @@ namespace HyperLinkUI.Engine.GUI
 
         private void AddChar(char ch)
         {
+            if (fnt.MeasureString(InputText + ch).X >= Width)
+            {
+                _txt_widget.LocalX -= fnt.MeasureString(ch + "").X;
+            }
             _input_chars.Insert(cursor_pos_index, ch);
             cursor_pos_index += 1;
         }
@@ -193,9 +203,13 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (cursor_pos_index - 1 >= 0)
             {
+                if (fnt.MeasureString(InputText).X > Width || _txt_widget.LocalX < 0)
+                {
+                   _txt_widget.LocalX += (fnt.MeasureString(_input_chars[cursor_pos_index - 1] + "").X);
+                }
                 cursor_pos_index -= 1;
                 _input_chars.RemoveAt(cursor_pos_index);
-            }
+            } 
         }
 
         private void Delete()

@@ -7,7 +7,7 @@
         <None Include="README.md" Pack="true" PackagePath="\" />
    </ItemGroup>
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows7.0</TargetFramework>
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
