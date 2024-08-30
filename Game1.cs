@@ -56,7 +56,6 @@ namespace HyperLinkUI
             
             SceneManager = Core.Init(UIContentManager, graphicsManager, Window);
             // check if the Loader throws an exception
-            AudioManager.Init();
             DesignerContext.Init(SceneManager);
             base.Initialize();
         }
@@ -91,7 +90,6 @@ namespace HyperLinkUI
             oldKeyboardState = newKeyboardState;
             BG.Animate(gameTime);
             TweenManager.TickAllTweens((float)gameTime.ElapsedGameTime.TotalSeconds);
-            AudioManager.Update();
 
             base.Update(gameTime);
             Profiler.End("update total");
