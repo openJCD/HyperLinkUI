@@ -10,4 +10,4 @@ using System.IO;   namespace HyperLinkUI.Engine {     public static cl
             GraphicsManager.PreferredBackBufferWidth = w;
             GraphicsManager.PreferredBackBufferHeight = h;
             GraphicsManager.ApplyChanges();
-        }         public static void UpdateWatch(object sender, FileSystemEventArgs e)         {             UIEventHandler.sendDebugMessage(sender, "File changes detected - press F5 to hot reload.");         }         public static void OnKeyDown(object sender, InputKeyEventArgs e)         {             if (e.Key == Keys.F5)                 ReloadAt(sm, SceneManager.ActiveScene.Name);         }     } } 
+        }         public static void UpdateWatch(object sender, FileSystemEventArgs e)         {             UIEventHandler.sendDebugMessage(sender, "File changes detected - press F5 to hot reload.");         }         public static void OnKeyDown(object sender, InputKeyEventArgs e)         {             if (e.Key == Keys.F5)                 ReloadAt(sm, SceneManager.ActiveScene?.Name);         }     } } 

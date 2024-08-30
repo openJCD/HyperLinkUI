@@ -39,11 +39,7 @@ namespace HyperLinkUI.Scenes
         #endregion 
 
         #region UI
-        public static Container new_root_container(UIRoot parent, int x, int y, int width, int height, string anchor)
-        {
-            return new Container(parent, x, y, width, height, LuaHelper.GetEnumFromString<AnchorType>(anchor));
-        }
-        public static Container new_container(Container parent, int x, int y, int width, int height, string anchor)
+        public static Container container(IContainer parent, int x, int y, int width, int height, string anchor)
         {
             return new Container(parent, x, y, width, height, LuaHelper.GetEnumFromString<AnchorType>(anchor));
         }

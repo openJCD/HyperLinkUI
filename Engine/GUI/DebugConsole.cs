@@ -122,7 +122,7 @@ namespace HyperLinkUI.Engine.GUI
                 case ("getLuaItem"):
                     if (tokens.Count()>1)
                     {
-                        try { UIEventHandler.sendDebugMessage(this, SceneManager.ActiveScene.ScriptHandler[tokens[1]].ToString()); }
+                        try { UIEventHandler.sendDebugMessage(this, SceneManager.ActiveScene?.ScriptHandler[tokens[1]].ToString()); }
                         catch { UIEventHandler.sendDebugMessage(this, "Could not find the requested value in current lua script"); }
                     }
                     return;
@@ -134,7 +134,7 @@ namespace HyperLinkUI.Engine.GUI
                     } else
                     {
                         _fpsMeterContainer = new WindowContainer(_parent, 0, 0, 100, 90, "fps_meter", "FPS", AnchorType.CENTRE);
-                        _fpsMeter = new TextLabel(_fpsMeterContainer, "0.000  qq", 0, 10, AnchorType.CENTRE);
+                        _fpsMeter = new TextLabel(_fpsMeterContainer, "0.00", 0, 10, AnchorType.CENTRE);
                         _isFpsMeterOn = true;
                     }
                     return;
@@ -155,7 +155,7 @@ namespace HyperLinkUI.Engine.GUI
                 default:
                     try
                     {
-                        var msg = SceneManager.ActiveScene.ScriptHandler.DoString(string.Join("", tokens));
+                        var msg = SceneManager.ActiveScene?.ScriptHandler?.DoString(string.Join(" ", tokens));
                         UIEventHandler.sendDebugMessage(this, msg.ToString());
                     } catch (Exception e)
                     {
