@@ -19,7 +19,7 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Title>HyperLink UI Framework</Title>
-    <Version>0.5.14</Version>
+    <Version>0.5.18</Version>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -27,6 +27,8 @@
     <AssemblyVersion>0.0.5</AssemblyVersion>
     <StartupObject>Program</StartupObject>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <Authors>openJCD</Authors>
+    <Description>Work-in-progress GUI framework and toolset for monogame developers</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FontStashSharp.MonoGame" Version="1.3.7" />
