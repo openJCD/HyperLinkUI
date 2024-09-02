@@ -50,10 +50,11 @@ namespace HyperLinkUI.Engine.GUI
 
         public AnchorType anchorType { get => anchor.Type; set => anchor.Type = value; }
         public LocalThemeProperties Theme = new LocalThemeProperties();
-
+        public float Alpha { get; set; } = 255f;
         protected Widget(Container parent)
         {
             Parent = parent;
+            Alpha = 255f;
         }
         public Widget() { }
 
@@ -84,8 +85,8 @@ namespace HyperLinkUI.Engine.GUI
                 return;
             if (DrawDebugRect)
             {
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.PrimaryColor);
-                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.PrimaryColor * 0.5f);
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.PrimaryColor * (Alpha / 255f));
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.PrimaryColor * 0.5f * (Alpha / 255f));
             }
         }
 
@@ -93,6 +94,7 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!Enabled)
                 return;
+            Alpha *= Parent.Alpha/255;
             if (BoundingRectangle.Contains(newState.Position))
                 isUnderMouseFocus = true;
             else isUnderMouseFocus = false;

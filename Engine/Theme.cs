@@ -54,6 +54,10 @@ namespace HyperLinkUI.Engine
 
         public static void LoadIniFile(string path, ContentManager content)
         {
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
             Stream fs = File.Open(path, FileMode.OpenOrCreate);
             StreamReader stream = new StreamReader(fs);
             _iniFileData = stream.ReadToEnd();
@@ -148,6 +152,8 @@ namespace HyperLinkUI.Engine
                 f.SetValue(typeof(Theme), double.Parse(value));
             else if (ftype == typeof(int))
                 f.SetValue(typeof(Theme), int.Parse(value));
+            else if (ftype == typeof(string))
+                f.SetValue(typeof(Theme), value);
         }
         static void SetValue(PropertyInfo f, string value)
         {
@@ -159,6 +165,8 @@ namespace HyperLinkUI.Engine
                 f.SetValue(typeof(Theme), double.Parse(value));
             else if (ftype == typeof(int))
                 f.SetValue(typeof(Theme), int.Parse(value));
+            else if (ftype == typeof(string))
+                f.SetValue(typeof(Theme), value);
         }
         public static void RegisterLocal(LocalThemeProperties p)
         {

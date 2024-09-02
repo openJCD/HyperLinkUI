@@ -1,6 +1,7 @@
 ﻿using HyperLinkUI.Engine;
 using HyperLinkUI.Engine.Animations;
 using HyperLinkUI.Engine.GUI;
+using HyperLinkUI.Engine.Scenes;
 using HyperLinkUI.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -14,22 +15,14 @@ using System.Linq;
 namespace HyperLinkUI.Scenes
 {
     public class SceneManager
-    {        
-        [LuaHide]
-        static DebugConsole dbc;
-        
-        [LuaHide]
+    {
         static bool _haltLuaVMUpdate;
-
-        [LuaHide]
+        static DebugConsole dbc;        
+        
         string _haltedErrorMsg = "";
-
-        [LuaHide]
+        CustomAPI[] _customAPIs = new CustomAPI[32];
         Dictionary<string, Scene> SceneDictionary;
-
-        [LuaHide]
         public static Scene ActiveScene { get; private set; }
-        [LuaHide]
         public UIRoot activeSceneUIRoot;
         public string SceneFolderPath { get; private set; }
         float gameTime = 0;
@@ -72,12 +65,20 @@ namespace HyperLinkUI.Scenes
             SceneAPI.ClearTextures();
             _haltLuaVMUpdate = false;
             ActiveScene = SceneDictionary[name];
-            activeSceneUIRoot = ActiveScene.Load(this);
+            activeSceneUIRoot = ActiveScene.Load(this, _customAPIs);
             if (dbc == null)
                 dbc = new DebugConsole(activeSceneUIRoot);
             else
                 dbc.CreateUI(activeSceneUIRoot);
             activeSceneUIRoot.OnWindowResize(Core.Window);
+        }
+        public void AddCustomAPI(CustomAPI api)
+        {
+            if (_customAPIs[31] != null)
+                throw new Exception("Maximum custom APIs added to scenes");
+            if (_customAPIs.Contains(api))
+                throw new Exception("Custom API already added");
+            _customAPIs.Append(api);
         }
         public Scene GetScene(string scene_name)
         {
@@ -87,7 +88,7 @@ namespace HyperLinkUI.Scenes
         {
             SceneDictionary.Add(scene.Name, scene);
         }
-        public void Update(GameTime gt)
+        internal void Update(GameTime gt)
         {
             gameTime = (float)gt.ElapsedGameTime.TotalSeconds;
             Profiler.Begin("lua gui update", gameTime);
@@ -103,14 +104,13 @@ namespace HyperLinkUI.Scenes
             if (!_haltLuaVMUpdate)  _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameUpdate", out _haltedErrorMsg, gt);
             Profiler.End("lua game update");
         }
-        public void Draw(SpriteBatch guiSpriteBatch)
+        internal void Draw(SpriteBatch guiSpriteBatch)
         {
             //run the lua draw thing if possible
             Profiler.Begin("lua game draw", gameTime);
              if (!_haltLuaVMUpdate) _haltLuaVMUpdate = LuaHelper.PauseOnError(_haltLuaVMUpdate, ActiveScene.ScriptHandler, "OnGameDraw", out _haltedErrorMsg, null);
             Profiler.End("lua game draw");
             
-            //guiSpriteBatch.Begin(SpriteSortMode.Deferred);
 
             Profiler.Begin("gui draw", gameTime);
             activeSceneUIRoot.Draw(guiSpriteBatch);
@@ -119,8 +119,6 @@ namespace HyperLinkUI.Scenes
             Profiler.Begin("flair primitives", gameTime);
             FlairManager.Draw(guiSpriteBatch);
             Profiler.End("flair primitives");
-
-            //guiSpriteBatch.End();
         }
         internal void UISceneManager_OnResize(object sender, EventArgs e)
         {

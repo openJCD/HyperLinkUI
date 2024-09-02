@@ -78,7 +78,7 @@ namespace HyperLinkUI.Engine.GUI
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
             Vector2 position = new Vector2(XPos, YPos);
-            guiSpriteBatch.DrawString(font, text, position, Theme.PrimaryColor);
+            guiSpriteBatch.DrawString(font, text, position, Theme.PrimaryColor * (Alpha / 255f));
             if (DrawDebugRect)
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Color.Green);
         }

@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
-
 using HyperLinkUI.Engine.GUI;
 using HyperLinkUI.Engine.Animations;
 using HyperLinkUI.Engine.GameSystems;
@@ -18,19 +17,21 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoTween;
+using HyperLinkUI.Engine.Scenes;
+using HyperLinkUI.Engine;
 
 #nullable enable
 
 namespace HyperLinkUI.Scenes
 {
-    public class SceneAPI
+    public class SceneAPI : CustomAPI
     {
         static List<Texture2D> _unmanaged_tx = new List<Texture2D>();
         #region EXPOSURE FUNCTION
         [LuaHide]
         public void ExposeTo(Lua lua)
         {
-            foreach (MethodInfo m in GetType().GetMethods(BindingFlags.Public | BindingFlags.Static))
+            foreach (MethodInfo m in GetType().GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly))
             {
                 lua.RegisterFunction(m.Name, this, m);
             }
@@ -44,7 +45,7 @@ namespace HyperLinkUI.Scenes
             return new Container(parent, x, y, width, height, LuaHelper.GetEnumFromString<AnchorType>(anchor));
         }
 
-        public static WindowContainer new_window_container(UIRoot parent, string title, int x, int y, int width, int height, string anchor, string tag)
+        public static WindowContainer window(UIRoot parent, string title, int x, int y, int width, int height, string anchor, string tag)
         {
             return new WindowContainer(parent, x, y, width, height, tag, title, LuaHelper.GetEnumFromString<AnchorType>(anchor));
         }
@@ -56,6 +57,10 @@ namespace HyperLinkUI.Scenes
         public static Button new_plain_button(Container parent, string text, int x, int y, int width, int height, string anchor, string etype, string tag)
         {
             return new Button(parent, text, x, y, width, height, LuaHelper.GetEnumFromString<AnchorType>(anchor), LuaHelper.GetEnumFromString<EventType>(etype), tag);
+        }
+        public static ImageButton new_image_button(Container parent, string text, Texture2D tex, int x, int y, string anchor, string etype, string tag)
+        {
+            return new ImageButton(parent, tex, x, y, tag, LuaHelper.GetEnumFromString<EventType>(etype), text, LuaHelper.GetEnumFromString<AnchorType>(anchor));
         }
         public static IconButton new_icon_button(Container parent, Texture2D sprite, int x, int y, string anchor, string etype, string tag)
         {
@@ -110,7 +115,10 @@ namespace HyperLinkUI.Scenes
             _unmanaged_tx.Add(tx);
             return tx;
         }
-
+        public static Texture2D get_texture(string asset)
+        {
+            return Core.Content.Load<Texture2D>(asset);
+        }
         public static void inherit_scene_function(SceneManager man, string scene_name, string function, params object[]? args)
         {
             var func = man.GetScene(scene_name).ScriptHandler.GetFunction(function);
@@ -167,16 +175,20 @@ namespace HyperLinkUI.Scenes
         /// <returns>Tween to chain methods with</returns>
         public static Tween tween_pos(Control target, int x, int y, float duration)
         {
-            Tween tw = TweenManager.Tween(target, new { LocalX = x, LocalY = y }, duration).Once().SetEase(Ease.OutCubic);
+            Tween tw = TweenManager.Tween(target, new { LocalX = x, LocalY = y }, duration).SetEase(Ease.OutCubic);
             return tw;
         }
 
         public static Tween tween_size(Control target, int w, int h, float duration)
         {
-            Tween tw = TweenManager.Tween(target, new { Width = w, Height = h }, duration).Once();
+            Tween tw = TweenManager.Tween(target, new { Width = w, Height = h }, duration);
             return tw;
         }
-
+        public static Tween tween_alpha(Control target, float end, float duration)
+        {
+            Tween tw = TweenManager.Tween(target, new { Alpha = end }, duration * 1.5f);
+            return tw;
+        }
         public static Keyframes animation()
         {
             return new Keyframes();

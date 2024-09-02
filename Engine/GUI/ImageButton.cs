@@ -12,7 +12,7 @@ namespace HyperLinkUI.Engine.GUI
     {
         protected Texture2D texture;
         protected SpriteSheet texturesheet;
-
+        protected NineSlice _ns;
         public ImageButton()
         {
 
@@ -32,16 +32,16 @@ namespace HyperLinkUI.Engine.GUI
             this.texture = texture;
             Parent = parent;
             parent.TransferWidget(this);
-            DebugLabel = text;
+            Text = text;
             labelfont = Theme.Font;
             Tag = tag;
             event_type = eventType;
             LocalX = relativex;
             LocalY = relativey;
             // button atlas should ALWAYS be 3 even-width images. Frame 0 is static, 1 is under mouse and 2 is clicked.
-            int width = texture.Width / 3;
-            int height = texture.Height;
-            texturesheet = new SpriteSheet(texture, 1, 3);
+            int width = (int)labelfont.MeasureString(text).X + 10;
+            int height = MathHelper.Max(texture.Height, (int)labelfont.MeasureString(text).Y);
+            _ns = new NineSlice(texture, BoundingRectangle, 3);
             DebugLabel += ", " + tag;
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
@@ -62,7 +62,7 @@ namespace HyperLinkUI.Engine.GUI
             int width = texture.Width / 3;
             int height = texture.Height;
             texturesheet = new SpriteSheet(texture, 1, 3);
-
+            _ns = new NineSlice(texture, BoundingRectangle, 3);
             anchor = new AnchorCoord(relativex, relativey, anchorType, parent, width, height);
             BoundingRectangle = new Rectangle((int)anchor.AbsolutePosition.X, (int)anchor.AbsolutePosition.Y, width, height);
         }
@@ -72,17 +72,17 @@ namespace HyperLinkUI.Engine.GUI
             if (BoundingRectangle.Contains(newState.Position))
             {
                 isUnderMouseFocus = true;
-                texturesheet.forceFrame(1);
+                _ns.SetFrame(1);
 
                 if (oldState.LeftButton == ButtonState.Pressed)
                 {
-                    texturesheet.forceFrame(2);
+                    _ns.SetFrame(2);
                 }
             }
             else
             {
                 isUnderMouseFocus = false;
-                texturesheet.forceFrame(0);
+                _ns.SetFrame(0);
             }
         }
 
@@ -90,19 +90,14 @@ namespace HyperLinkUI.Engine.GUI
         {
             // guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.WidgetBorderColor);
             //draw text with relative position set to the width and height of the texture / 2
-            guiSpriteBatch.DrawString(labelfont, DebugLabel, AbsolutePosition + texturesheet.InGameBounds.Size.ToVector2() / 2 - labelfont.MeasureString(DebugLabel) / 2, Theme.PrimaryColor);
-            texturesheet.Draw(guiSpriteBatch, AbsolutePosition);
+            _ns.BindRect = BoundingRectangle;
+            Vector2 offset = new Vector2(TextOffsetX, TextOffsetY);
+            _ns.Draw(guiSpriteBatch);
+            guiSpriteBatch.DrawString(labelfont, Text, offset + BoundingRectangle.Center.ToVector2() - labelfont.MeasureString(Text) / 2, Theme.PrimaryColor);
         }
         public void SetTexture(Texture2D texture)
         {
             this.texture = texture;
-            texturesheet = new SpriteSheet(texture, 1, 3);
-        }
-        public void SetTextureFromFile(GraphicsDevice graphics, string txpath)
-        {
-            Stream sr = new FileStream(txpath, FileMode.Open);
-
-            texture = Texture2D.FromStream(graphics, sr);
             texturesheet = new SpriteSheet(texture, 1, 3);
         }
     }

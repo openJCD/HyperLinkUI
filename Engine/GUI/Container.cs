@@ -26,6 +26,7 @@ namespace HyperLinkUI.Engine.GUI
         public bool BlockMouseClick = true;
 
         public LocalThemeProperties Theme = new LocalThemeProperties();
+        public float Alpha { get; set; } = 255f;
         public bool IsUnderMouseFocus { get => isUnderMouseFocus; }
 
         public virtual IContainer Parent { get => parent; protected set => parent = value; }
@@ -83,7 +84,7 @@ namespace HyperLinkUI.Engine.GUI
         {
             NineSliceEnabled = true;
             DrawBorder = false;
-            NineSlice = new NineSlice(ns_tx, BoundingRectangle);
+            NineSlice = new NineSlice(ns_tx, BoundingRectangle, 1);
             //NineSlice.DrawMode = NSDrawMode.Padded;
         }
         #endregion
@@ -164,6 +165,7 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!IsOpen)
                 return;
+            Alpha *= parent.Alpha/255;
             Rectangle scissor_reset = guiSpriteBatch.GraphicsDevice.ScissorRectangle;
             if (ClipContents)
             {
@@ -176,7 +178,7 @@ namespace HyperLinkUI.Engine.GUI
             //base.Draw(sb);
 
             if (RenderBackgroundColor)
-                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor);
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor * (Alpha / 255f));
             
             if (NineSliceEnabled)
             {
@@ -189,10 +191,10 @@ namespace HyperLinkUI.Engine.GUI
             foreach (var container in ChildContainers)
                 container.Draw(guiSpriteBatch);
             if (DrawBorder)
-                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
+                guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor * (Alpha/255f));
 
             if (!IsActive)
-                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor * 0.5f);
+                guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.TertiaryColor * (Alpha/255f) * 0.5f);
             
             guiSpriteBatch.End();
             guiSpriteBatch.GraphicsDevice.ScissorRectangle = scissor_reset;
@@ -300,7 +302,7 @@ namespace HyperLinkUI.Engine.GUI
                 }
             }
         }
-
+        
         public void SetBorderColor(Color C)
         {
             Theme.SecondaryColor = C;

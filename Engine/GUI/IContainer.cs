@@ -16,6 +16,8 @@ namespace HyperLinkUI.Engine.GUI
 
         float XPos { get; set; }
         float YPos { get; set; }
+
+        float Alpha { get; set; }
         public List<Container> ChildContainers { get; set; }
         public List<Widget> ChildWidgets { get; set; }
         public void AddContainer(Container container) { }

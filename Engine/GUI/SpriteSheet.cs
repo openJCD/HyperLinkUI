@@ -28,7 +28,7 @@ namespace HyperLinkUI.Engine.GUI
             if (currentFrame == totalFrames)
                 currentFrame = 0;
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 location)
+        public void Draw(SpriteBatch spriteBatch, Vector2 location, float alpha)
         {
             int width = Texture.Width / Columns;
             int height = Texture.Height / Rows;
@@ -40,7 +40,7 @@ namespace HyperLinkUI.Engine.GUI
 
             InGameBounds = destinationRectangle;
 
-            spriteBatch.Draw(Texture, destinationRectangle, sourceRectangle, Color.White);
+            spriteBatch.Draw(Texture, destinationRectangle, sourceRectangle, Color.White * alpha);
         }
         public void forceFrame(int frame)
         {

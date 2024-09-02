@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,17 @@ namespace HyperLinkUI.Engine.GUI
         public override void Draw(SpriteBatch guiSpriteBatch)
         {
             if (Enabled)
-                texturesheet.Draw(guiSpriteBatch, AbsolutePosition);
+                texturesheet.Draw(guiSpriteBatch, AbsolutePosition, (Alpha/255f));
+        }
+        public override void Update(MouseState oldState, MouseState newState)
+        {
+            if (BoundingRectangle.Contains(newState.Position))
+            {
+                texturesheet.forceFrame(1);
+                if (newState.LeftButton == ButtonState.Pressed)
+                    texturesheet.forceFrame(2);
+            }
+            else texturesheet.forceFrame(0);
         }
     }
 }

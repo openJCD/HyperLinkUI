@@ -4,6 +4,7 @@ using System;
 using HyperLinkUI.Engine.GUI;
 using HyperLinkUI.Engine;
 using System.Drawing;
+using HyperLinkUI.Engine.Scenes;
 
 namespace HyperLinkUI.Scenes
 {
@@ -28,7 +29,7 @@ namespace HyperLinkUI.Scenes
         /// <summary>Script
         /// Instantiate a new UIRoot with a GameSettings xml file using a Content Manager
         /// </summary>
-        public UIRoot Load(SceneManager sceneManager)
+        public UIRoot Load(SceneManager sceneManager, CustomAPI[] _customApis)
         {
             // init and re-init instances 
             SceneRoot = new UIRoot();
@@ -43,7 +44,10 @@ namespace HyperLinkUI.Scenes
 
             // expose API to lua instance
             new SceneAPI().ExposeTo(ScriptHandler);
-
+            foreach(CustomAPI a in _customApis)
+            {
+                a?.ExposeTo(ScriptHandler);
+            }
             // actually call the script itself
             ScriptCaller.Call();
             // call required "Init()" function

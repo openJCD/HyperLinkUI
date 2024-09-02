@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using FontStashSharp;
-using HyperLinkUI.Engine.Animations;
 using System;
 
 namespace HyperLinkUI.Engine.GUI
@@ -97,7 +96,7 @@ namespace HyperLinkUI.Engine.GUI
             if (!Enabled) return;
             if (Active)
             {
-                guiSpriteBatch.DrawLine(cursor_pos, cursor_pos + new Vector2(0, BoundingRectangle.Height - 4), Theme.PrimaryColor);
+                guiSpriteBatch.DrawLine(cursor_pos, cursor_pos + new Vector2(0, BoundingRectangle.Height - 4), Theme.PrimaryColor * (Alpha / 255f));
                 guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.PrimaryColor * 0.5f);
                 _txt_widget.Text = InputText;
             } else
@@ -105,7 +104,7 @@ namespace HyperLinkUI.Engine.GUI
                 if (InputText == "")
                     _txt_widget.Text = Hint;
             }
-            guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor);
+            guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.SecondaryColor * (Alpha / 255f));
         }
 
         public override void Update(MouseState oldState, MouseState newState)

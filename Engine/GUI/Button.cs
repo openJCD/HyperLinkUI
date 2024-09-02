@@ -11,7 +11,8 @@ namespace HyperLinkUI.Engine.GUI
         protected EventType event_type;
         protected bool clicked;
         protected float fillMultiplier;
-
+        public int TextOffsetY { get; set; }
+        public int TextOffsetX { get; set; }
         public string Text { get; set; }
 
         public string Tag { get; set; }
@@ -46,15 +47,15 @@ namespace HyperLinkUI.Engine.GUI
         {
             if (!Enabled)
                 return;
-            guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.PrimaryColor);
+            Vector2 offset = new Vector2(TextOffsetX, TextOffsetY);
+            guiSpriteBatch.DrawRectangle(BoundingRectangle, Theme.PrimaryColor * (Alpha / 255f));
 
-            guiSpriteBatch.FillRectangle(BoundingRectangle, Color.Multiply(Theme.PrimaryColor, fillMultiplier));
-            guiSpriteBatch.DrawString(labelfont, Text, AbsolutePosition + BoundingRectangle.Size.ToVector2() / 2 - labelfont.MeasureString(Text) / 2, Theme.PrimaryColor);
+            guiSpriteBatch.FillRectangle(BoundingRectangle, Theme.PrimaryColor * fillMultiplier * (Alpha / 255f));
+            guiSpriteBatch.DrawString(labelfont, Text, offset + AbsolutePosition + BoundingRectangle.Size.ToVector2() / 2 - labelfont.MeasureString(Text) / 2, Theme.PrimaryColor * (Alpha / 255f));
         }
         public override void Update(MouseState oldState, MouseState newState)
         {
             base.Update(oldState, newState);
-
 
             if (Parent.IsUnderMouseFocus && BoundingRectangle.Contains(newState.Position))
             {

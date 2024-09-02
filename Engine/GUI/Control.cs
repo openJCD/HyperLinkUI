@@ -25,5 +25,6 @@ namespace HyperLinkUI.Engine.GUI
         float XPos { get; }
         float YPos { get; }
         AnchorCoord Anchor { get; }
+        float Alpha { get; set; }
     }
 }

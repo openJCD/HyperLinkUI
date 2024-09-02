@@ -12,14 +12,14 @@
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
-    <UseWindowsForms>True</UseWindowsForms>
+    <UseWindowsForms>False</UseWindowsForms>
     <Configurations>Debug;Release;Nuget</Configurations>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Title>HyperLink UI Framework</Title>
-    <Version>0.5.18</Version>
+    <Version>0.5.20</Version>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

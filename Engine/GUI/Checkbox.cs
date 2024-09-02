@@ -40,6 +40,7 @@ namespace HyperLinkUI.Engine.GUI
             Anchor = new AnchorCoord(relativex, relativey, anchorType, parent, Width, Height);
             BoundingRectangle = container.BoundingRectangle;
             container.TransferWidget(this);
+            container.DrawBorder = false;
         }
 
         public override void Draw(SpriteBatch guiSpriteBatch)
@@ -48,12 +49,12 @@ namespace HyperLinkUI.Engine.GUI
                 return;
 
             if (IsUnderMouseFocus)
-                guiSpriteBatch.DrawRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(4)), Theme.PrimaryColor);
+                guiSpriteBatch.DrawRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(4)), Theme.PrimaryColor * Alpha);
             if (State)
             {
-                guiSpriteBatch.FillRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(3)), Theme.PrimaryColor);
+                guiSpriteBatch.FillRectangle(new Rectangle(btnrect.Location + new Point(2), btnrect.Size - new Point(3)), Theme.PrimaryColor * Alpha);
             }
-            guiSpriteBatch.DrawRectangle(btnrect, Theme.PrimaryColor);
+            guiSpriteBatch.DrawRectangle(btnrect, Theme.PrimaryColor * Alpha);
         }
 
         public override void Update(MouseState oldState, MouseState newState)

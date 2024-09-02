@@ -76,6 +76,7 @@ namespace HyperLinkUI.Engine.GUI
                 Height = windowheight - value * 2;
             }
         }
+        public float Alpha { get; set; } = 255f;
 
         [LuaHide]
         public List<Container> ContainersUnderMouseHover { get; set; }
