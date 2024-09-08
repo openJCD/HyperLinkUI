@@ -1,3 +1,4 @@
 # "Hyperlink": UI and game tool framework
 ______________________________________
-### Hierarchy-based externally-scriptable UI framework for MonoGame projects.
+### Composite scriptable GUI framework for MonoGame projects.
+This repository is deprecated - refer to MonoGui from now on for new code/versions (renamed). 
